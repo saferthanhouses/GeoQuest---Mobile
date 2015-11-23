@@ -15,6 +15,9 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
+
+    $state.go('map');
+
   });
 })
 
@@ -27,6 +30,6 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
     .state('map', {
          url: '/map',
          controller: 'MapCtrl',
-         templateUrl: '/templates/map.html'
+         templateUrl: 'templates/map.html'
      })
 });
