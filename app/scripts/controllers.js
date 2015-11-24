@@ -58,8 +58,16 @@ angular.module('GeoQuest.controllers', [])
     $scope.map.locate({
         setView: true, 
         maxZoom: 20, 
-        watch: true,
+        watch: false,
         zoom: 16, 
+        enableHighAccuracy: true
+    });
+
+    //locate yourself continually, but don't annoyingly change the zoom
+    $scope.map.locate({
+        setView: true, 
+        maxZoom: 20, 
+        watch: true,
         enableHighAccuracy: true
     });
 
