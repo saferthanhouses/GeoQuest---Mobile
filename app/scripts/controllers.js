@@ -70,6 +70,7 @@ angular.module('GeoQuest.controllers', [])
 
    // When a fellow leaves
    socket.on('death', function(id) {
+      console.log("fellowDeath");
        var index;
        for (var i=0; i< $scope.fellows.length; i++) {
            if($scope.fellows[i].id === id) {
