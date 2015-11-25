@@ -3,6 +3,8 @@ angular.module('GeoQuest.controllers', [])
 
 .controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration) {
 
+
+
     //main map object
     $scope.map = L.map('map');
     //object to contain current status of client

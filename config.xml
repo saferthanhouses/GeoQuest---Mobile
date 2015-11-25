@@ -10,5 +10,8 @@
     <content src="index.html" />
     <access origin="*" />
     <allow-navigation href="http://*/*" />
+    <feature name="Geolocation">
+        <param name="android-package" value="org.apache.cordova.GeoBroker" />
+    </feature>
     <plugin name="de.appplant.cordova.plugin.local-notification" spec="~0.8.2" />
 </widget>
