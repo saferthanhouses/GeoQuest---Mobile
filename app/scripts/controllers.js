@@ -1,10 +1,11 @@
+'use strict'
 
 angular.module('GeoQuest.controllers', [])
 
-.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration) {
+.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory) {
 
-    //main map object
-    $scope.map = L.map('map');
+    $scope.map = MapFactory.generateMap(document.getElementById('map'));
+
     //object to contain current status of client
     $scope.me = {};
     $scope.me.currentRegion;
@@ -14,12 +15,6 @@ angular.module('GeoQuest.controllers', [])
     $scope.shapes = {};
     //array containing information of others
     $scope.fellows = [];
-
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        maxZoom: 18,
-        id: 'scotteggs.o7614jl2',
-        accessToken: 'pk.eyJ1Ijoic2NvdHRlZ2dzIiwiYSI6ImNpaDZoZzhmdjBjMDZ1cWo5aGcyaXlteTkifQ.LZe0-IBRQmZ0PkQBsYIliw'
-    }).addTo($scope.map);
 
     $scope.shapes.polygon1 = {
         shapeobject: L.polygon([
