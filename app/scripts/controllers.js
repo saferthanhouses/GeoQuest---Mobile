@@ -1,7 +1,7 @@
 
 angular.module('GeoQuest.controllers', [])
 
-.controller('MapCtrl', function ($scope) {
+.controller('MapCtrl', function ($scope, $ionicModal) {
 
 
 
@@ -94,14 +94,16 @@ angular.module('GeoQuest.controllers', [])
         if(!_.isEqual(newRegion, $scope.me.currentRegion)) {
             //if status properties are not equal we update
             $scope.me.currentRegion = newRegion;
+            //check not already visited
+            if (!_.any($scope.me.regionsVisited, $scope.me.currentRegion)) {
             //add location to locations visited
-            $scope.me.regionsVisited.push($scope.me.currentRegion)
+              $scope.me.regionsVisited.push($scope.me.currentRegion)
+            }
             //make regions visible based on current and visited regions
             $scope.makeVisible();
             //open up modal to client showing map status
-            // $scope.openMapStatus();
+            $scope.openMapStatus();
             //redraw map based on regions set to true
-
             for (var key in $scope.me.regionsVisible) {
                 $scope.me.regionsVisible[key].shapeobject.addTo($scope.map)
             }
@@ -112,7 +114,7 @@ angular.module('GeoQuest.controllers', [])
     //function to detect if within bounds of polygon 1
     $scope.generateRegion = function (point) {
         for (var key in $scope.shapes) {
-            if($scope.shapes[key].shapeobject.getBounds().contains(point)) {
+            if($scope.shapes[key] && $scope.shapes[key].shapeobject.getBounds().contains(point)) {
                 console.log('region found')
                 return $scope.shapes[key]
             }
@@ -127,29 +129,42 @@ angular.module('GeoQuest.controllers', [])
         
         //if currently within polygon1, make visible polygon2
         if($scope.me.currentRegion === $scope.shapes.polygon1) {
+          console.log("you are within region 1")
             $scope.me.regionsVisible.push($scope.shapes.polygon2)
         }
         //if at any time you have visited polygon1, make visible polygon 3
-        if($scope.me.regionsVisited.indexOf($scope.shapes.polygon1) > -1) {
-            $scope.me.regionsVisible.push($scope.shapes.polygon3)
+        // if($scope.me.regionsVisited.indexOf($scope.shapes.polygon1) > -1) {
+        //     $scope.me.regionsVisible.push($scope.shapes.polygon3)
+        // }
+
+        // TODO: delete regions from map on exit event
+
+        // if currently in region2, show region 3
+        if ($scope.me.currentRegion === $scope.shapes.polygon2){
+          $scope.me.regionsVisible.push($scope.shapes.polygon3)
         }
+
         return;
     }
 
 
-    // $scope.openMapStatus = function() {
-    //     $uibModal.open({
-    //         animation: true,
-    //         templateUrl: '/js/common/modals/map-status.html',
-    //         controller: 'MapStatusCtrl',
-    //         size: 'lg',
-    //         resolve: {
-    //             currentStatus: function () {
-    //                 return $scope.me
-    //             }
-    //         }
-    //     })
-    // };
+    // ionic modal:
+    //  inject $ionicModal
+     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
+       scope: $scope,
+       animation: 'slide-in-up'
+    }).then(function(modal){
+      $scope.modal = modal;
+    })
+
+    // later will want to pass custom message into the modal
+    $scope.openMapStatus = function() {
+      $scope.modal.show();     
+    };
+
+    $scope.closeModal = function(){
+      $scope.modal.hide();
+    }
 
 
     // When a fellow arrives or moves
@@ -196,4 +211,8 @@ angular.module('GeoQuest.controllers', [])
     });
 
 
-});
+})
+
+.controller('MapStatusCtrl', function($scope){
+
+})
