@@ -15,6 +15,7 @@ angular.module('GeoQuest.controllers', [])
     $scope.shapes = {};
     //array containing information of others
     $scope.fellows = [];
+    $scope.map.mapRegionLayer;
 
     $scope.shapes.polygon1 = {
         shapeobject: L.polygon([
@@ -69,7 +70,7 @@ angular.module('GeoQuest.controllers', [])
 
     $scope.map.on('locationfound', function (e) {
         $scope.me.location = e.latlng;
-        console.log('new location found')
+        console.log('location found event');
 
         //if no client marker exists, create new marker
         if (!$scope.myMarker) {
@@ -79,7 +80,9 @@ angular.module('GeoQuest.controllers', [])
                 iconAnchor:   [19, 38], // point of the icon which will correspond to marker's location
                 popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
             });
+            //create new marker for my location
             $scope.myMarker = new L.marker($scope.me.location, {icon: meIcon});
+            //add my location to map
             $scope.map.addLayer($scope.myMarker);
         } else {
             //otherwise take myMarker and update location
@@ -97,34 +100,39 @@ angular.module('GeoQuest.controllers', [])
             $scope.me.currentRegion = newRegion;
             //check not already visited
             if (!_.any($scope.me.regionsVisited, $scope.me.currentRegion)) {
-            //add location to locations visited
+            //if not add location to locations visited
               $scope.me.regionsVisited.push($scope.me.currentRegion)
             }
             //make regions visible based on current and visited regions
             $scope.makeVisible();
 
-            // modal opening triggers notification.
-            //open up modal to client showing map status
+            // open up modal to client showing map status, notification triggers
             $scope.openMapStatus();
-            //redraw map based on regions set to true
+            
+            //generate array of visible regions
+            var tempRegionArray = [];
             for (var key in $scope.me.regionsVisible) {
-
-                $scope.me.regionsVisible[key].shapeobject.addTo($scope.map)
+                tempRegionArray.push($scope.me.regionsVisible[key].shapeobject);
             }
-            console.log($scope.me)   
+            //define layer group to visible region array, if it exists, remove it
+            if($scope.map.mapRegionLayer) {
+                $scope.map.removeLayer($scope.map.mapRegionLayer);
+            }
+            //define new region layer after removal from map
+            $scope.map.mapRegionLayer = L.layerGroup(tempRegionArray);
+            //add layer to map
+            $scope.map.addLayer($scope.map.mapRegionLayer);
         }
-
     });
     //function to detect if within bounds of polygon 1
     $scope.generateRegion = function (point) {
         for (var key in $scope.shapes) {
             if($scope.shapes[key] && $scope.shapes[key].shapeobject.getBounds().contains(point)) {
-                console.log('region found')
                 return $scope.shapes[key]
             }
         }
     }
-    //function to update visibility of regions
+    //function to update visibility of regions based on user location
     $scope.makeVisible = function () {
         //empty array if not alreay empty
         $scope.me.regionsVisible = []
@@ -133,16 +141,8 @@ angular.module('GeoQuest.controllers', [])
         
         //if currently within polygon1, make visible polygon2
         if($scope.me.currentRegion === $scope.shapes.polygon1) {
-          console.log("you are within region 1")
             $scope.me.regionsVisible.push($scope.shapes.polygon2)
         }
-        //if at any time you have visited polygon1, make visible polygon 3
-        // if($scope.me.regionsVisited.indexOf($scope.shapes.polygon1) > -1) {
-        //     $scope.me.regionsVisible.push($scope.shapes.polygon3)
-        // }
-
-        // TODO: delete regions from map on exit event
-
         // if currently in region2, show region 3
         if ($scope.me.currentRegion === $scope.shapes.polygon2){
           $scope.me.regionsVisible.push($scope.shapes.polygon3)

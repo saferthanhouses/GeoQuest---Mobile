@@ -1,0 +1,26 @@
+//Setting up for Mobile Development
+Install Grunt and Grunt-Cli
+Install Xcode
+Install Cordova
+Install Ionic
+clone repo from github
+NPM install
+bower install
+
+//cordova plugin commands
+cordova plugin list
+cordova plugin remove 'name of plugin'
+
+
+//complete restart on ios
+exit xcode
+ionic platform remove ios
+ionic platform add ios
+ionic build ios
+open project in xcode
+cordova prepare
+
+//rebuild in ios after changes:
+grunt build:ios
+open in xcode
+click play > triggers build, install, run

@@ -63,7 +63,6 @@
       "locator": "https://github.com/apache/cordova-plugin-whitelist.git",
       "id": "cordova-plugin-whitelist"
     },
-    "de.appplant.cordova.common.registerusernotificationsettings",
     "cordova-plugin-vibration",
     "de.appplant.cordova.plugin.local-notification",
     "org.apache.cordova.console",
@@ -127,10 +126,6 @@
       "version": "",
       "locator": "android"
     },
-    {
-      "platform": "ios",
-      "version": "",
-      "locator": "ios"
-    }
+    "ios"
   ]
 }
