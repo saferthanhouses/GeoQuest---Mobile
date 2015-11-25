@@ -25,7 +25,8 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
   $stateProvider
     .state('home', {
       url: '/',
-      template: "this is the home"    
+      templateUrl: "templates/home.html",
+      controller: 'HomeCtrl'    
     })
     .state('map', {
          url: '/map',
