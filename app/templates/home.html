@@ -1,5 +1,12 @@
 <ion-view view-title="Home" align-title="center">
 
-	Hey there!
+	<table style='width:100%;margin:50px 20px 0;'>
+    		<tr>
+    			<th>Name</th><th>Distance (m)</th><th>Time (hr)</th><th>Summary</th><th>Distance from you (mi)</th>
+    		</tr>
+    		<tr ng-repeat="game in games">
+    			<td><a ui-sref="Map">{{game.name}}</a></td><td>{{game.distance}}</td><td>{{game.time}}</td><td>{{game.summary}}</td><td>{{game.distFromMe}}</td>
+    		</tr>
+    	</table>
 
 </ion-view>
