@@ -9,3 +9,41 @@ body {
 #map, html, body {
 	height: 100%;
 }
+
+.myModal {  
+ width: 90%; 
+ height: 90%; 
+ top: 5%; 
+ left: 5%; 
+ right: 5%; 
+ bottom: 5%;
+ border-radius: 10px;
+ /* hack to get the modal height to change */
+ min-height: 0 !important; 
+ font-family: monospace;
+ background-color: rgba(0,0,0,0.8);
+ color: white;
+}
+
+.closeModalButton {
+	width: 90%;
+	margin-left: 0px;
+	border-radius: 4px;
+	margin-top: 90% !important;
+
+}
+
+.modalContent {
+	height: 100%;
+	padding: 10%;
+}
+
+.modalTitle {
+	font-size: 24px;
+	text-align: center;
+	font-family: monospace;
+}
+
+.bar-header {
+	padding:10px;
+}
