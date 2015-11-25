@@ -53,9 +53,6 @@
     "test": "grunt test"
   },
   "cordovaPlugins": [
-    "org.apache.cordova.device",
-    "org.apache.cordova.console",
-    "com.ionic.keyboard",
     {
       "locator": "https://github.com/apache/cordova-plugin-geolocation.git",
       "id": "cordova-plugin-geolocation"
@@ -64,9 +61,14 @@
       "locator": "https://github.com/apache/cordova-plugin-whitelist.git",
       "id": "cordova-plugin-whitelist"
     },
-    "de.appplant.cordova.common.registerusernotificationsettings",
     "cordova-plugin-vibration",
-    "de.appplant.cordova.plugin.local-notification"
+    "com.ionic.keyboard",
+    "de.appplant.cordova.common.registerusernotificationsettings",
+    "de.appplant.cordova.plugin.local-notification",
+    "cordova-plugin-device",
+    "de.appplant.cordova.common.registerusernotificationsettings",
+    "de.appplant.cordova.plugin.local-notification",
+    "com.ionic.keyboard"
   ],
   "cordovaPlatforms": [
     {
@@ -74,10 +76,6 @@
       "version": "",
       "locator": "android"
     },
-    {
-      "platform": "ios",
-      "version": "",
-      "locator": "ios"
-    }
+    "ios"
   ]
 }
