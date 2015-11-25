@@ -1,9 +1,10 @@
 // Ionic Starter App
+'use strict'
 
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.controllers', 'ngAnimate'])
+angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.controllers', 'GeoQuest.factories', 'ngAnimate'])
 
 .run(function($ionicPlatform, $state) {
   $ionicPlatform.ready(function() {
@@ -16,18 +17,24 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
       StatusBar.styleDefault();
     }
 
-    $state.go('map');
+    $state.go('Home');
 
   });
 })
 
 .config(function($stateProvider){
   $stateProvider
-    .state('home', {
+    .state('Home', {
       url: '/',
-      template: "this is the home"    
+      templateUrl: "templates/home.html",
+      controller: 'HomeCtrl',
+      resolve: {
+        games: function(GamesFactory) {
+          return GamesFactory.getAllGames();
+        }
+      }    
     })
-    .state('map', {
+    .state('Map', {
          url: '/map',
          controller: 'MapCtrl',
          templateUrl: 'templates/map.html'
