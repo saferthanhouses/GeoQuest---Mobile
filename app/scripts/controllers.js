@@ -52,15 +52,26 @@ angular.module('GeoQuest.controllers', [])
     $scope.map.locate({
         setView: true, 
         maxZoom: 20, 
-        watch: false,
+        watch: true,
         zoom: 16,
         enableHighAccuracy: true
-    });
+    })
+
+    $scope.map.on('zoomend', changeLocateZoom);
+
+    function changeLocateZoom(e){
+      if ($scope.map._locateOptions){
+        $scope.map._locateOptions.maxZoom = $scope.map.getZoom();
+      }
+    }
+
+    
 
     // TODO : - if location not in $scope.shapes
     //        - if location already in regionsVisited
 
     $scope.map.on('locationfound', function (e) {
+        console.log("locationfound, accuracy:", e.accuracy);
         $scope.me.location = e.latlng;
         console.log('new location found')
 
