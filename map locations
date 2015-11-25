@@ -1,0 +1,8 @@
+map locations
+
+{
+	"within region 1" : [40.705026, -74.009340],
+	"within region 2" : [40.705136, -74.008728],
+	"within region 3" : [40.704583, -74.008702],
+	"north of region 1" : [40.705864, -74.009243]
+}
