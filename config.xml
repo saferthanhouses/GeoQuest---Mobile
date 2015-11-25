@@ -10,4 +10,5 @@
     <content src="index.html" />
     <access origin="*" />
     <allow-navigation href="http://*/*" />
+    <plugin name="de.appplant.cordova.plugin.local-notification" spec="~0.8.2" />
 </widget>

@@ -1,9 +1,7 @@
 
 angular.module('GeoQuest.controllers', [])
 
-.controller('MapCtrl', function ($scope, $ionicModal) {
-
-
+.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration) {
 
     //main map object
     $scope.map = L.map('map');
@@ -109,10 +107,13 @@ angular.module('GeoQuest.controllers', [])
             }
             //make regions visible based on current and visited regions
             $scope.makeVisible();
+
+            // modal opening triggers notification.
             //open up modal to client showing map status
             $scope.openMapStatus();
             //redraw map based on regions set to true
             for (var key in $scope.me.regionsVisible) {
+
                 $scope.me.regionsVisible[key].shapeobject.addTo($scope.map)
             }
             console.log($scope.me)   
@@ -156,19 +157,33 @@ angular.module('GeoQuest.controllers', [])
     }
 
 
-    // ionic modal:
-    //  inject $ionicModal
-     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
-       scope: $scope,
-       animation: 'slide-in-up'
-    }).then(function(modal){
-      $scope.modal = modal;
+    $ionicModal.fromTemplateUrl('templates/mapModal.html', {
+          scope: $scope,
+          animation: 'slide-in-up'
+      }).then(function(modal){
+          $scope.modal = modal;
     })
 
     // later will want to pass custom message into the modal
     $scope.openMapStatus = function() {
-      $scope.modal.show();     
+      $scope.modal.show();    
+      notifyUser("new region entered!"); 
     };
+
+    function notifyUser(message){
+      $cordovaVibration.vibrate(200);
+      $cordovaLocalNotification.add({
+        id: 1,
+        title: 'GeoQuest Alert!',
+        text: message,
+        data: {
+          customProperty: 'custom value'
+        }
+      }).then(function(result){
+        console.log(result)
+      })
+    }
+
 
     $scope.closeModal = function(){
       $scope.modal.hide();
