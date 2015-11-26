@@ -6,6 +6,7 @@ angular.module('GeoQuest.controllers', [])
 
     $scope.map = MapFactory.generateMap(document.getElementById('map'));
 
+ 
     //object to contain current status of client
     $scope.me = {};
     $scope.me.currentRegion;
@@ -48,27 +49,30 @@ angular.module('GeoQuest.controllers', [])
     }
 
 
-    //locate and zoom map
-    $scope.map.locate({
-        setView: true, 
-        maxZoom: 20, 
-        watch: false,
-        zoom: 16, 
-        enableHighAccuracy: true
-    });
-
     //locate yourself continually, but don't annoyingly change the zoom
     $scope.map.locate({
         setView: true, 
         maxZoom: 20, 
         watch: true,
+        zoom: 16,
         enableHighAccuracy: true
-    });
+    })
+
+    $scope.map.on('zoomend', changeLocateZoom);
+
+    function changeLocateZoom(e){
+      if ($scope.map._locateOptions){
+        $scope.map._locateOptions.maxZoom = $scope.map.getZoom();
+      }
+    }
+
+    
 
     // TODO : - if location not in $scope.shapes
     //        - if location already in regionsVisited
 
     $scope.map.on('locationfound', function (e) {
+        console.log("locationfound, accuracy:", e.accuracy);
         $scope.me.location = e.latlng;
         console.log('location found event');
 
