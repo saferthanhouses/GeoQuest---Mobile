@@ -2,7 +2,14 @@
 
 angular.module('GeoQuest.controllers', [])
 
-.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory) {
+.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams) {
+    $scope.gameId = $stateParams.gameId;
+
+    // Connect to appropriate socket namespace, using $scope.gameId as namespace path
+    var socket = io.connect("https://damp-ocean-1851.herokuapp.com/" + gameId);
+        socket.on('connect', function() {
+            console.log('We have sockets!')
+        });
 
     $scope.map = MapFactory.generateMap(document.getElementById('map'));
 

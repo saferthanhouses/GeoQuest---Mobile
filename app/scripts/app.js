@@ -35,7 +35,7 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
       }    
     })
     .state('Map', {
-         url: '/map',
+         url: '/map/:gameId',
          controller: 'MapCtrl',
          templateUrl: 'templates/map.html'
      })
