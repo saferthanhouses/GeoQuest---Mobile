@@ -4,15 +4,76 @@ angular.module('GeoQuest.controllers', [])
 
 .controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams) {
     $scope.gameId = $stateParams.gameId;
+    var ns_socket; // This is assigned a value once server says it's cool to join a namespace
+    var hereIAm; // This is assigned a value inside registerEventListeners
+    // https://damp-ocean-1851.herokuapp.com/
 
-    // Connect to appropriate socket namespace, using $scope.gameId as namespace path
-    var socket = io.connect("https://damp-ocean-1851.herokuapp.com/" + gameId);
-        socket.on('connect', function() {
-            console.log('We have sockets!')
+    // Make a general connection, then ask to connect to the namespace for this game using $scope.gameId as namespace path.
+    var socket = io.connect('http://localhost:1337');
+    socket.emit('joinNs', $scope.gameId);
+
+    // When the server confirms the namespace exists, the client joins it.
+    socket.on('setToJoin', function(gameId) {
+        ns_socket = io.connect('http://localhost:1337/' + gameId);
+        ns_socket.on('connect',function(){console.log('joined namespace ' + gameId);});
+        registerSocketEvents();
+    });
+
+    // This gets called when the client joins a namespace
+    function registerSocketEvents() {
+        // When a fellow arrives or moves
+        ns_socket.on('fellowLocation', function(fellow) {
+            console.log('fellow location', fellow);
+            if (fellow.id === $scope.me.id) return;
+            for (var i=0; i<$scope.fellows.length; i++) {
+                if(fellow.id === $scope.fellows[i].id) {
+                    $scope.fellows[i].location = fellow.location;
+                    $scope.fellows[i].marker.setLatLng($scope.fellows[i].location);
+                    return;
+                }
+            }
+            var newFellow = fellow;
+            newFellow.marker = new L.marker(newFellow.location);
+            $scope.map.addLayer(newFellow.marker);
+            $scope.fellows.push(newFellow);
         });
+
+        // When a fellow leaves
+        ns_socket.on('death', function(id) {
+            var index;
+            for (var i=0; i< $scope.fellows.length; i++) {
+                if($scope.fellows[i].id === id) {
+                    $scope.map.removeLayer($scope.fellows[i].marker);
+                    index = i;
+                }
+            }
+            $scope.fellows.splice(index,1);
+        });
+
+        // When you first show up, so you can tell who you are relative to your fellows
+        ns_socket.on('yourId', function(id) {
+            console.log('my id is: ', id);
+            $scope.me.id = id;
+        });
+
+        // When you first show up, so you know your fellows
+        ns_socket.on('yourFellows', function (everyone) {
+            for (var i=0; i< everyone.length; i++) {
+                var newFellow = everyone[i];
+                newFellow.marker = new L.marker(newFellow.location);
+                $scope.map.addLayer(newFellow.marker);
+                $scope.fellows.push(newFellow);
+            }
+        });
+        // This gets called on 'location found'
+        hereIAm = function() {
+            ns_socket.emit('hereIAm', $scope.me.location);
+        };
+    }
 
     $scope.map = MapFactory.generateMap(document.getElementById('map'));
 
+ 
     //object to contain current status of client
     $scope.me = {};
     $scope.me.currentRegion;
@@ -55,27 +116,31 @@ angular.module('GeoQuest.controllers', [])
     }
 
 
-    //locate and zoom map
-    $scope.map.locate({
-        setView: true, 
-        maxZoom: 20, 
-        watch: false,
-        zoom: 16, 
-        enableHighAccuracy: true
-    });
-
     //locate yourself continually, but don't annoyingly change the zoom
     $scope.map.locate({
         setView: true, 
         maxZoom: 20, 
         watch: true,
+        zoom: 16,
         enableHighAccuracy: true
-    });
+    })
+
+    $scope.map.on('zoomend', changeLocateZoom);
+
+    function changeLocateZoom(e){
+      if ($scope.map._locateOptions){
+        $scope.map._locateOptions.maxZoom = $scope.map.getZoom();
+      }
+    }
+
+    
 
     // TODO : - if location not in $scope.shapes
     //        - if location already in regionsVisited
 
+
     $scope.map.on('locationfound', function (e) {
+        console.log("locationfound, accuracy:", e.accuracy);
         $scope.me.location = e.latlng;
         console.log('location found event');
 
@@ -95,8 +160,8 @@ angular.module('GeoQuest.controllers', [])
             //otherwise take myMarker and update location
             $scope.myMarker.setLatLng($scope.me.location);
         }
-        //emit notification to server //possibly send $scope.me
-        socket.emit('hereIAm', $scope.me.location);
+        //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
+        hereIAm();
 
         //generate region based on client location within bounds
         var newRegion = $scope.generateRegion($scope.me.location)
@@ -189,52 +254,7 @@ angular.module('GeoQuest.controllers', [])
 
     $scope.closeModal = function(){
       $scope.modal.hide();
-    }
-
-
-    // When a fellow arrives or moves
-    socket.on('fellowLocation', function(fellow) {
-        if (fellow.id === $scope.me.id) return;
-        for (var i=0; i<$scope.fellows.length; i++) {
-            if(fellow.id === $scope.fellows[i].id) {
-                $scope.fellows[i].location = fellow.location;
-                $scope.fellows[i].marker.setLatLng($scope.fellows[i].location);
-                return;
-            }
-        }
-        var newFellow = fellow;
-        newFellow.marker = new L.marker(newFellow.location);
-        $scope.map.addLayer(newFellow.marker);
-        $scope.fellows.push(newFellow);
-    });
-
-    // When a fellow leaves
-    socket.on('death', function(id) {
-        var index;
-        for (var i=0; i< $scope.fellows.length; i++) {
-            if($scope.fellows[i].id === id) {
-                $scope.map.removeLayer($scope.fellows[i].marker);
-                index = i;
-            }
-        }
-        $scope.fellows.splice(index,1);
-    });
-
-    // When you first show up, so you can tell who you are relative to your fellows
-    socket.on('yourId', function(id) {
-        $scope.me.id = id;
-    });
-
-    // When you first show up, so you know your fellows
-    socket.on('yourFellows', function (everyone) {
-        for (var i=0; i< everyone.length; i++) {
-            var newFellow = everyone[i];
-            newFellow.marker = new L.marker(newFellow.location);
-            $scope.map.addLayer(newFellow.marker);
-            $scope.fellows.push(newFellow);
-        }
-    });
-
+    };
 
 })
 
