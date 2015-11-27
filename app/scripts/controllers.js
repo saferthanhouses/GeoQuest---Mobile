@@ -3,26 +3,16 @@
 angular.module('GeoQuest.controllers', [])
 
 .controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams) {
-    $scope.gameId = $stateParams.gameId;
-    var ns_socket; // This is assigned a value once server says it's cool to join a namespace
+    $scope.roomId = $stateParams.roomId;
     var hereIAm; // This is assigned a value inside registerEventListeners
     // https://damp-ocean-1851.herokuapp.com/
 
-    // Make a general connection, then ask to connect to the namespace for this game using $scope.gameId as namespace path.
-    var socket = io.connect('http://localhost:1337');
-    socket.emit('joinNs', $scope.gameId);
-
-    // When the server confirms the namespace exists, the client joins it.
-    socket.on('setToJoin', function(gameId) {
-        ns_socket = io.connect('http://localhost:1337/' + gameId);
-        ns_socket.on('connect',function(){console.log('joined namespace ' + gameId);});
-        registerSocketEvents();
-    });
-
-    // This gets called when the client joins a namespace
+    // This gets called when the client joins a room
+    // might not even need to call, since will join a room while in pergatory,
+    // then just put roomSocket on scope from $stateParams
     function registerSocketEvents() {
         // When a fellow arrives or moves
-        ns_socket.on('fellowLocation', function(fellow) {
+        nsSocket.on('fellowLocation', function(fellow) {
             console.log('fellow location', fellow);
             if (fellow.id === $scope.me.id) return;
             for (var i=0; i<$scope.fellows.length; i++) {
@@ -39,7 +29,7 @@ angular.module('GeoQuest.controllers', [])
         });
 
         // When a fellow leaves
-        ns_socket.on('death', function(id) {
+        nsSocket.on('death', function(id) {
             var index;
             for (var i=0; i< $scope.fellows.length; i++) {
                 if($scope.fellows[i].id === id) {
@@ -51,13 +41,13 @@ angular.module('GeoQuest.controllers', [])
         });
 
         // When you first show up, so you can tell who you are relative to your fellows
-        ns_socket.on('yourId', function(id) {
+        nsSocket.on('yourId', function(id) {
             console.log('my id is: ', id);
             $scope.me.id = id;
         });
 
         // When you first show up, so you know your fellows
-        ns_socket.on('yourFellows', function (everyone) {
+        nsSocket.on('yourFellows', function (everyone) {
             for (var i=0; i< everyone.length; i++) {
                 var newFellow = everyone[i];
                 newFellow.marker = new L.marker(newFellow.location);
@@ -67,7 +57,7 @@ angular.module('GeoQuest.controllers', [])
         });
         // This gets called on 'location found'
         hereIAm = function() {
-            ns_socket.emit('hereIAm', $scope.me.location);
+            nsSocket.emit('hereIAm', $scope.me.location);
         };
     }
 
@@ -132,12 +122,6 @@ angular.module('GeoQuest.controllers', [])
         $scope.map._locateOptions.maxZoom = $scope.map.getZoom();
       }
     }
-
-    
-
-    // TODO : - if location not in $scope.shapes
-    //        - if location already in regionsVisited
-
 
     $scope.map.on('locationfound', function (e) {
         console.log("locationfound, accuracy:", e.accuracy);
@@ -258,8 +242,45 @@ angular.module('GeoQuest.controllers', [])
 
 })
 
-.controller('MapStatusCtrl', function($scope){
+.controller('PergatoryCtrl', function($scope, $stateParams){
+    $scope.gameId = $stateParams.gameId;
+    var nsSocket; // Assigned a value once server says it's cool to join a namespace
 
+    // Make a general connection, then ask to connect to the namespace for this game using $scope.gameId as namespace path.
+    var socket = io.connect('http://localhost:1337');
+    socket.emit('joinNs', $scope.gameId);
+
+    // When the server confirms the namespace exists, the client joins it.
+    // Client is then asked to type in a code to join a game instance (room),
+    // or to start a new game instance (create a new room).
+    socket.on('setToJoinNs', function(gameId) {
+        nsSocket = io.connect('http://localhost:1337/' + gameId);
+        nsSocket.on('connect', function() {
+            console.log('joined namespace ' + gameId);
+
+            // Register listener for confirmation that client is joined the room
+            nsSocket.on('joinedRoom', function(roomId) {
+                console.log('joined room ' + roomId);
+            });
+            
+            // bring up choice of what room to join (new or existing)
+            // on 'submit', emit ('joinRoom')
+        });
+        
+
+
+    });
+
+    function registerNsEvents() {
+        nsSocket.on('joinedRoom', function(roomId) {
+            console.log('joined room ' + roomId);
+        });
+    }
+
+
+    // When we enter a room code, emit 'joinRoom'. When server responds with 'setToJoinRoom', 
+
+    // Might have to send the rm_socket to the map state
 })
 
 .controller('HomeCtrl', function($scope, $ionicPlatform, $cordovaGeolocation, games) {

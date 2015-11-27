@@ -26,7 +26,7 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
   $stateProvider
     .state('Home', {
       url: '/',
-      templateUrl: "templates/home.html",
+      templateUrl: 'templates/home.html',
       controller: 'HomeCtrl',
       resolve: {
         games: function(GamesFactory) {
@@ -34,8 +34,13 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
         }
       }    
     })
+    .state('Pergatory', {
+      url: '/pergatory/:gameId',
+      templateUrl: 'templates/pergatory.html',
+      controller: 'PergatoryCtrl'
+    })
     .state('Map', {
-         url: '/map/:gameId',
+         url: '/map/:roomId',
          controller: 'MapCtrl',
          templateUrl: 'templates/map.html'
      })
