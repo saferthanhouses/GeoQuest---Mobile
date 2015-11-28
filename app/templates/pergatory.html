@@ -1,7 +1,14 @@
 <ion-view view-title="Pergatory" align-title="center">
 
-	<div>
-		<p>Haha, Hi!</p>
+	<div ng-show="showRoomOptions" class="container">
+		<form ng-model="room" ng-submit="joinOrCreateRoom(room.id)">
+		<p>If no code, we'll make a new room</p>
+		<div class="form-group">
+			<label>Pen thy code here</label>
+			<input ng-model="room.id" class="form-control">
+		</div>
+		<button class="btn btn-info" type="submit">Join or Create</button>
+		</form>
 	</div>
 
 </ion-view>
