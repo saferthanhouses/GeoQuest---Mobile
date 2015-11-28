@@ -66,11 +66,6 @@ angular.module('GeoQuest.controllers', [])
       }
     }
 
-    
-
-    // TODO : - if location not in $scope.shapes
-    //        - if location already in regionsVisited
-
     $scope.map.on('locationfound', function (e) {
         console.log("locationfound, accuracy:", e.accuracy);
         $scope.me.location = e.latlng;
@@ -96,7 +91,8 @@ angular.module('GeoQuest.controllers', [])
         socket.emit('hereIAm', $scope.me.location);
 
         //generate region based on client location within bounds
-        var newRegion = $scope.generateRegion($scope.me.location)
+        // if not in a region what to do?
+        var newRegion = $scope.generateRegion($scope.me.location);
 
         //check to see if status has changed, if so, update
         if(!_.isEqual(newRegion, $scope.me.currentRegion)) {
@@ -104,11 +100,12 @@ angular.module('GeoQuest.controllers', [])
             $scope.me.currentRegion = newRegion;
             //check not already visited
             if (!_.any($scope.me.regionsVisited, $scope.me.currentRegion)) {
+                console.log("you have already visited this region");
             //if not add location to locations visited
               $scope.me.regionsVisited.push($scope.me.currentRegion)
             }
             //make regions visible based on current and visited regions
-            $scope.makeVisible();
+            $scope.makeVisible ();
 
             // open up modal to client showing map status, notification triggers
             $scope.openMapStatus();
@@ -131,10 +128,12 @@ angular.module('GeoQuest.controllers', [])
     //function to detect if within bounds of polygon 1
     $scope.generateRegion = function (point) {
         for (var key in $scope.shapes) {
-            if($scope.shapes[key] && $scope.shapes[key].shapeobject.getBounds().contains(point)) {
+            // what is this doing?
+            if($scope.shapes[key].shapeobject.getBounds().contains(point)) {
                 return $scope.shapes[key]
             }
         }
+        // if not in a region will return undefined.
     }
     //function to update visibility of regions based on user location
     $scope.makeVisible = function () {
@@ -152,6 +151,8 @@ angular.module('GeoQuest.controllers', [])
           $scope.me.regionsVisible.push($scope.shapes.polygon3)
         }
 
+        console.log("visible regions", $scope.me.regionsVisible);
+
         return;
     }
 
@@ -165,6 +166,7 @@ angular.module('GeoQuest.controllers', [])
 
     // later will want to pass custom message into the modal
     $scope.openMapStatus = function() {
+      // will be undefined if the modal hasn't had time to load
       $scope.modal.show();    
       notifyUser("new region entered!"); 
     };

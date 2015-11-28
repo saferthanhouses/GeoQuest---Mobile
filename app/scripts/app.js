@@ -6,7 +6,7 @@
 // the 2nd parameter is an array of 'requires'
 angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.controllers', 'GeoQuest.factories', 'ngAnimate'])
 
-.run(function($ionicPlatform, $state) {
+.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -20,6 +20,32 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
     $state.go('Home');
 
   });
+
+    $rootScope.$on('loading:show', function() {
+      $ionicLoading.show({template: 'foo'})
+    })
+
+    $rootScope.$on('loading:hide', function() {
+      $ionicLoading.hide()
+    })
+
+})
+
+// this will show a loading modal during every http request.
+// is this what we want? - this will be more obviouso n the phone?
+.config(function($httpProvider){
+   $httpProvider.interceptors.push(function($rootScope) {
+    return {
+      request: function(config) {
+        $rootScope.$broadcast('loading:show')
+        return config
+      },
+      response: function(response) {
+        $rootScope.$broadcast('loading:hide')
+        return response
+      }
+    }
+  })
 })
 
 .config(function($stateProvider){
