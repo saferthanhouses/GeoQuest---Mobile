@@ -5,7 +5,6 @@ angular.module('GeoQuest.controllers', [])
 .controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams) {
     var nsSocket = $stateParams.nsSocket;
     console.log('passed Sockect', nsSocket);
-    // https://damp-ocean-1851.herokuapp.com/
 
     // When a fellow arrives or moves
     nsSocket.on('fellowLocation', function(fellow) {
@@ -239,14 +238,17 @@ angular.module('GeoQuest.controllers', [])
     var nsSocket; // Assigned a value once server says it's cool to join a namespace
 
     // Make a general connection, then ask to connect to the namespace for this game using $scope.gameId as namespace path.
-    var socket = io.connect('http://localhost:1337');
+    var socket = io.connect('https://damp-ocean-1851.herokuapp.com');
+    socket.on('connect', function(){console.log('gottem');});
     socket.emit('joinNs', $scope.gameId);
+
+    // https://damp-ocean-1851.herokuapp.com
 
     // When the server confirms the namespace exists, the client joins it.
     // Client is then asked to type in a code to join a game instance (room),
     // or to start a new game instance (create a new room).
     socket.on('setToJoinNs', function(gameId) {
-        nsSocket = io.connect('http://localhost:1337/' + gameId);
+        nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + gameId);
         nsSocket.on('connect', function() {
             console.log('joined namespace ' + gameId);
 
@@ -256,8 +258,9 @@ angular.module('GeoQuest.controllers', [])
             };
 
             // Register listener for confirmation that client is joined the room
-            nsSocket.on('joinedRoom', function(roomId) {
-                console.log('joined room ' + roomId);
+            nsSocket.on('joinedRoom', function(roomData) {
+                console.log('joined room ' + roomData.room.id);
+                if (roomData.created) alert('Pass your fellows this fine code, and you shall know them on the road: ' + roomData.room.id);
                 $state.go('Map', {nsSocket: nsSocket});
             });
 
