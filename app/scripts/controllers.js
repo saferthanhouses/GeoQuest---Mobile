@@ -2,7 +2,54 @@
 
 angular.module('GeoQuest.controllers', [])
 
-.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory) {
+.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams) {
+    var nsSocket = $stateParams.nsSocket;
+    console.log('passed Sockect', nsSocket);
+
+    // When a fellow arrives or moves
+    nsSocket.on('fellowLocation', function(fellow) {
+        console.log('fellow location', fellow);
+        if (fellow.id === $scope.me.id) return;
+        for (var i=0; i<$scope.fellows.length; i++) {
+            if(fellow.id === $scope.fellows[i].id) {
+                $scope.fellows[i].location = fellow.location;
+                $scope.fellows[i].marker.setLatLng($scope.fellows[i].location);
+                return;
+            }
+        }
+        var newFellow = fellow;
+        newFellow.marker = new L.marker(newFellow.location);
+        $scope.map.addLayer(newFellow.marker);
+        $scope.fellows.push(newFellow);
+    });
+
+    // When a fellow leaves
+    nsSocket.on('death', function(id) {
+        var index;
+        for (var i=0; i< $scope.fellows.length; i++) {
+            if($scope.fellows[i].id === id) {
+                $scope.map.removeLayer($scope.fellows[i].marker);
+                index = i;
+            }
+        }
+        $scope.fellows.splice(index,1);
+    });
+
+    // When you first show up, so you can tell who you are relative to your fellows
+    nsSocket.on('yourId', function(id) {
+        console.log('my id is: ', id);
+        $scope.me.id = id;
+    });
+
+    // When you first show up, so you know your fellows
+    nsSocket.on('yourFellows', function (everyone) {
+        for (var i=0; i< everyone.length; i++) {
+            var newFellow = everyone[i];
+            newFellow.marker = new L.marker(newFellow.location);
+            $scope.map.addLayer(newFellow.marker);
+            $scope.fellows.push(newFellow);
+        }
+    });
 
     $scope.map = MapFactory.generateMap(document.getElementById('map'));
 
@@ -87,8 +134,8 @@ angular.module('GeoQuest.controllers', [])
             //otherwise take myMarker and update location
             $scope.myMarker.setLatLng($scope.me.location);
         }
-        //emit notification to server //possibly send $scope.me
-        socket.emit('hereIAm', $scope.me.location);
+        //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
+        nsSocket.emit('hereIAm', $scope.me.location);
 
         //generate region based on client location within bounds
         // if not in a region what to do?
@@ -154,7 +201,7 @@ angular.module('GeoQuest.controllers', [])
         console.log("visible regions", $scope.me.regionsVisible);
 
         return;
-    }
+    };
 
 
     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
@@ -162,13 +209,13 @@ angular.module('GeoQuest.controllers', [])
           animation: 'slide-in-up'
       }).then(function(modal){
           $scope.modal = modal;
-    })
+    });
 
     // later will want to pass custom message into the modal
     $scope.openMapStatus = function() {
       // will be undefined if the modal hasn't had time to load
       $scope.modal.show();    
-      notifyUser("new region entered!"); 
+      notifyUser('new region entered!'); 
     };
 
     function notifyUser(message){
@@ -188,57 +235,48 @@ angular.module('GeoQuest.controllers', [])
 
     $scope.closeModal = function(){
       $scope.modal.hide();
-    }
-
-
-    // When a fellow arrives or moves
-    socket.on('fellowLocation', function(fellow) {
-        if (fellow.id === $scope.me.id) return;
-        for (var i=0; i<$scope.fellows.length; i++) {
-            if(fellow.id === $scope.fellows[i].id) {
-                $scope.fellows[i].location = fellow.location;
-                $scope.fellows[i].marker.setLatLng($scope.fellows[i].location);
-                return;
-            }
-        }
-        var newFellow = fellow;
-        newFellow.marker = new L.marker(newFellow.location);
-        $scope.map.addLayer(newFellow.marker);
-        $scope.fellows.push(newFellow);
-    });
-
-    // When a fellow leaves
-    socket.on('death', function(id) {
-        var index;
-        for (var i=0; i< $scope.fellows.length; i++) {
-            if($scope.fellows[i].id === id) {
-                $scope.map.removeLayer($scope.fellows[i].marker);
-                index = i;
-            }
-        }
-        $scope.fellows.splice(index,1);
-    });
-
-    // When you first show up, so you can tell who you are relative to your fellows
-    socket.on('yourId', function(id) {
-        $scope.me.id = id;
-    });
-
-    // When you first show up, so you know your fellows
-    socket.on('yourFellows', function (everyone) {
-        for (var i=0; i< everyone.length; i++) {
-            var newFellow = everyone[i];
-            newFellow.marker = new L.marker(newFellow.location);
-            $scope.map.addLayer(newFellow.marker);
-            $scope.fellows.push(newFellow);
-        }
-    });
-
+    };
 
 })
 
-.controller('MapStatusCtrl', function($scope){
+.controller('PergatoryCtrl', function($scope, $stateParams, $state){
+    $scope.gameId = $stateParams.gameId;
+    $scope.showRoomOptions = false;
+    var nsSocket; // Assigned a value once server says it's cool to join a namespace
 
+    // Make a general connection, then ask to connect to the namespace for this game using $scope.gameId as namespace path.
+    var socket = io.connect('https://damp-ocean-1851.herokuapp.com');
+    socket.on('connect', function(){console.log('gottem');});
+    socket.emit('joinNs', $scope.gameId);
+
+    // https://damp-ocean-1851.herokuapp.com
+
+    // When the server confirms the namespace exists, the client joins it.
+    // Client is then asked to type in a code to join a game instance (room),
+    // or to start a new game instance (create a new room).
+    socket.on('setToJoinNs', function(gameId) {
+        nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + gameId);
+        nsSocket.on('connect', function() {
+            console.log('joined namespace ' + gameId);
+
+            // Register function to join room. Called on form submission
+            $scope.joinOrCreateRoom = function(roomId) {
+                nsSocket.emit('joinRoom', roomId);
+            };
+
+            // Register listener for confirmation that client is joined the room
+            nsSocket.on('joinedRoom', function(roomData) {
+                console.log('joined room ' + roomData.room.id);
+                if (roomData.created) alert('Pass your fellows this fine code, and you shall know them on the road: ' + roomData.room.id);
+                $state.go('Map', {nsSocket: nsSocket});
+            });
+
+            // bring up choice of what room to join, or create a new one
+            $scope.showRoomOptions = true;
+        });
+    }); 
+
+    // Might have to send the rm_socket to the map state
 })
 
 .controller('HomeCtrl', function($scope, $ionicPlatform, $cordovaGeolocation, games) {

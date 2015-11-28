@@ -12,7 +12,6 @@ angular.module('GeoQuest.factories', [])
 				return res.data;
 			});
 		}
-
 	};
 })
 
