@@ -63,6 +63,7 @@
       "locator": "https://github.com/apache/cordova-plugin-whitelist.git",
       "id": "cordova-plugin-whitelist"
     },
+    "com.cordova.plugins.sms",
     "cordova-plugin-vibration",
     "org.apache.cordova.console",
     "org.apache.cordova.contacts",

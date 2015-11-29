@@ -1,9 +1,14 @@
 <ion-view view-title="Pergatory" align-title="center">
+<ion-content scroll="true">
 
-	<p>Pick your fellows to join you on the quest!</p>
-	<div class="contacts" ng-repeat="contact in contacts">
-		<div class="contact"><span class="pull-left name">{{contact.name}}</span><span class="pull-right number">{{contact.number}}</span></div>
+	<p class="hi">Pick your fellows to join you on the quest!</p>
+	<input ng-model="desiredContact.name">
+	<button class="send-text btn btn-info">Invite!</button>
+	<div class="contacts">
+		<div style="font-size:16px;"ng-repeat="contact in contacts | filter:desiredContact" class="contact clearfix">
+			<span class="name">{{contact.name}} </span>
+			<span class=" pull-right number">{{contact.number}}</span>
+		</div>
 	</div>
-	<button class="btn btn-info" ng-click="sendText()">Invite!</button>
-
+</ion-content>
 </ion-view>
