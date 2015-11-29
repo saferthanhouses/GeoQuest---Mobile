@@ -1,14 +1,9 @@
 <ion-view view-title="Pergatory" align-title="center">
 
-	<div ng-show="showRoomOptions" class="container">
-		<form ng-model="room" ng-submit="joinOrCreateRoom(room.id)">
-		<p>If no code, we'll make a new room</p>
-		<div class="form-group">
-			<label>Pen thy code here</label>
-			<input ng-model="room.id" class="form-control">
-		</div>
-		<button class="btn btn-info" type="submit">Join or Create</button>
-		</form>
+	<p>Pick your fellows to join you on the quest!</p>
+	<div ng-repeat="contact in contacts">
+		<div ng-click="toggleSelected(contact.number)"><span class="pull-left">{{contact.name}}</span><span class="pull-right">{{contact.number}}</span></div>
 	</div>
+	<button class="btn btn-info" ng-click="sendText()">Invite!</button>
 
 </ion-view>

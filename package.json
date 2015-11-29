@@ -65,6 +65,7 @@
     },
     "cordova-plugin-vibration",
     "org.apache.cordova.console",
+    "org.apache.cordova.contacts",
     "com.ionic.keyboard",
     "de.appplant.cordova.common.registerusernotificationsettings",
     "de.appplant.cordova.common.registerusernotificationsettings",
@@ -105,7 +106,8 @@
     "de.appplant.cordova.common.registerusernotificationsettings",
     "cordova-plugin-vibration",
     "ionic-plugin-keyboard",
-    "de.appplant.cordova.plugin.local-notification"
+    "de.appplant.cordova.plugin.local-notification",
+    "cordova-plugin-vibration"
   ],
   "cordovaPlatforms": [
     {
