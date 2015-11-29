@@ -3,11 +3,10 @@
   <h1 class="modalTitle">Region Information</h1>
 </ion-header-bar>
 <ion-content class="modalContent">
-  You are in {{ me.currentRegion.name }}.
-  This is a good region.<br>You are safe here.
-  <br>
-  <br>
-  For now ...
-  <button class="button button-full button-energized closeModalButton" ng-click="closeModal()">Done</button>
+	<h2>{{mapStates.currentState.modal.title}}</h2>
+	<p>{{mapStates.currentState.modal.text}}</p>
+  <button class="button button-full button-energized closeModalButton" ng-click="closeModal()">
+  	Done
+  </button>
 </ion-content>
 </ion-modal-view>
