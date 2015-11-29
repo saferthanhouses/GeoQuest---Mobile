@@ -278,17 +278,19 @@ angular.module('GeoQuest.controllers', [])
     socket.on('connect', function(){console.log('gottem');});
     socket.emit('joinNs', $scope.gameId);
 
-    $scope.toggleChosen = function(number) {
+    // When a contact is clicked, it's added to text queue and highlighted.
+    // If already selected, it's spliced out of queue and ungighlighted.
+    $('.contact').on('click', function() {
+        var number = $(this).find('.number').val();
         var ind = $scope.chosenFellows.indexOf(number);
         if (ind < 0) {
             $scope.chosenFellows.push(number);
-            // Add active class
+            $(this).addClass('active');
         } else {
             $scope.chosenFellows.splice(ind,1);
-            // Remove active class
+            $(this).removeClass('active');
         }
-    };
-
+    });
 
     // when click one, highlight as active and push into array
         // when click again, unhighlight and splice from array

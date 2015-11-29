@@ -1,8 +1,8 @@
 <ion-view view-title="Pergatory" align-title="center">
 
 	<p>Pick your fellows to join you on the quest!</p>
-	<div ng-repeat="contact in contacts">
-		<div ng-click="toggleSelected(contact.number)"><span class="pull-left">{{contact.name}}</span><span class="pull-right">{{contact.number}}</span></div>
+	<div class="contacts" ng-repeat="contact in contacts">
+		<div class="contact"><span class="pull-left name">{{contact.name}}</span><span class="pull-right number">{{contact.number}}</span></div>
 	</div>
 	<button class="btn btn-info" ng-click="sendText()">Invite!</button>
 
