@@ -1,6 +1,12 @@
 // Ionic Starter App
 'use strict'
 
+// This is for if client arrives here by a hyperlink texted to them.
+function handleOpenURL(url) {
+  alert(url);
+  window.localStorage.setItem('external_load', url);
+}
+
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
@@ -17,7 +23,16 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
       StatusBar.styleDefault();
     }
 
-    $state.go('Home');
+    var externalUrl = window.localStorage.getItem('external_load');
+    alert(externalUrl);
+    if (externalUrl) {
+      var arr = externalUrl.split('_');
+      var ns = arr[1];
+      var room = arr[2];
+      $state.go('Pergatory', {ns: ns, room: room});
+    } else {
+      $state.go('Home');
+    }
 
   });
 
@@ -32,7 +47,7 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
 })
 
 // this will show a loading modal during every http request.
-// is this what we want? - this will be more obviouso n the phone?
+// is this what we want? - this will be more obvious on the phone?
 .config(function($httpProvider){
    $httpProvider.interceptors.push(function($rootScope) {
     return {
@@ -42,7 +57,7 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
       },
       response: function(response) {
         $rootScope.$broadcast('loading:hide')
-        return response
+        return response;
       }
     }
   })
@@ -63,10 +78,14 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
     .state('Pergatory', {
       url: '/pergatory/:gameId',
       templateUrl: 'templates/pergatory.html',
-      controller: 'PergatoryCtrl'
+      controller: 'PergatoryCtrl',
+      params: {
+        ns: null,
+        room: null
+      }
     })
     .state('Map', {
-         url: '/map/:roomId',
+         url: '/map',
          controller: 'MapCtrl',
          templateUrl: 'templates/map.html',
          params: {nsSocket: null}
