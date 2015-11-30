@@ -5,11 +5,15 @@
 }
 
 .abandon {
-  position: relative;
+  position: fixed;
   top: 20px;
   left: 20px;
+}
+.abandon a:link, .abandon a:visited, .abandon a:hover, .abandon a:active, {
   color: white;
   font-weight: bold;
+  font-family: Papyrus,fantasy;
+  font-size: 16px; 
 }
 
 body {
