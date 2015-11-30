@@ -331,6 +331,10 @@ angular.module('GeoQuest.controllers', [])
 })
 
 .controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaContacts, $cordovaSms){
+    // If client is already connected, disconnect so can make a new connection
+    // (only want to bne in one namespace and room at a time) 
+    if (socket) socket.disconnect();
+
     var questId = $stateParams.questId; // Defined if came from home state
     // These will be defined if the client got here via external link
     var ns = $stateParams.ns;
@@ -338,7 +342,7 @@ angular.module('GeoQuest.controllers', [])
     var nsSocket; // Assigned a value once server says it's cool to join a namespace
 
     // Registers method to send a text to each chosen contact, then go to map state. 
-    var message;
+    var message; // Defined in socket listener
     var success = function () { console.log('Message sent successfully'); };
     var error = function (e) { console.log('Message Failed:' + e); };
     $('.send-text').click(function() {
@@ -349,7 +353,8 @@ angular.module('GeoQuest.controllers', [])
     });
 
     // Make a general connection, then ask to connect to the namespace for this game using $scope.questId as namespace path.
-    var socket = io.connect('https://damp-ocean-1851.herokuapp.com');
+    var socket = io.connect('https://damp-ocean-1851.herokuapp.com', {
+        'sync disconnect on unload': true });
     socket.on('connect', function(){console.log('gottem');});
 
     // Connects to namespace when server says good to go, and asks to join room
