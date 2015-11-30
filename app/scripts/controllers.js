@@ -56,7 +56,8 @@ angular.module('GeoQuest.controllers', [])
     //object to contain current status of client
     $scope.me = {};
     $scope.me.currentRegion;
-    $scope.me.regionsVisited = [];
+    $scope.me.regionsVisited = [];  
+    // nothing
     $scope.me.regionsVisible = []
     //object to contain shapes data
     $scope.shapes = {};
@@ -243,9 +244,9 @@ angular.module('GeoQuest.controllers', [])
     var ns = $stateParams.ns;
     var room = $stateParams.room;
     var nsSocket; // Assigned a value once server says it's cool to join a namespace
-    alert(questId);
-    alert(ns);
-    alert(room);
+    // Used for sending texts to chosen fellows
+    var createdNs;
+    var createdRoom;
 
     // Make a general connection, then ask to connect to the namespace for this game using $scope.questId as namespace path.
     var socket = io.connect('https://damp-ocean-1851.herokuapp.com');
@@ -255,14 +256,14 @@ angular.module('GeoQuest.controllers', [])
     // Client is then asked to type in a code to join a game instance (room),
     // or to start a new game instance (create a new room).
     socket.on('setToJoinNs', function(questId) {
+        createdNs = questId;
         nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + questId);
         nsSocket.on('connect', function() {
             console.log('joined namespace ' + questId);
 
             // Register listener for confirmation that client is joined the room
             nsSocket.on('joinedRoom', function(roomData) {
-                console.log('roomData', roomData);
-                console.log('joined room ' + roomData.room);
+                createdRoom = roomData.room;
                 // If client new the room they wanted to join, they followed a link,
                 // and thus should be taken to map state without choosing fellows
                 if (!roomData.newRoom) $state.go('Map', {nsSocket: nsSocket});
@@ -338,7 +339,7 @@ angular.module('GeoQuest.controllers', [])
     });
 
     // Send a text to each chosen contact, then go to map state
-    var message = 'Hello from GeoQuest!';
+    var message = 'You have been invited on a GeoQuest! Follow this path to join: https://heroku.com/_' + ns + '_' + room;
     var success = function () { console.log('Message sent successfully'); };
     var error = function (e) { console.log('Message Failed:' + e); };
     $('.send-text').click(function() {
