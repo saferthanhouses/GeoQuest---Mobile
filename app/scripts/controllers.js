@@ -1,5 +1,15 @@
 'use strict'
 
+// @OB/CZ pseudo-code
+// .factory('FellowFactory', function ($stateParams) {
+//     return {
+//         get: function () {
+//             var nsSocket = $stateParams.nsSocket;
+//             return nsSocket.getFellows();
+//         }
+//     }
+// })
+
 angular.module('GeoQuest.controllers', [])
 
 .controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams) {
