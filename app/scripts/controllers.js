@@ -336,13 +336,45 @@ angular.module('GeoQuest.controllers', [])
     var ns = $stateParams.ns;
     var room = $stateParams.room;
     var nsSocket; // Assigned a value once server says it's cool to join a namespace
-    // Used for sending texts to chosen fellows
-    var createdNs;
-    var createdRoom;
+
+    // Registers method to send a text to each chosen contact, then go to map state. 
+    var message;
+    var success = function () { console.log('Message sent successfully'); };
+    var error = function (e) { console.log('Message Failed:' + e); };
+    $('.send-text').click(function() {
+        $scope.chosenFellows.forEach(function(fellowNumber) {
+            $cordovaSms.send(fellowNumber, message, {}, success, error);
+        });
+        $state.go('Map', {nsSocket: nsSocket});
+    });
 
     // Make a general connection, then ask to connect to the namespace for this game using $scope.questId as namespace path.
     var socket = io.connect('https://damp-ocean-1851.herokuapp.com');
     socket.on('connect', function(){console.log('gottem');});
+
+    // Connects to namespace when server says good to go, and asks to join room
+    // If arrived via external link, room will be defined, and after joined room
+    // will be sent to map state
+    socket.on('setToJoinNs', function(questId) {
+        var nsForSMS = questId;
+        nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + questId);
+        nsSocket.on('connect', function() {
+            console.log('joined namespace ' + questId);
+            // Register listener for confirmation that client is joined the room
+            nsSocket.on('joinedRoom', function(roomData) {
+                console.log('joined room ' + roomData.room);
+                var roomForSMS = roomData.room;
+                // Now that we have id's on scope, set the text message
+                message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/_' + nsForSMS + '_' + roomForSMS;
+                // If client knew the room they wanted to join, they followed a link,
+                // and thus should be taken to map state without choosing fellows
+                if (!roomData.newRoom) $state.go('Map', {nsSocket: nsSocket});
+            });
+            // Request to join room (room will be null if they got here from home state)
+            // If room is undefined, server will create a new room in the namespace for this quest
+            nsSocket.emit('joinRoom', room);
+        });
+    }); 
 
     // Ask to join namespace. Use questId passed in if came from home state,
     // ns if came from external link
@@ -409,35 +441,6 @@ angular.module('GeoQuest.controllers', [])
         });
     });
 
-    // Send a text to each chosen contact, then go to map state
-    var message = 'You have been invited on a GeoQuest! Follow this path to join: https://heroku.com?ns=' + createdNs + '&room=' + createdRoom;
-    var success = function () { console.log('Message sent successfully'); };
-    var error = function (e) { console.log('Message Failed:' + e); };
-    $('.send-text').click(function() {
-        $scope.chosenFellows.forEach(function(fellowNumber) {
-            $cordovaSms.send(fellowNumber, message, {}, success, error);
-        });
-        $state.go('Map', {nsSocket: nsSocket});
-    });
-
-    socket.on('setToJoinNs', function(questId) {
-        createdNs = questId;
-        nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + questId);
-        nsSocket.on('connect', function() {
-            console.log('joined namespace ' + questId);
-
-            // Register listener for confirmation that client is joined the room
-            nsSocket.on('joinedRoom', function(roomData) {
-                createdRoom = roomData.room;
-                // If client knew the room they wanted to join, they followed a link,
-                // and thus should be taken to map state without choosing fellows
-                if (!roomData.newRoom) $state.go('Map', {nsSocket: nsSocket});
-            });
-            // Request to join room (room will be null if they got here from home state)
-            // If room is undefined, server will create a new room in the namespace for this quest
-            nsSocket.emit('joinRoom', room);
-        });
-    }); 
 })
 
 .controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordovaGeolocation, games) {

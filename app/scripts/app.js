@@ -18,7 +18,6 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
     }
 
     var externalUrl = window.localStorage.getItem('external_load');
-    alert(externalUrl);
     if (externalUrl) {
       var arr = externalUrl.split('_');
       var ns = arr[1];
