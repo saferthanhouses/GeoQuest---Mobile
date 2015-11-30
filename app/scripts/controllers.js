@@ -261,6 +261,7 @@ angular.module('GeoQuest.controllers', [])
 
             // Register listener for confirmation that client is joined the room
             nsSocket.on('joinedRoom', function(roomData) {
+                console.log('roomData', roomData);
                 console.log('joined room ' + roomData.room);
                 // If client new the room they wanted to join, they followed a link,
                 // and thus should be taken to map state without choosing fellows

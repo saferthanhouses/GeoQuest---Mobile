@@ -46,6 +46,6 @@
     </feature>
     <plugin name="de.appplant.cordova.plugin.local-notification" spec="~0.8.2" />
     <plugin name="cordova-plugin-customurlscheme" spec="~4.0.0">
-        <variable name="URL_SCHEME" value="geoquest" />
+        <variable name="URL_SCHEME" value="geo.quest" />
     </plugin>
 </widget>

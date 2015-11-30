@@ -1,12 +1,6 @@
 // Ionic Starter App
 'use strict'
 
-// This is for if client arrives here by a hyperlink texted to them.
-function handleOpenURL(url) {
-  alert(url);
-  window.localStorage.setItem('external_load', url);
-}
-
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
@@ -76,7 +70,7 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
       }    
     })
     .state('Pergatory', {
-      url: '/pergatory/:gameId',
+      url: '/pergatory/:questId',
       templateUrl: 'templates/pergatory.html',
       controller: 'PergatoryCtrl',
       params: {
