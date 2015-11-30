@@ -344,27 +344,6 @@ angular.module('GeoQuest.controllers', [])
     var socket = io.connect('https://damp-ocean-1851.herokuapp.com');
     socket.on('connect', function(){console.log('gottem');});
 
-    // When the server confirms the namespace exists, the client joins it.
-    // Client is then asked to type in a code to join a game instance (room),
-    // or to start a new game instance (create a new room).
-    socket.on('setToJoinNs', function(questId) {
-        createdNs = questId;
-        nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + questId);
-        nsSocket.on('connect', function() {
-            console.log('joined namespace ' + questId);
-
-            // Register listener for confirmation that client is joined the room
-            nsSocket.on('joinedRoom', function(roomData) {
-                createdRoom = roomData.room;
-                // If client new the room they wanted to join, they followed a link,
-                // and thus should be taken to map state without choosing fellows
-                if (!roomData.newRoom) $state.go('Map', {nsSocket: nsSocket});
-            });
-            // Request to join room (room will be null if they got here from home state)
-            // If room is undefined, server will create a new room in the namespace for this quest
-            nsSocket.emit('joinRoom', room);
-        });
-    }); 
     // Ask to join namespace. Use questId passed in if came from home state,
     // ns if came from external link
     var toEmit = (ns) ? ns : questId;
