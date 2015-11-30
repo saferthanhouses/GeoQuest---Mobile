@@ -47,6 +47,15 @@
  -->
     <!-- build:js scripts/scripts.js -->
 
+    <!-- Called when client arrives at site via custom url
+    url saved to window, then used in pergatory state -->
+    <script>
+        function handleOpenURL(url) {
+          alert(url);
+          window.localStorage.setItem('external_load', url);
+        }
+    </script>
+
     <script src="bower_components/socket.io-client/socket.io.js"></script> 
     <script src="scripts/app.js"></script>
     <script src="scripts/configuration.js"></script>
