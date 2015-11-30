@@ -108,7 +108,9 @@
     "cordova-plugin-vibration",
     "ionic-plugin-keyboard",
     "de.appplant.cordova.plugin.local-notification",
-    "cordova-plugin-vibration"
+    "cordova-plugin-vibration",
+    "org.apache.cordova.contacts",
+    "com.cordova.plugins.sms"
   ],
   "cordovaPlatforms": [
     {
