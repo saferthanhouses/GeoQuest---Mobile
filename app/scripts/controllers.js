@@ -431,7 +431,7 @@ angular.module('GeoQuest.controllers', [])
     });
 
     // Send a text to each chosen contact, then go to map state
-    var message = 'You have been invited on a GeoQuest! Follow this path to join: https://heroku.com/_' + ns + '_' + room;
+    var message = 'You have been invited on a GeoQuest! Follow this path to join: https://heroku.com?ns=' + createdNs + '&room=' + createdRoom;
     var success = function () { console.log('Message sent successfully'); };
     var error = function (e) { console.log('Message Failed:' + e); };
     $('.send-text').click(function() {
@@ -441,22 +441,22 @@ angular.module('GeoQuest.controllers', [])
         $state.go('Map', {nsSocket: nsSocket});
     });
 
-    // When the server confirms the namespace exists, the client joins it.
-    // Client is then asked to type in a code to join a game instance (room),
-    // or to start a new game instance (create a new room).
-    socket.on('setToJoinNs', function(gameId) {
-        var roomId; // Might need this later for link to join a room
-        nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + gameId);
+    socket.on('setToJoinNs', function(questId) {
+        createdNs = questId;
+        nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + questId);
         nsSocket.on('connect', function() {
-            console.log('joined namespace ' + gameId);
+            console.log('joined namespace ' + questId);
 
             // Register listener for confirmation that client is joined the room
-
-            nsSocket.on('joinedRoom', function(roomId) {
-                console.log('joined room ' + roomId);
+            nsSocket.on('joinedRoom', function(roomData) {
+                createdRoom = roomData.room;
+                // If client knew the room they wanted to join, they followed a link,
+                // and thus should be taken to map state without choosing fellows
+                if (!roomData.newRoom) $state.go('Map', {nsSocket: nsSocket});
             });
-            // Request to join room (may or may not specify Id based on how they get here)
-            nsSocket.emit('joinRoom', roomId);
+            // Request to join room (room will be null if they got here from home state)
+            // If room is undefined, server will create a new room in the namespace for this quest
+            nsSocket.emit('joinRoom', room);
         });
     }); 
 })
