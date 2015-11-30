@@ -333,7 +333,15 @@ angular.module('GeoQuest.controllers', [])
 .controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaContacts, $cordovaSms){
     // If client is already connected, disconnect so can make a new connection
     // (only want to bne in one namespace and room at a time) 
-    if (socket) socket.disconnect();
+    console.log('socket', socket);
+    if (socket) {
+        console.log('socket', socket)
+        socket.disconnect();
+    } 
+     if (nsSocket) {
+        console.log('nsSocket', nsSocket);
+        nsSocket.disconnect();
+    } 
 
     var questId = $stateParams.questId; // Defined if came from home state
     // These will be defined if the client got here via external link
