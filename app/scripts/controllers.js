@@ -370,7 +370,7 @@ angular.module('GeoQuest.controllers', [])
     }
 
     // find all contacts with 'Bob' in any name field
-    var options      = new ContactFindOptions();
+    // var options      = new ContactFindOptions();
     options.multiple = true;
     options.desiredFields = ['phoneNumbers', 'displayName', 'name'];
     options.hasPhoneNumber = true;

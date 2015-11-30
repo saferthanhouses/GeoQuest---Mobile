@@ -40,12 +40,21 @@ body {
 	height: 100%;
 	padding: 10%;
 }
-
 .modalTitle {
-	font-size: 24px;
+	font-color: fff;
+  font-size: 24px;
 	text-align: center;
 	font-family: monospace;
 }
+.modalImage {
+  width: 100%;
+}
+
+.modalText {
+  
+}
+
+
 
 .bar-header {
 	padding:10px;
