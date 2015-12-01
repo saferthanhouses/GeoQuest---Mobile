@@ -11,8 +11,9 @@
 		</form>
 		<div class="contacts">
 			<div ng-repeat="contact in contacts | filter:desiredContact" class="contact clearfix">
-				<span class="name">{{contact.name}} </span>
-				<span class=" pull-right number">{{contact.number}}</span>
+				<!-- <span class="name">{{contact.name}} </span>
+				<span class=" pull-right number">{{contact.number}}</span> -->
+				<div>{{contact}}</div>
 			</div>
 		</div>
 	</div>
