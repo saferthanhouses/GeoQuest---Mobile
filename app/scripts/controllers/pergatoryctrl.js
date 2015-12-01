@@ -63,29 +63,30 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
     var toEmit = (ns) ? ns : questId;
     socket.emit('joinNs', toEmit);
 
+
+
     // Parses array of contacts that plugin brings forth
     function onSuccess(contacts) {
-        var parsedContacts = contacts;
-        // var parsedContacts = [];
-        // contacts.forEach(function(contact) {
-        //     if (contact.phoneNumbers) {
-        //         contact.phoneNumbers.forEach(function(number) {
-        //             if (number.type === 'mobile') {
-        //                 if (ionic.Platform.isAndroid()) {
-        //                     parsedContacts.push({
-        //                         name: contact.displayName,
-        //                         number: number.value
-        //                     });
-        //                 } else {
-        //                     parsedContacts.push({
-        //                         name: contact.givenName,
-        //                         number: number.value
-        //                     });
-        //                 }
-        //             } 
-        //         });
-        //     }
-        // });
+        var parsedContacts = [];
+        contacts.forEach(function(contact) {
+            if (contact.phoneNumbers) {
+                contact.phoneNumbers.forEach(function(number) {
+                    if (number.type === 'mobile') {
+                        if (ionic.Platform.isAndroid()) {
+                            parsedContacts.push({
+                                name: contact.displayName,
+                                number: number.value
+                            });
+                        } else {
+                            parsedContacts.push({
+                                name: contact.givenName,
+                                number: number.value
+                            });
+                        }
+                    } 
+                });
+            }
+        });
         // Remove doubles (don't know why there are doubles), and sort by name
         var numbers = [];
         var noDoubles = [];
@@ -98,6 +99,7 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
             if(a.name > b.name) return 1;
             return 0;
         });
+        $scope.contacts = toReturn;
         $scope.$digest();
     }
     // If plugin can't fetch contacts
