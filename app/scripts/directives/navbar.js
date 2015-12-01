@@ -1,6 +1,6 @@
 'use strict';
 
-app.directive('navbar', function ($rootScope, AuthService, AUTH_EVENTS, $state) {
+app.directive('navbar', function ($rootScope, $state) {  // other injections: , AuthService, AUTH_EVENTS, 
 
     return {
         restrict: 'E',

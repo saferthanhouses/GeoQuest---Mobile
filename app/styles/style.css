@@ -23,7 +23,7 @@ body {
   height: 100%;
 }
 
-ion-view {
+section {
     background: url('../images/denim.png') repeat;
 }
 
