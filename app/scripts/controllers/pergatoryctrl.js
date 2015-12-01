@@ -65,6 +65,7 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
 
     // Parses array of contacts that plugin brings forth
     function onSuccess(contacts) {
+        console.log('contact objects from phone!!!', contacts);
         var parsedContacts = [];
         contacts.forEach(function(contact) {
             if (contact.phoneNumbers) {
