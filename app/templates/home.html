@@ -1,12 +1,25 @@
 <ion-view view-title="Home" align-title="center">
+<ion-content scroll="true">
+	<navbar></navbar>
 
-	<table style='width:100%;margin:50px 20px 0;'>
-    		<tr>
-    			<th>Name</th><th>Distance (m)</th><th>Time (hr)</th><th>Summary</th><th>Distance from you (mi)</th>
-    		</tr>
-    		<tr ng-repeat="game in games">
-    			<td><a ui-sref="Pergatory({questId: game._id})">{{game.name}}</a></td><td>{{game.distance}}</td><td>{{game.time}}</td><td>{{game.summary}}</td><td>{{game.distFromMe}}</td>
-    		</tr>
-    	</table>
+	<section>
+	<div class="container">
+		<h2 class="center">Select a Quest</h2>
+		<form>
+			<div class="form-group">
+				<input class="form-control" placeholder="Filter Quests by Name" type="text" ng-model="desiredQuest.name">
+			</div>
+		</form>
 
+		<div class="quest" ng-repeat="game in games | filter:desiredQuest">
+			<p><a ui-sref="Pergatory({questId: game._id})">{{game.name}}</a></p>
+			<p>Starts {{game.distFromMe}} Miles From You</p>
+			<p>Covers {{game.distance}} Miles</p>
+			<p>Takes Roughly {{game.time}} Hours</p>
+			<p>68 Reviews: Avg 3.6/5</p>
+			<p>Summary: {{game.summary}}</p>
+			
+		</div>
+	</div>
+</ion-content>
 </ion-view>

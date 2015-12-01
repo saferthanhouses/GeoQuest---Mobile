@@ -1,14 +1,21 @@
 <ion-view view-title="Pergatory" align-title="center">
 <ion-content scroll="true">
-
-	<p class="hi">Pick your fellows to join you on the quest!</p>
-	<input ng-model="desiredContact.name">
-	<button class="send-text btn btn-info">Invite!</button>
-	<div class="contacts">
-		<div style="font-size:16px;"ng-repeat="contact in contacts | filter:desiredContact" class="contact clearfix">
-			<span class="name">{{contact.name}} </span>
-			<span class=" pull-right number">{{contact.number}}</span>
+<section>
+	<div class="container">
+		<h2 class="center">Choose Your Fellowship</h2>
+		<form>
+			<div class="form-group">
+				<input class="form-control" placeholder="Filter Fellows by Name" type="text" ng-model="desiredContact.name">
+			</div>
+			<button class="send-text btn btn-info">Summon!</button>
+		</form>
+		<div class="contacts">
+			<div ng-repeat="contact in contacts | filter:desiredContact" class="contact clearfix">
+				<span class="name">{{contact.name}} </span>
+				<span class=" pull-right number">{{contact.number}}</span>
+			</div>
 		</div>
 	</div>
+</section>
 </ion-content>
 </ion-view>

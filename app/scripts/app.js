@@ -4,9 +4,9 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.controllers', 'GeoQuest.factories', 'ngAnimate'])
+var app = angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'ngAnimate']);
 
-.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
+app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -22,6 +22,9 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
       var arr = externalUrl.split('_');
       var ns = arr[1];
       var room = arr[2];
+      console.log('LOCASTORAGE', localStorage);
+      window.localStorage.clear();
+      console.log('LOCASTORAGE', localStorage);
       $state.go('Pergatory', {ns: ns, room: room});
     } else {
       $state.go('Home');
@@ -29,13 +32,13 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
 
   });
 
-    $rootScope.$on('loading:show', function() {
-      $ionicLoading.show({template: 'foo'})
-    })
+    // $rootScope.$on('loading:show', function() {
+    //   $ionicLoading.show({template: 'foo'})
+    // })
 
-    $rootScope.$on('loading:hide', function() {
-      $ionicLoading.hide()
-    })
+    // $rootScope.$on('loading:hide', function() {
+    //   $ionicLoading.hide()
+    // })
 
 })
 
@@ -54,33 +57,4 @@ angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.control
       }
     }
   })
-})
-
-.config(function($stateProvider){
-  $stateProvider
-    .state('Home', {
-      url: '/',
-      templateUrl: 'templates/home.html',
-      controller: 'HomeCtrl',
-      resolve: {
-        games: function(GamesFactory) {
-          return GamesFactory.getAllGames();
-        }
-      }    
-    })
-    .state('Pergatory', {
-      url: '/pergatory/:questId',
-      templateUrl: 'templates/pergatory.html',
-      controller: 'PergatoryCtrl',
-      params: {
-        ns: null,
-        room: null
-      }
-    })
-    .state('Map', {
-         url: '/map',
-         controller: 'MapCtrl',
-         templateUrl: 'templates/map.html',
-         params: {nsSocket: null}
-     })
 });

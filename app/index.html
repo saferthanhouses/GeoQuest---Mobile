@@ -12,6 +12,7 @@
     <!-- endbower -->
     <!-- endbuild -->
     <link href="styles/style.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Josefin+Sans' rel='stylesheet' type='text/css'>
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="styles/ionic.app.css" rel="stylesheet">
@@ -51,7 +52,6 @@
     url saved to window, then used in pergatory state -->
     <script>
         function handleOpenURL(url) {
-          alert(url);
           window.localStorage.setItem('external_load', url);
         }
     </script>
@@ -59,9 +59,20 @@
     <script src="bower_components/socket.io-client/socket.io.js"></script> 
     <script src="scripts/app.js"></script>
     <script src="scripts/configuration.js"></script>
-    <script src="scripts/controllers.js"></script>
-    <script src="scripts/factories.js"></script>
-    <!-- endbuild -->
+
+    <script src="scripts/controllers/homectrl.js"></script>
+    <script src="scripts/controllers/mapctrl.js"></script>
+    <script src="scripts/controllers/pergatoryctrl.js"></script>
+
+    <script src="scripts/factories/gamesfactory.js"></script>
+    <script src="scripts/factories/mapfactory.js"></script>
+
+    <script src="scripts/states/home-state.js"></script>
+    <script src="scripts/states/map-state.js"></script>
+    <script src="scripts/states/pergatory-state.js"></script>
+
+    <script src="scripts/directives/navbar.js"></script>
+    
   </head>
   <body ng-app="GeoQuest">
 

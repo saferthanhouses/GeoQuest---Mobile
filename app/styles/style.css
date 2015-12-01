@@ -1,16 +1,88 @@
 /* Empty. Add your own CSS if you like */
 
-.chosen {
-  background-color: blue;
+/* General */
+* {
+  font-family: 'Josefin Sans', sans-serif;
 }
 
 body {
-	padding: 0;
-	margin: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.center {
+  text-align: center;
+}
+
+.form-group input {
+  font-size: 16px;
+  padding: 5px 0 0 3px;
 }
 
 #map, html, body {
-	height: 100%;
+  height: 100%;
+}
+
+section {
+    background: url('../images/denim.png') repeat;
+}
+
+/* Home */
+div.container {
+    background: url('../images/paper.png') repeat;
+    margin: 0 7%;
+}
+
+.container p {
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+.container h2 {
+  margin-top: 15px 
+}
+
+.form-group {
+  margin-top: 20px;
+}
+
+.quest {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Pergatory */
+.contact {
+  font-size: 16px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.chosen {
+  background-color: #776868;
+  color: #fff;
+}
+
+.contacts {
+  margin-top: 8px;
+}
+
+/* Map */
+#map {
+  position: static;
+}
+
+.abandon {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+}
+.abandon a:link, .abandon a:visited, .abandon a:hover, .abandon a:active, .abandon a {
+  color: white;
+  font-weight: bold;
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 30px; 
+  text-decoration: none;
 }
 
 .myModal {  
@@ -49,10 +121,6 @@ body {
 
 .bar-header {
 	padding:10px;
-}
-
-.chosen {
-	background-color: blue;
 }
 
 
