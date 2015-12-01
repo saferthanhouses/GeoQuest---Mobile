@@ -4,7 +4,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var app = angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'GeoQuest.controllers', 'GeoQuest.factories', 'ngAnimate'])
+var app = angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'ngAnimate']) // 'GeoQuest.controllers', 'GeoQuest.factories'
 
 app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
   $ionicPlatform.ready(function() {
@@ -57,33 +57,4 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
       }
     }
   })
-})
-
-app.config(function($stateProvider){
-  $stateProvider
-    .state('Home', {
-      url: '/',
-      templateUrl: 'templates/home.html',
-      controller: 'HomeCtrl',
-      resolve: {
-        games: function(GamesFactory) {
-          return GamesFactory.getAllGames();
-        }
-      }    
-    })
-    .state('Pergatory', {
-      url: '/pergatory/:questId',
-      templateUrl: 'templates/pergatory.html',
-      controller: 'PergatoryCtrl',
-      params: {
-        ns: null,
-        room: null
-      }
-    })
-    .state('Map', {
-         url: '/map',
-         controller: 'MapCtrl',
-         templateUrl: 'templates/map.html',
-         params: {nsSocket: null}
-     })
 });

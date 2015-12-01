@@ -10,9 +10,11 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotificati
     });
 
     var nsSocket = $stateParams.nsSocket;
+    var socket = $stateParams.socket;
 
     $scope.abandon = function() {
-        console.log('abandoning', nsSocket);
+        console.log('abandoning nsSocket', nsSocket);
+        console.log('abandoning socket', socket);
         nsSocket.disconnect();
         $state.go('Home');
     };

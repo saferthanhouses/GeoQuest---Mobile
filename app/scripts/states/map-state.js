@@ -6,6 +6,9 @@ app.config(function($stateProvider){
        url: '/map',
        controller: 'MapCtrl',
        templateUrl: 'templates/map.html',
-       params: {nsSocket: null}
+       params: {
+          nsSocket: null,
+          socket: null
+        }
    });
 });
