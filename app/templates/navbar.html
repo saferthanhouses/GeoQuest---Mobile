@@ -1,14 +1,16 @@
-<nav class="navbar navbar-static-top">
-    <div class="container">
-        <ul class="nav navbar-nav">
-            <li ng-repeat="item in items" ng-show="!item.auth || isLoggedIn()">
-                <a ui-sref-active="active" ui-sref="{{ item.state }}">{{ item.label }}</a>
-            </li>
-        </ul>
-        <button ng-show="!user" ui-sref="login" class="btn login-button">Login</button>
-        <div ng-show="user" class="welcome">
-            <span>Welcome, {{ user.email }}!</span>
-            <a ng-click="logout()">Logout</a>
-        </div>
+<nav class="navbar navbar-static-top clearfix">
+    <ul class="nav navbar-nav">
+        <li ng-repeat="item in items" ng-show="!item.auth || isLoggedIn()">
+            <a ui-sref-active="active" ui-sref="{{ item.state }}">{{ item.label }}</a>
+        </li>
+    </ul>
+    <div class="logo pull-left"><img src="http://s17.postimg.org/wrmvxxo1r/map_logo.png" /></div>
+    <button ui-sref="login" class="btn btn-info login-button pull-left">Back to quests</button>
+    <button ng-show="!user" ui-sref="login" class="btn btn-info login-button pull-right">Signup</button>
+    <button ng-show="!user" class ="btn btn-info login-button pull-right">Login</button>
+    <button class ="btn btn-info login-button pull-right">Logout</button>
+    <div ng-show="user" class="welcome">
+        <span>Welcome, {{ user.email }}!</span>
+        <a ng-click="logout()">Logout</a>
     </div>
 </nav>

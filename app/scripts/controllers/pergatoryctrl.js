@@ -67,42 +67,38 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
 
     // Parses array of contacts that plugin brings forth
     function onSuccess(contacts) {
-        // var parsedContacts = [];
-        // contacts.forEach(function(contact) {
-        //     if (contact.phoneNumbers) {
-        //         contact.phoneNumbers.forEach(function(number) {
-        //             if (number.type === 'mobile') {
-        //                 if (ionic.Platform.isAndroid()) {
-        //                     parsedContacts.push({
-        //                         name: contact.displayName,
-        //                         number: number.value
-        //                     });
-        //                 } else {
-        //                     parsedContacts.push({
-        //                         name: contact.givenName,
-        //                         number: number.value
-        //                     });
-        //                 }
-        //             } 
-        //         });
-        //     }
-        // });
-        var toReturn = [];
+        var parsedContacts = [];
         contacts.forEach(function(contact) {
-            if (contact.phoneNumbers) toReturn.push(contact);
+            if (contact.phoneNumbers) {
+                contact.phoneNumbers.forEach(function(number) {
+                    if (number.type === 'mobile') {
+                        if (ionic.Platform.isAndroid()) {
+                            parsedContacts.push({
+                                name: contact.displayName,
+                                number: number.value
+                            });
+                        } else {
+                            parsedContacts.push({
+                                name: contact.givenName,
+                                number: number.value
+                            });
+                        }
+                    } 
+                });
+            }
         });
         // Remove doubles (don't know why there are doubles), and sort by name
-        // var numbers = [];
-        // var noDoubles = [];
-        // parsedContacts.filter(function(contact) {
-        //     if (numbers.indexOf(contact.number.replace(/[^\w]/g,'')) < 0) noDoubles.push(contact);
-        //     numbers.push(contact.number.replace(/[^\w]/g,''));
-        // });
-        // $scope.contacts = noDoubles.sort(function(a, b){
-        //     if(a.name < b.name) return -1;
-        //     if(a.name > b.name) return 1;
-        //     return 0;
-        // });
+        var numbers = [];
+        var noDoubles = [];
+        parsedContacts.filter(function(contact) {
+            if (numbers.indexOf(contact.number.replace(/[^\w]/g,'')) < 0) noDoubles.push(contact);
+            numbers.push(contact.number.replace(/[^\w]/g,''));
+        });
+        $scope.contacts = noDoubles.sort(function(a, b){
+            if(a.name < b.name) return -1;
+            if(a.name > b.name) return 1;
+            return 0;
+        });
         $scope.contacts = toReturn;
         $scope.$digest();
     }

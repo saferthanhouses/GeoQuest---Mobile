@@ -27,10 +27,37 @@ section {
     background: url('../images/denim.png') repeat;
 }
 
+/* navbar */
+nav.navbar.navbar-static-top {
+  border-bottom: 1px solid #333030;
+  box-shadow: 0px 3px 5px #888888;
+  padding: 0 2%;
+  margin-bottom: 0;
+  height: 40px;
+}
+nav .pull-right, nav .pull-left {
+  margin: 8px 8px 0 0;
+  font-weight: bold;
+}
+
+@media (max-width: 767px) {
+  nav .pull-right, nav .pull-left {
+    margin: 8px 8px 0 0;
+  }
+}
+.logo {
+  width: 35px;
+  height: 35px;
+}
+.logo img {
+  width: 100%;
+  color: #333;
+}
+
 /* Home */
 div.container {
     background: url('../images/paper.png') repeat;
-    margin: 0 7%;
+    margin: 0 2%;
 }
 
 .container p {
