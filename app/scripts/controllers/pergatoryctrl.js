@@ -47,7 +47,7 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
                 console.log('joined room ' + roomData.room);
                 var roomForSMS = roomData.room;
                 // Now that we have id's on scope, set the text message
-                message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/_' + nsForSMS + '_' + roomForSMS;
+                message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/?ns=' + nsForSMS + '&room=' + roomForSMS;
                 // If client knew the room they wanted to join, they followed a link,
                 // and thus should be taken to map state without choosing fellows
                 if (!roomData.newRoom) $state.go('Map', {nsSocket: nsSocket, socket: socket});
@@ -65,26 +65,27 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
 
     // Parses array of contacts that plugin brings forth
     function onSuccess(contacts) {
-        var parsedContacts = [];
-        contacts.forEach(function(contact) {
-            if (contact.phoneNumbers) {
-                contact.phoneNumbers.forEach(function(number) {
-                    if (number.type === 'mobile') {
-                        if (ionic.Platform.isAndroid()) {
-                            parsedContacts.push({
-                                name: contact.displayName,
-                                number: number.value
-                            });
-                        } else {
-                            parsedContacts.push({
-                                name: contact.givenName,
-                                number: number.value
-                            });
-                        }
-                    } 
-                });
-            }
-        });
+        var parsedContacts = contacts;
+        // var parsedContacts = [];
+        // contacts.forEach(function(contact) {
+        //     if (contact.phoneNumbers) {
+        //         contact.phoneNumbers.forEach(function(number) {
+        //             if (number.type === 'mobile') {
+        //                 if (ionic.Platform.isAndroid()) {
+        //                     parsedContacts.push({
+        //                         name: contact.displayName,
+        //                         number: number.value
+        //                     });
+        //                 } else {
+        //                     parsedContacts.push({
+        //                         name: contact.givenName,
+        //                         number: number.value
+        //                     });
+        //                 }
+        //             } 
+        //         });
+        //     }
+        // });
         // Remove doubles (don't know why there are doubles), and sort by name
         var numbers = [];
         var noDoubles = [];
