@@ -32,13 +32,13 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
 
   });
 
-    $rootScope.$on('loading:show', function() {
-      $ionicLoading.show({template: 'foo'})
-    })
+    // $rootScope.$on('loading:show', function() {
+    //   $ionicLoading.show({template: 'foo'})
+    // })
 
-    $rootScope.$on('loading:hide', function() {
-      $ionicLoading.hide()
-    })
+    // $rootScope.$on('loading:hide', function() {
+    //   $ionicLoading.hide()
+    // })
 
 })
 
