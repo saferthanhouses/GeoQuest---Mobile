@@ -6,8 +6,6 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
     // These will be defined if the client got here via external link
     var ns = $stateParams.ns;
     var room = $stateParams.room;
-    alert(ns);
-    alert(room);
     var nsSocket; // Assigned a value once server says it's cool to join a namespace
 
     // Registers method to send a text to each chosen contact, then go to map state. 
@@ -20,6 +18,15 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
         });
         $scope.chosenFellows = []
         $state.go('Map', {nsSocket: nsSocket, socket: socket});
+    });
+
+    // Make form inline if window widens (should really be a directive)
+    $(window).resize(function() {
+        if ($(window).width() > 600) {
+            $('form').addClass('form-inline');
+        } else {
+            $('form').removeClass('form-inline');
+        }
     });
 
     // Make a general connection, then ask to connect to the namespace for this game using $scope.questId as namespace path.

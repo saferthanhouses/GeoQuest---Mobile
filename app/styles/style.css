@@ -1,10 +1,79 @@
 /* Empty. Add your own CSS if you like */
+
+/* General */
 * {
   font-family: 'Josefin Sans', sans-serif;
 }
 
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.center {
+  text-align: center;
+}
+
+.form-group input {
+  font-size: 16px;
+  padding: 5px 0 0 3px;
+}
+
+#map, html, body {
+  height: 100%;
+}
+
+ion-view {
+    background: url('../images/denim.png') repeat;
+}
+
+/* Home */
+div.container {
+    background: url('../images/paper.png') repeat;
+    margin: 0 7%;
+}
+
+.container p {
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+.container h2 {
+  margin-top: 15px 
+}
+
+.form-group {
+  margin-top: 20px;
+}
+
+.quest {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Pergatory */
+.contact {
+  font-size: 16px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
 .chosen {
-  background-color: blue;
+  background-color: #776868;
+  color: #fff;
+}
+
+.contacts {
+  margin-top: 5px;
+}
+
+@media (min-width: 600px) {
+
+}
+
+/* Map */
+#map {
+  position: static;
 }
 
 .abandon {
@@ -18,19 +87,6 @@
   font-family: 'Josefin Sans', sans-serif;
   font-size: 30px; 
   text-decoration: none;
-}
-
-#map {
-  position: static;
-}
-
-body {
-	padding: 0;
-	margin: 0;
-}
-
-#map, html, body {
-	height: 100%;
 }
 
 .myModal {  
@@ -69,10 +125,6 @@ body {
 
 .bar-header {
 	padding:10px;
-}
-
-.chosen {
-	background-color: blue;
 }
 
 
