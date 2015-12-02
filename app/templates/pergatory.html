@@ -1,5 +1,6 @@
 <ion-view view-title="Pergatory" align-title="center">
 <ion-content scroll="true">
+<navbar home="home" abandon="abandon" socket="socket" nssocket="nsSocket"></navbar>
 <section>
 	<div class="container">
 		<h2 class="center">Choose Your Fellowship</h2>
@@ -7,13 +8,12 @@
 			<div class="form-group">
 				<input class="form-control" placeholder="Filter Fellows by Name" type="text" ng-model="desiredContact.name">
 			</div>
-			<button class="send-text btn btn-info">Summon!</button>
+			<button ng-click="summonFellows()" class="btn btn-info">Summon!</button>
 		</form>
 		<div class="contacts">
 			<div ng-repeat="contact in contacts | filter:desiredContact" class="contact clearfix">
-				<!-- <span class="name">{{contact.name}} </span>
-				<span class=" pull-right number">{{contact.number}}</span> -->
-				<div>{{contact}}</div>
+				<span class="name">{{contact.name}} </span>
+				<span class=" pull-right number">{{contact.number}}</span>
 			</div>
 		</div>
 	</div>

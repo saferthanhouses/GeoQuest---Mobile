@@ -1,6 +1,7 @@
 'use strict'
 
 app.controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordovaGeolocation, games) {
+    $scope.home = true;
     // We will use this to calculate the user's distance from the starting pt of each game
     // and sort the games in order of ascending distance from where the user is
     function getDistanceFromLatLonInMi(lat1,lon1,lat2,lon2) {

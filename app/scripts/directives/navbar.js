@@ -4,10 +4,14 @@ app.directive('navbar', function ($rootScope, $state) {  // other injections: , 
 
     return {
         restrict: 'E',
-        scope: {},
-        templateUrl: '../templates/navbar.html',
+        scope: {
+            home: '=',
+            abandon: '=',
+            nssocket: '=',
+            socket: '='
+        },
+        templateUrl: 'templates/navbar.html',
         link: function (scope) {
-
             // scope.items = [
             //     { label: 'Home', state: 'home' },
             //     { label: 'Map', state: 'map' },
