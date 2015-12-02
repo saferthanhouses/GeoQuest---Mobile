@@ -18,7 +18,6 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
     }
 
     var externalUrl = window.localStorage.getItem('external_load');
-      setTimeout(function() {
         if (externalUrl) {
         var arr = externalUrl.split('_');
         var ns = arr[1];
@@ -29,7 +28,6 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
       } else {
         $state.go('Home');
       }
-    }, 500);
 
   });
 
