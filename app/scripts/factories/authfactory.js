@@ -1,0 +1,124 @@
+'use strict'
+
+app.constant('AUTH_EVENTS', {
+        loginSuccess: 'auth-login-success',
+        loginFailed: 'auth-login-failed',
+        logoutSuccess: 'auth-logout-success-',
+        sessionTimeout: 'auth-session-timeout',
+        notAuthenticated: 'auth-not-authenticated',
+        notAuthorized: 'auth-not-authorized'
+})
+
+.factory('AuthInterceptor', function ($rootScope, $q, AUTH_EVENTS) {
+        var statusDict = {
+            401: AUTH_EVENTS.notAuthenticated,
+            403: AUTH_EVENTS.notAuthorized,
+            419: AUTH_EVENTS.sessionTimeout,
+            440: AUTH_EVENTS.sessionTimeout
+        };
+        return {
+            responseError: function (response) {
+                $rootScope.$broadcast(statusDict[response.status], response);
+                return $q.reject(response)
+            }
+        };
+})
+
+.service('Session', function ($rootScope, AUTH_EVENTS) {
+
+        var self = this;
+
+        $rootScope.$on(AUTH_EVENTS.notAuthenticated, function () {
+            self.destroy();
+        });
+
+        $rootScope.$on(AUTH_EVENTS.sessionTimeout, function () {
+            self.destroy();
+        });
+
+        this.id = null;
+        this.user = null;
+
+        this.create = function (sessionId, user) {
+            this.id = sessionId;
+            this.user = user;
+        };
+
+        this.destroy = function () {
+            this.id = null;
+            this.user = null;
+        };
+
+})
+
+.service('AuthService', function ($http, Session, $rootScope, AUTH_EVENTS, $q, ENV) {
+
+        function onSuccessfulLogin(response) {
+            console.log("onSuccessfulLogin response", response);
+            var data = response.data;
+            Session.create(data.id, data.user);
+            $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+            return data.user;
+        }
+
+        // Uses the session factory to see if an
+        // authenticated user is currently registered.
+        this.isAuthenticated = function () {
+            return !!Session.user;
+        };
+
+        this.getLoggedInUser = function (fromServer) {
+
+            // If an authenticated session exists, we
+            // return the user attached to that session
+            // with a promise. This ensures that we can
+            // always interface with this method asynchronously.
+
+            // Optionally, if true is given as the fromServer parameter,
+            // then this cached value will not be used.
+
+            if (this.isAuthenticated() && fromServer !== true) {
+                return $q.when(Session.user);
+            }
+
+            // Make request GET /session.
+            // If it returns a user, call onSuccessfulLogin with the response.
+            // If it returns a 401 response, we catch it and instead resolve to null.
+            return $http.get(ENV.apiEndpoint + 'session').then(onSuccessfulLogin).catch(function () {
+                return null;
+            });
+
+        };
+
+        this.login = function (credentials) {
+            return $http.post(ENV.apiEndpoint + 'login', credentials)
+                .then(onSuccessfulLogin)
+                .catch(function () {
+                    return $q.reject({ message: 'Invalid login credentials.' });
+                });
+        };
+
+        this.signup = function (credentials) {
+            //sends a post request containing the user's credentials to 
+            return $http.post(ENV.apiEndpoint + 'api/users/signup', credentials)
+                //once the user has been created on the backend...
+                .then(function(response) {
+                    //a second post request is created to log the user in
+                    return $http.post(ENV.apiEndpoint + 'login', credentials);
+                })
+                .then(onSuccessfulLogin)
+                .catch(function () {
+                    return $q.reject({ message: 'Invalid signup credentials.' });
+                });
+        };
+
+        this.logout = function () {
+            return $http.get(ENV.apiEndpoint + 'logout').then(function () {
+                Session.destroy();
+                $rootScope.$broadcast(AUTH_EVENTS.logoutSuccess);
+            });
+        };
+
+})
+
+
