@@ -6,8 +6,7 @@
     </ul>
     <div class="logo pull-left"><img src="http://s17.postimg.org/wrmvxxo1r/map_logo.png" /></div>
     <button ng-show="!home" ng-click="abandon(nssocket, socket)" class="btn btn-info pull-left">Back to Quests</button>
-    <button ng-show="!user" ui-sref="login" class="btn btn-info login-button pull-right">Signup</button>
-    <button ng-show="!user" class ="btn btn-info login-button pull-right">Login</button>
+    <button ng-show="!user" ui-sref="Auth" class="btn btn-info login-button pull-right">Login / Signup</button>
     <button ng-show="false" class ="btn btn-info login-button pull-right">Logout</button>
     <div ng-show="user" class="welcome">
         <span>Welcome, {{ user.email }}!</span>
