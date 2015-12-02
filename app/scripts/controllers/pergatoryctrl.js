@@ -65,9 +65,10 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
                 contact.phoneNumbers.forEach(function(number) {
                     if (number.type === 'mobile') {
                         if (ionic.Platform.isAndroid()) {
+                            var parsedNumber = number.value.replace(/[\W]/g,"")
                             parsedContacts.push({
                                 name: contact.displayName,
-                                number: number.value
+                                number: parsedNumber
                             });
                         } else {
                             parsedContacts.push({

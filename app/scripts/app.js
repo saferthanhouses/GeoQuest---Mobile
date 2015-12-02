@@ -18,7 +18,7 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
     }
 
     var externalUrl = window.localStorage.getItem('external_load');
-        if (externalUrl) {
+      if (externalUrl) {
         var arr = externalUrl.split('_');
         var ns = arr[1];
         var room = arr[2];
