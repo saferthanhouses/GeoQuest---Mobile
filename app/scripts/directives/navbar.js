@@ -1,6 +1,7 @@
 'use strict';
 
-app.directive('navbar', function ($rootScope, $state, $ionicModal) {  // other injections: , AuthService, AUTH_EVENTS, 
+app.directive('navbar', function ($rootScope, $state, $ionicModal, AuthService, Session) {  // other injections: , AuthService, AUTH_EVENTS, 
+
 
     return {
         restrict: 'E',
@@ -13,9 +14,29 @@ app.directive('navbar', function ($rootScope, $state, $ionicModal) {  // other i
         templateUrl: 'templates/navbar.html',
         link: function (scope) {
 
+            scope.user = false;
+
             scope.openAuth = function() {
+                console.log(Session.user);
                 $rootScope.$emit('openAuthModal');
             }
+
+            $rootScope.$on('auth-login-success', function() {
+                scope.user = true;
+            })
+
+            $rootScope.$on('auth-logout-success-', function(){
+                scope.user = false;
+            })
+
+            scope.logout = function() {
+                console.log(Session.user);
+                AuthService.logout().then(function(){
+                    // flash logout successful
+                    console.log("logout successful");
+                })
+            } 
+
 
             // scope.items = [
             //     { label: 'Home', state: 'home' },

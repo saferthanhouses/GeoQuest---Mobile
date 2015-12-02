@@ -140,8 +140,9 @@ div.container {
  color: white;
 }
 
-.authModal {
-
+.modalButtons {
+  display:inline-block;
+  margin-left: 38%;
 }
 
 .closeModalButton {

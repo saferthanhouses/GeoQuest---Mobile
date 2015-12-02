@@ -1,6 +1,6 @@
 'use strict'
 
-app.factory('GamesFactory', function($http) {
+app.factory('GamesFactory', function($http, ENV) {
 
 	return {
 

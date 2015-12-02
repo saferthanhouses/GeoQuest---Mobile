@@ -21,7 +21,17 @@ app.service('AuthModal', function($ionicModal, AuthService, $rootScope){
 
 	$rootScope.login = function(userInfo) {
 		AuthService.login(userInfo).then(function(user){
-			console.log(user);
+			self.modal.hide()
+		}, function(){
+			$rootScope.validationError = true;
+		})
+	}
+
+	$rootScope.signup = function(userInfo) {
+		AuthService.signup(userInfo).then(function(user){
+			self.modal.hide()
+		}, function(){
+			$rootScope.validationError = true;
 		})
 	}
 
