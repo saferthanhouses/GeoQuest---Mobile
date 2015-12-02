@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordovaGeolocation, games, $state) {
+app.controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordovaGeolocation, $state) {
     $scope.home = true;
     // If client arrived by hitting nav button, there was a socket connection
     // The socket was passed here via $state.go. We disconnect them
