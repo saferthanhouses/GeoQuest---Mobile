@@ -28,7 +28,7 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
                 console.log('joined room ' + roomData.room);
                 var roomForSMS = roomData.room;
                 // Now that we have id's on scope, set the text message
-                message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/?ns=' + nsForSMS + '&room=' + roomForSMS;
+                message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/_' + nsForSMS + '_' + roomForSMS;
                 // If client knew the room they wanted to join, they followed a link,
                 // and thus should be taken to map state without choosing fellows
                 if (!roomData.newRoom) $state.go('Map', {nsSocket: $scope.nsSocket, socket: $scope.socket});
