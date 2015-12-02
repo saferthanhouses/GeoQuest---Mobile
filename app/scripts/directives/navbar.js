@@ -1,6 +1,6 @@
 'use strict';
 
-app.directive('navbar', function ($rootScope, $state) {  // other injections: , AuthService, AUTH_EVENTS, 
+app.directive('navbar', function ($rootScope, $state, $ionicModal) {  // other injections: , AuthService, AUTH_EVENTS, 
 
     return {
         restrict: 'E',
@@ -12,6 +12,11 @@ app.directive('navbar', function ($rootScope, $state) {  // other injections: , 
         },
         templateUrl: 'templates/navbar.html',
         link: function (scope) {
+
+            scope.openAuth = function() {
+                $rootScope.$emit('openAuthModal');
+            }
+
             // scope.items = [
             //     { label: 'Home', state: 'home' },
             //     { label: 'Map', state: 'map' },

@@ -6,7 +6,7 @@
 // the 2nd parameter is an array of 'requires'
 var app = angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'ngAnimate', 'config']);
 
-app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
+app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal, AuthModal) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)

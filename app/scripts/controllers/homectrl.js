@@ -10,6 +10,7 @@ app.controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordo
       $scope.socket.disconnect();
     }
 
+
     // Easier to pass complex objects using $state.go than ui-sref
     $scope.toPergatory = function(gameId, socket) {
       $state.go('Pergatory', {questId: gameId, theSocket: socket});
