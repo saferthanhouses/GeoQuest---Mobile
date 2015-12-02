@@ -1,7 +1,20 @@
 'use strict'
 
-app.controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordovaGeolocation, games) {
+app.controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordovaGeolocation, games, $state) {
     $scope.home = true;
+    // If client arrived by hitting nav button, there was a socket connection
+    // The socket was passed here via $state.go. We disconnect them
+    // since a new connection is made in 'Pergatory'.
+    $scope.socket = $stateParams.nsSocket; 
+    if ($scope.socket) {
+      $scope.socket.disconnect();
+    }
+
+    // Easier to pass complex objects using $state.go than ui-sref
+    $scope.toPergatory = function(gameId, socket) {
+      $state.go('Pergatory', {questId: gameId, theSocket: socket});
+    };
+
     // We will use this to calculate the user's distance from the starting pt of each game
     // and sort the games in order of ascending distance from where the user is
     function getDistanceFromLatLonInMi(lat1,lon1,lat2,lon2) {
