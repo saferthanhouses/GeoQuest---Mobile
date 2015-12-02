@@ -18,16 +18,18 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
     }
 
     var externalUrl = window.localStorage.getItem('external_load');
-    if (externalUrl) {
-      var arr = externalUrl.split('_');
-      var ns = arr[1];
-      var room = arr[2];
-      console.log('in app.run: ns', ns, 'room', room);
-      window.localStorage.clear();
-      $state.go('Pergatory', {ns: ns, room: room});
-    } else {
-      $state.go('Home');
-    }
+      setTimeout(function() {
+        if (externalUrl) {
+        var arr = externalUrl.split('_');
+        var ns = arr[1];
+        var room = arr[2];
+        console.log('in app.run: ns', ns, 'room', room);
+        window.localStorage.clear();
+        $state.go('Pergatory', {ns: ns, room: room});
+      } else {
+        $state.go('Home');
+      }
+    }, 500);
 
   });
 
