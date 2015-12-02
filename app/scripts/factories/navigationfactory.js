@@ -4,9 +4,8 @@ app.factory('NavigationFactory', function($state) {
 
 	return {
 		abandon: function(nsSocket) {
-			console.log('ABNDONING!!!')
-			nsSocket.disconnect();
-			$state.go('Home');
+			console.log('ABANDONING!!!')
+			$state.go('Home', {nsSocket: nsSocket});
 		}
 	};
 
