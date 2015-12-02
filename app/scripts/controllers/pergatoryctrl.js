@@ -3,18 +3,18 @@
 app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaContacts, $cordovaSms, NavigationFactory){
     $scope.abandon = NavigationFactory.abandon;
     var questId = $stateParams.questId; // Defined if client came from home state
-    console.log('questId', questId);
-    $scope.chosenFellows = [];
+    console.log('questId from home', questId);
+
     // These will be defined if the client got here via external link
     var ns = $stateParams.ns;
     var room = $stateParams.room;
-    console.log('IN PERGATORY: ns', ns, 'room', room);
+    console.log('IN PERGATORY from link: ns', ns, 'room', room);
 
-    $scope.nsSocket; // Assigned a value once server says it's cool to join a namespace
     // Make a general connection, then ask to connect to the namespace for this game using $scope.questId as namespace path.
-    $scope.socket = io.connect('https://damp-ocean-1851.herokuapp.com');
+    $scope.socket = io.connect('https://damp-ocean-1851.herokuapp.com', {'forceNew': true, 'sync disconnect on unload': true });
+    console.log('soooocket', $scope.socket)
     $scope.socket.on('connect', function(){console.log('gottem');});
-
+    $scope.nsSocket; // Assigned a value once server says it's cool to join a namespace
     // Connects to namespace when server says good to go, and asks to join room
     // If arrived via external link, room will be defined, and after joined room
     // will be sent to map state
@@ -38,7 +38,6 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
             $scope.nsSocket.emit('joinRoom', room);
         });
     }); 
-
     // Ask to join namespace. Use questId passed in if came from home state,
     // ns if came from external link
     var toEmit = (ns) ? ns : questId;
@@ -48,6 +47,7 @@ app.controller('PergatoryCtrl', function($scope, $stateParams, $state, $cordovaC
     var message; // Defined in socket listener
     var success = function () { console.log('Message sent successfully'); };
     var error = function (e) { console.log('Message Failed:' + e); };
+    $scope.chosenFellows = [];
     $scope.summonFellows = function() {
         $scope.chosenFellows.forEach(function(fellowNumber) {
             $cordovaSms.send(fellowNumber, message, {}, success, error);
