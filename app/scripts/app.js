@@ -22,9 +22,8 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading) {
       var arr = externalUrl.split('_');
       var ns = arr[1];
       var room = arr[2];
-      console.log('LOCASTORAGE', localStorage);
+      console.log('in app.run: ns', ns, 'room', room);
       window.localStorage.clear();
-      console.log('LOCASTORAGE', localStorage);
       $state.go('Pergatory', {ns: ns, room: room});
     } else {
       $state.go('Home');

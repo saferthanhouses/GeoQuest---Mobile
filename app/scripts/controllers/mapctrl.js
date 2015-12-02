@@ -1,6 +1,10 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams, $state) {
+app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams, $state, NavigationFactory) {
+    $scope.nsSocket = $stateParams.nsSocket;
+    $scope.socket = $stateParams.socket;
+    $scope.abandon = NavigationFactory.abandon;
+
     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
         scope: $scope,
         animation: 'slide-in-up'
@@ -9,18 +13,8 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotificati
         $scope.startMapFunctions()
     });
 
-    var nsSocket = $stateParams.nsSocket;
-    var socket = $stateParams.socket;
-
-    $scope.abandon = function() {
-        console.log('abandoning nsSocket', nsSocket);
-        console.log('abandoning socket', socket);
-        nsSocket.disconnect();
-        $state.go('Home');
-    };
-
     // When a fellow arrives or moves
-    nsSocket.on('fellowLocation', function(fellow) {
+    $scope.nsSocket.on('fellowLocation', function(fellow) {
         console.log('fellow location', fellow);
         if (fellow.id === $scope.me.id) return;
         for (var i=0; i<$scope.fellows.length; i++) {
@@ -37,7 +31,7 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotificati
     });
 
     // When a fellow leaves
-    nsSocket.on('death', function(id) {
+    $scope.nsSocket.on('death', function(id) {
         var index;
         for (var i=0; i< $scope.fellows.length; i++) {
             if($scope.fellows[i].id === id) {
@@ -49,13 +43,13 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotificati
     });
 
     // When you first show up, so you can tell who you are relative to your fellows
-    nsSocket.on('yourId', function(id) {
+    $scope.nsSocket.on('yourId', function(id) {
         console.log('my id is: ', id);
         $scope.me.id = id;
     });
 
     // When you first show up, so you know your fellows
-    nsSocket.on('yourFellows', function (everyone) {
+    $scope.nsSocket.on('yourFellows', function (everyone) {
         for (var i=0; i< everyone.length; i++) {
             var newFellow = everyone[i];
             newFellow.marker = new L.marker(newFellow.location);
@@ -259,7 +253,7 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotificati
                 $scope.myMarker.setLatLng($scope.me.location);
             }
             //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
-            nsSocket.emit('hereIAm', $scope.me.location);
+            $scope.nsSocket.emit('hereIAm', $scope.me.location);
             
             if($scope.mapStates.currentState.transitionCondition.region === 'any' || targetRegion[0].shapeobject.getBounds().contains($scope.me.location)) {
                 // open up modal to client showing map status, notification triggers
