@@ -5,11 +5,11 @@ app.config(function($stateProvider){
     .state('Home', {
       url: '/',
       templateUrl: 'templates/home.html',
-      controller: 'HomeCtrl'
-      // resolve: {
-        // games: function(GamesFactory) {
-        //   return GamesFactory.getAllGames();
-        // }
-          
+      controller: 'HomeCtrl',
+      resolve: {
+        games: function(GamesFactory) {
+          return GamesFactory.getAllGames();
+        }
+      }    
     });
 });

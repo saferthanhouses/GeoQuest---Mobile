@@ -22,7 +22,7 @@ app.directive('navbar', function ($rootScope, $state, $ionicModal, AuthService, 
             }
 
             $rootScope.$on('auth-login-success', function() {
-                scope.user = true;
+                scope.user = Session.user;
             })
 
             $rootScope.$on('auth-logout-success-', function(){
