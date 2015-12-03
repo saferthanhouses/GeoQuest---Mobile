@@ -1,6 +1,7 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams, $state, NavigationFactory) {
+app.controller('MapCtrl', function ($scope, $ionicModal, $cordovaLocalNotification, $ionicPlatform, $cordovaVibration, MapFactory, $stateParams, $state, NavigationFactory, quest) {
+    console.log("resolved quest", quest)
     $scope.nsSocket = $stateParams.nsSocket;
     $scope.socket = $stateParams.socket;
     $scope.abandon = NavigationFactory.abandon;

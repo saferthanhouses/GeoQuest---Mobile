@@ -44,6 +44,7 @@ module.exports = function (grunt) {
           ENV: {
             name: 'development',
             apiEndpoint: 'https://damp-ocean-1851.herokuapp.com/'
+            // apiEndpoint: 'http://192.168.3.96:1337/'
           }
         }
       },

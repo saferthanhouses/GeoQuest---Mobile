@@ -7,8 +7,8 @@ app.config(function($stateProvider){
       templateUrl: 'templates/home.html',
       controller: 'HomeCtrl',
       resolve: {
-        games: function(GamesFactory) {
-          return GamesFactory.getAllGames();
+        games: function(QuestFactory) {
+          return QuestFactory.getAllQuests();
         }
       }    
     });
