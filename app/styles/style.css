@@ -29,6 +29,13 @@ section {
     height: auto;
 }
 
+.validationError {
+  color: red;
+  font-size: 0.9em;
+  font-weight: bold;
+  text-align: center;
+}
+
 /* navbar */
 nav.navbar.navbar-static-top {
   border-bottom: 1px solid #333030;
