@@ -12,6 +12,7 @@
 	    		<span class="input-label">Password</span>
 	    		<input type="password" ng-model="userInfo.password">
 	  		</label>
+	  		<div class="validationError" ng-show="validationError">Invalid Credentials</div>
 		</div>
 		<div class="modalButtons">
 			<button ng-click="login(userInfo)" class ="btn btn-success login-button">Login</button> 
