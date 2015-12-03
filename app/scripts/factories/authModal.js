@@ -8,7 +8,7 @@ app.service('AuthModal', function($ionicModal, AuthService, $rootScope){
 
 	self = this;
 
-	$ionicModal.fromTemplateUrl('/templates/auth-modal.html', {
+	$ionicModal.fromTemplateUrl('templates/auth-modal.html', {
     	scope: $rootScope,
     	animation: 'slide-in-up'
   	}).then(function(modal) {
