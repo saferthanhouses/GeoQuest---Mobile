@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
-app.factory('GamesFactory', function($http, ENV) {
+app.factory('QuestFactory', function($http, ENV) {
 
 	return {
 
-		getAllGames: function() {
+		getAllQuests: function() {
 			return $http.get(ENV.apiEndpoint + 'api/quests/')
 			.then(function(res) {
 				return res.data;

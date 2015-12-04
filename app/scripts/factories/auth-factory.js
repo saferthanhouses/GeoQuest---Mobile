@@ -19,7 +19,7 @@ app.constant('AUTH_EVENTS', {
         return {
             responseError: function (response) {
                 $rootScope.$broadcast(statusDict[response.status], response);
-                return $q.reject(response)
+                return $q.reject(response);
             }
         };
 })
@@ -54,10 +54,9 @@ app.constant('AUTH_EVENTS', {
 .service('AuthService', function ($http, Session, $rootScope, AUTH_EVENTS, $q, ENV) {
 
         function onSuccessfulLogin(response) {
-            console.log("onSuccessfulLogin response", response);
             var data = response.data;
             Session.create(data.id, data.user);
-            $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+            $rootScope.$broadcast(AUTH_EVENTS.loginSuccess, data.user);
             return data.user;
         }
 
@@ -99,6 +98,7 @@ app.constant('AUTH_EVENTS', {
         };
 
         this.signup = function (credentials) {
+            console.log('credentials', credentials);
             //sends a post request containing the user's credentials to 
             return $http.post(ENV.apiEndpoint + 'api/users/signup', credentials)
                 //once the user has been created on the backend...

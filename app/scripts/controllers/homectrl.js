@@ -1,23 +1,45 @@
 'use strict'
 
-app.controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordovaGeolocation, $state, games) {
+app.controller('HomeCtrl', function($scope, $rootScope, $stateParams, $ionicPlatform, $cordovaGeolocation, $state, quests, Session, StartedQuestFactory) {
+    console.log('home')
     $scope.home = true;
-    // If client arrived by hitting nav button, there was a socket connection
+    $scope.user = Session.user;
+    console.log('ueer hehe', $scope.user);
+    // When user logs in, get them on scope and their startedQuests on scope
+    $rootScope.$on('auth-login-success', function(event, user) {
+      $scope.user = user;
+      $scope.getStartedQuests();
+    });
+    $scope.getStartedQuests = function() {
+      if ($scope.user) {
+        StartedQuestFactory.getStartedQuestsForUser($scope.user._id)
+        .then(function(startedQuests) {
+          $scope.startedQuests = startedQuests;
+          console.log('got the quetsts')
+        });
+      }
+    };
+    $scope.getStartedQuests();
+
+    $scope.viewStartedQuests = function(userId) {
+      $state.go('StartedQuests', {userId: userId}, {reload: true});
+    };
+
+    // If client arrived by hitting 'back to quests' button, there was a socket connection
     // The socket was passed here via $state.go. We disconnect them
-    // since a new connection is made in 'Pergatory'.
+    // since a new connection will be made in 'Pergatory' state.
     $scope.socket = $stateParams.nsSocket; 
     if ($scope.socket) {
       $scope.socket.disconnect();
     }
 
-
     // Easier to pass complex objects using $state.go than ui-sref
-    $scope.toPergatory = function(gameId, socket) {
-      $state.go('Pergatory', {questId: gameId, theSocket: socket});
+    $scope.toPergatory = function(questId, socket) {
+      $state.go('Pergatory', {questId: questId, theSocket: socket});
     };
 
-    // We will use this to calculate the user's distance from the starting pt of each game
-    // and sort the games in order of ascending distance from where the user is
+    // We will use this to calculate the user's distance from the starting pt of each quest
+    // and sort the quests in order of ascending distance from where the user is
     function getDistanceFromLatLonInMi(lat1,lon1,lat2,lon2) {
       var R = 6371; // Radius of the earth in km
       var dLat = deg2rad(lat2-lat1);  // deg2rad below
@@ -43,15 +65,15 @@ app.controller('HomeCtrl', function($scope, $stateParams, $ionicPlatform, $cordo
           return [position.coords.latitude, position.coords.longitude];
         })
         .then(function(myLocation) {
-            games.forEach(function(game) {
-                var args = [myLocation[0], myLocation[1], game.start[0], game.start[1]];
-                game.distFromMe = getDistanceFromLatLonInMi.apply(null, args);
-                game.distFromMe = Math.round(game.distFromMe * 100)/100;
+            quests.forEach(function(quest) {
+                var args = [myLocation[0], myLocation[1], quest.start[0], quest.start[1]];
+                quest.distFromMe = getDistanceFromLatLonInMi.apply(null, args);
+                quest.distFromMe = Math.round(quest.distFromMe * 100)/100;
             });
-            games.sort(function(a,b) {
+            quests.sort(function(a,b) {
                 return a.distFromMe - b.distFromMe;
             });
-            $scope.games = games;
+            $scope.quests = quests;
         })
         .catch(function(err) {
           console.log('Had a problem getting location: ' + err);
