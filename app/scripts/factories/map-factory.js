@@ -16,8 +16,8 @@ app.factory('MapFactory', function() {
 			map.on('zoomend', changeLocateZoom);
 		    
 		    function changeLocateZoom(e){
-		      if ($scope.map._locateOptions){
-		        $scope.map._locateOptions.maxZoom = $scope.map.getZoom();
+		      if (map._locateOptions){
+		        map._locateOptions.maxZoom = map.getZoom();
 		      }
 		    }
 
