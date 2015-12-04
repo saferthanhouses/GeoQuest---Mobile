@@ -11,7 +11,14 @@ app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $rootScop
 	return {
 		//OB/CZ: could this be less crazy?
 		//OB/CZ: this should return a promise, then you wouldn't have to broadcast
-		getAndParseContacts: function() {
+		// getAndParseContacts: function() {
+		// 	return $q(function (resolve, reject) {
+		// 		doTheAsyncThing(function (contacts) {
+		// 			resolve(onSuccess(contacts));
+		// 		}, function (err) {
+		// 			reject(err);
+		// 		});
+		// 	});
 			// Parses array of contacts that plugin brings forth
 		    function onSuccess(contacts) {
 		        var parsedContacts = [];

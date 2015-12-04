@@ -15,6 +15,11 @@ app.controller('HomeCtrl', function($scope, $rootScope, $stateParams, $ionicPlat
     $scope.user = Session.user; //OB/CZ: AuthService.getLoggedInUser
     $scope.startedQuests = startedQuests;
 
+    AuthService.getLoggedInUser()
+    .then(function(user){
+      $scope.user = user;
+    })
+
     // When user logs in, get them on scope and their startedQuests on scope
     $rootScope.$on('auth-login-success', function(event, user) {
       $scope.user = user; //OB/CZ: resolve
