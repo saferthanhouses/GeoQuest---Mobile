@@ -23,7 +23,6 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         region.shapeObject = L.circle(region.locationPoints, region.radius);
     })
 
-    console.log("$scope.mapStates", $scope.mapStates);
     var targetRegion;
 
     // USER VARIABLES 
@@ -60,7 +59,6 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
          var usr = L.latLng($scope.me.location.lat, $scope.me.location.lng);
          var target = L.latLng(target[0], target[1]);
          var bounds = L.latLngBounds(usr, target);
-         console.log(usr, target, bounds);
         $scope.map.fitBounds(bounds)
     }
 
@@ -97,12 +95,6 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
 
         // should be visible regions because this will never be the first state (assumption that all other states have VRs) 
         var visibleRegionsArray = getVisibleRegions();
-        
-
-        console.log("visibleRegionsArray", visibleRegionsArray)
-        console.log("targetRegion.locationPoints", $scope.mapStates.currentState.targetRegion.locationPoints)
-        // problems in these two parst.
-
         $scope.map.mapRegionLayer = L.layerGroup(visibleRegionsArray);
         $scope.map.addLayer($scope.map.mapRegionLayer);
         
@@ -130,7 +122,6 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
     function questEnd(){
         console.log("You have finished the quest");
     }
-
 
     function goToNextState() {
         $scope.mapStates.currentState = $scope.mapStates.states[$scope.mapStates.currentStateIndex + 1];
