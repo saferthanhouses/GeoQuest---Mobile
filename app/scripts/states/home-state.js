@@ -2,14 +2,15 @@
 
 app.config(function($stateProvider){
   $stateProvider
-    .state('Home', {
-      url: '/',
-      templateUrl: 'templates/home.html',
-      controller: 'HomeCtrl',
-      resolve: {
-        games: function(QuestFactory) {
-          return QuestFactory.getAllQuests();
-        }
-      }    
-    });
+  .state('Home', {
+    url: '/',
+    cache: false,
+    templateUrl: 'templates/home.html',
+    controller: 'HomeCtrl',
+    resolve: {
+      quests: function(QuestFactory) {
+        return QuestFactory.getAllQuests();
+      }
+    }    
+  });
 });

@@ -1,6 +1,6 @@
 <ion-view view-title="Home" align-title="center">
 <ion-content scroll="true">
-	<navbar home="home"></navbar>
+	<navbar home="home" user="user" startedquests="startedQuests"></navbar>
 
 	<section>
 	<div class="container">
@@ -11,13 +11,13 @@
 			</div>
 		</form>
 
-		<div class="quest" ng-repeat="game in games | filter:desiredQuest">
-			<p><a ui-sref="Pergatory({questId: game._id})">{{game.name}}</a></p>
-			<p>Starts {{game.distFromMe}} Miles From You</p>
-			<p>Covers {{game.distance}} Miles</p>
-			<p>Takes Roughly {{game.time}} Hours</p>
+		<div class="quest" ng-repeat="quest in quests | filter:desiredQuest">
+			<p><a ui-sref="Pergatory({questId: quest._id})">{{quest.name}}</a></p>
+			<p>Starts {{quest.distFromMe}} Miles From You</p>
+			<p>Covers {{quest.distance}} Miles</p>
+			<p>Takes Roughly {{quest.time}} Hours</p>
 			<p>68 Reviews: Avg 3.6/5</p>
-			<p>Summary: {{game.summary}}</p>
+			<p>Summary: {{quest.summary}}</p>
 		</div>
 	</div>
 </ion-content>
