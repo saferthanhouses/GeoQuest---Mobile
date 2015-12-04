@@ -1,8 +1,10 @@
 'use strict'
 
 app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFactory, $stateParams, $state, NavigationFactory, quest) {
+    var questId = $stateParams.questId; // namespace is same as questId
+    var room = $stateParams.room; // room Id was set when user summoned fellows
+    console.log('in mapctrl ns: ', questId, 'room', room);
 
-    
     // MAPSTATE VARIABLES
     $scope.mapStates = {
         states: quest.mapstates,
@@ -175,6 +177,26 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
 
 
     // SOCKETS
+
+    // Make a general connection, then ask to connect to the namespace for this quest using questId as namespace path,
+    // then ask to join room using ms since 1970 as roomId
+    $scope.socket = io.connect('https://damp-ocean-1851.herokuapp.com', {'forceNew': true, 'sync disconnect on unload': true });
+    console.log('soooocket', $scope.socket)
+    $scope.socket.on('connect', function(){console.log('gottem');});
+    $scope.nsSocket; // Assigned a value once server says it's cool to join a namespace
+    $scope.socket.on('setToJoinNs', function(questId) {
+        $scope.nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + questId);
+        $scope.nsSocket.on('connect', function() {
+            console.log('joined namespace ' + questId);
+            // Register listener for confirmation that client is joined the room
+            $scope.nsSocket.on('joinedRoom', function(roomId) {
+                console.log('joined room ' + roomId);
+            });
+            // Request to join room
+            $scope.nsSocket.emit('joinRoom', room);
+        });
+    }); 
+    $scope.socket.emit('joinNs', toEmit);
 
     $scope.nsSocket = $stateParams.nsSocket;
     $scope.socket = $stateParams.socket;
