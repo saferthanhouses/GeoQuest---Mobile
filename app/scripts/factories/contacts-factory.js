@@ -9,6 +9,8 @@ app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $rootScop
 	var error = function (e) { console.log('Message Failed:' + e); };
 
 	return {
+		//OB/CZ: could this be less crazy?
+		//OB/CZ: this should return a promise, then you wouldn't have to broadcast
 		getAndParseContacts: function() {
 			// Parses array of contacts that plugin brings forth
 		    function onSuccess(contacts) {

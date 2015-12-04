@@ -12,7 +12,7 @@ app.config(function($stateProvider){
         return QuestFactory.getAllQuests();
       },
       startedQuests: function(StartedQuestFactory, Session) {
-        if (Session.user) {
+        if (Session.user) { //OB/CZ: resolving the user
           return StartedQuestFactory.getStartedQuestsForUser(Session.user._id);
         }
       }

@@ -15,7 +15,8 @@
 		<div class="quest clearfix" ng-repeat="startedQuest in startedQuests | filter:desiredQuest">
 			<div class="pull-left">
 				<p><a ui-sref="Map({questId: startedQuest.quest._id, room:startedQuest.room, startedQuest: startedQuest})">{{startedQuest.quest.name}}</a></p>
-				<p>Started on {{startedQuest.startDate.toString().slice(0,-5)}}</p>
+<!-- 				moment
+ -->				<p>Started on {{startedQuest.startDate.toString().slice(0,-5)}}</p>
 			</div>
 			<div class="pull-right">
 				<button class="btn btn-danger" ng-click="deleteStartedQuest(startedQuest._id)">X</button>

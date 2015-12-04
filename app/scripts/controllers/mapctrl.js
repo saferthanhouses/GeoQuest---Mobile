@@ -21,6 +21,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
     $scope.me = {};
     $scope.fellows = [];
 
+    //OB/CZ: could go in a directive/service
     // MAP INITIALISATION
     // get user position, set user on map, start watching --- kicks everything off.
     $cordovaGeolocation.getCurrentPosition({enableHighAccuracy: true, timeout: 10000})
@@ -35,7 +36,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
             // set the map watcher
             setupWatchEvents();
         })
-    
+
     // fit bounds with one target of [lat, lng]
     function fitBounds(target){
          var usr = L.latLng($scope.me.location.lat, $scope.me.location.lng);
@@ -111,7 +112,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
         return tempRegionArray; 
     }
 
-
+//OB/CZ: map directive
     function addUserMarker() {
         var meIcon = L.icon({
             iconUrl: 'http://icon-park.com/imagefiles/location_map_pin_red8.png',
@@ -195,6 +196,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
     console.log('connecting sockets')
     SocketFactory.connectSockets(questId, room);
 
+//OB/CZ: remove below:
     
     // function registerSocketListeners() {
     //     // When a fellow arrives or moves

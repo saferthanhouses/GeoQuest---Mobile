@@ -1,5 +1,5 @@
 'use strict'
-
+//OB/CZ: why is this called this?
 app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, Session, StartedQuestFactory, ContactsFactory){
     
     // Receive contacts and put them on scope when factory gets them
@@ -36,7 +36,7 @@ app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $stat
 
     // When a contact is clicked, it's added to text queue and highlighted.
     // If already selected, it's spliced out of queue and ungighlighted.
-    $(document).ready(function() {
+    $(document).ready(function() { //OB/CZ: bad -> ng-click?
         $('.contacts').on('click', '.contact', function() {
             var number = $(this).find('.number').html();
             var ind = $scope.chosenFellows.indexOf(number);
