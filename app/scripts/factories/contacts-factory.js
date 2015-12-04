@@ -54,16 +54,17 @@ app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $rootScop
 		    }
 
 		    // find all contacts that have phone numbers, populate displayname and phoneNumbers
-		    var options      = new ContactFindOptions();
+		    var options = new ContactFindOptions();
 		    options.multiple = true;
 		    options.desiredFields = ['phoneNumbers', 'displayName', 'name'];
 		    options.hasPhoneNumber = true;
-		    var fields       = ['displayName', 'phoneNumbers'];
+		    var fields = ['displayName', 'phoneNumbers'];
 		    navigator.contacts.find(fields, onSuccess, onError, options);
 		},
 
-		// Send each chosen fellow the sms with the link to the quest instance
-	    summonFellows: function(chosenFellows, message) {
+		// Send each chosen fellow an sms with the link to the quest instance
+	    summonFellows: function(chosenFellows, questId, room) {
+	    	var message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/_' + questId + '_' + room;
 	        chosenFellows.forEach(function(fellowNumber) {
 	            $cordovaSms.send(fellowNumber, message, {}, success, error);
 	        });      

@@ -17,7 +17,6 @@ app.directive('navbar', function ($rootScope, $state, $ionicModal, AuthService, 
         link: function (scope) {
 
             scope.openAuth = function() {
-                console.log(Session.user);
                 $rootScope.$emit('openAuthModal');
             }
 

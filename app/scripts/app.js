@@ -24,20 +24,12 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal,
       var room = arr[2];
       console.log('in app.run: ns', ns, 'room', room);
       window.localStorage.clear();
-      $state.go('Pergatory', {ns: ns, room: room});
+      $state.go('Map', {questId: ns, room: room});
     } else {
       $state.go('Home');
     }
 
   });
-
-    // $rootScope.$on('loading:show', function() {
-    //   $ionicLoading.show({template: 'foo'})
-    // })
-
-    // $rootScope.$on('loading:hide', function() {
-    //   $ionicLoading.hide()
-    // })
 
 })
 

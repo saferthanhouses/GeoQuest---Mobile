@@ -1,65 +1,37 @@
 'use strict'
 
-app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, NavigationFactory, Session, StartedQuestFactory, ContactsFactory){
+app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, Session, StartedQuestFactory, ContactsFactory){
+    
     // Receive contacts and put them on scope when factory gets them
     $rootScope.$on('contacts', function(event, contacts) {
         $scope.contacts = contacts;
         $scope.$digest();
     });
-    ContactsFactory.getAndParseContacts();
-    var questId = $stateParams.questId; // Defined if client came from home state
+    ContactsFactory.getAndParseContacts(); // The factory $rootScope.$broadcasts the contacts
+
+    // Get other necessary things on $scope
+    $scope.questId = $stateParams.questId; // From user's choice in Home state
+    $scope.startedQuestId = $stateParams.startedQuestId; // Defined if user got here via a startedQuest link
+    $scope.room = Date.now(); // This will be the roomId that the user asks server to join
+
     $scope.user = Session.user;  // Get user on scope
-    $scope.abandon = NavigationFactory.abandon;
-    $scope.chosenFellows = [];
-    
-    console.log('questId from home', questId);
-
-    // These will be defined if the client got here via external link
-    var ns = $stateParams.ns;
-    var room = $stateParams.room;
-    console.log('IN PERGATORY from link: ns', ns, 'room', room);
-
-    // Make a general connection, then ask to connect to the namespace for this quest using $scope.questId as namespace path.
-    $scope.socket = io.connect('https://damp-ocean-1851.herokuapp.com', {'forceNew': true, 'sync disconnect on unload': true });
-    console.log('soooocket', $scope.socket)
-    $scope.socket.on('connect', function(){console.log('gottem');});
-    $scope.nsSocket; // Assigned a value once server says it's cool to join a namespace
-    // Connects to namespace when server says good to go, and asks to join room
-    // If arrived via external link, room will be defined, and after joined room
-    // will be sent to map state
-    $scope.socket.on('setToJoinNs', function(questId) {
-        $scope.nsForSMS = questId;
-        $scope.nsSocket = io.connect('https://damp-ocean-1851.herokuapp.com/' + questId);
-        $scope.nsSocket.on('connect', function() {
-            console.log('joined namespace ' + questId);
-            // Register listener for confirmation that client is joined the room
-            $scope.nsSocket.on('joinedRoom', function(roomData) {
-                console.log('joined room ' + roomData.room);
-                $scope.roomForSMS = roomData.room;
-                // Now that we have id's on scope, set the text message
-                message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/_' + $scope.nsForSMS + '_' + $scope.roomForSMS;
-                // If client knew the room they wanted to join, they followed a link,
-                // and thus should be taken to map state without choosing fellows
-                console.log("questId on redirect", questId)
-                if (!roomData.newRoom) $state.go('Map', {nsSocket: $scope.nsSocket, socket: $scope.socket, questId: questId});
-            });
-            // Request to join room (room will be null if they got here from home state)
-            // If room is undefined, server will create a new room in the namespace for this quest
-            $scope.nsSocket.emit('joinRoom', room);
-        });
-    }); 
-    // Ask to join namespace. Use questId passed in if came from home state,
-    // ns if came from external link
-    var toEmit = (ns) ? ns : questId;
-    $scope.socket.emit('joinNs', toEmit);
+    $scope.abandon = SocketFactory.abandon; // For going back to Home state
+    $scope.chosenFellows = []; // Array gets populated as user selects contacts
 
     // Registers method to send a text to each chosen contact, then go to map state. 
-    var message; // Defined in socket listener
     $scope.summonFellows = function() {
-        ContactsFactory.summonFellows($scope.chosenFellows, message);
+        ContactsFactory.summonFellows($scope.chosenFellows, $scope.questId, $scope.room);
+        $scope.chosenFellows = [];
         $('.chosen').removeClass('chosen');
-        if ($scope.user) StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.nsForSms, $scope.roomForSMS);
-        $state.go('Map', {nsSocket: $scope.nsSocket, socket: $scope.socket, questId: questId});        
+        // Save the quest instance as a startedQuest in the DB
+        if ($scope.user) {
+            StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.questId, $scope.room)
+            .then(function(startedQuest) {
+                $state.go('Map', {questId: $scope.questId, room: $scope.room, startedQuest: startedQuest});
+            });
+        } else {
+            $state.go('Map', {questId: $scope.questId, room: $scope.room});        
+        }
     };
 
     // When a contact is clicked, it's added to text queue and highlighted.
@@ -77,5 +49,5 @@ app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $stat
             }
         });
     });
-
 });
+
