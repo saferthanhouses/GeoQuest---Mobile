@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 app.factory('QuestFactory', function($http, ENV) {
 
@@ -9,6 +9,13 @@ app.factory('QuestFactory', function($http, ENV) {
 			.then(function(res) {
 				return res.data;
 			});
+		},
+
+		getOneQuest: function(questId){
+			return $http.get(ENV.apiEndpoint + 'api/quests/' + questId)
+			.then(function(res) {
+				return res.data;
+			})
 		}
 	};
 });

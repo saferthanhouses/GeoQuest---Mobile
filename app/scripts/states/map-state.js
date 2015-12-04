@@ -7,8 +7,13 @@ app.config(function($stateProvider){
        controller: 'MapCtrl',
        templateUrl: 'templates/map.html',
        params: {
-          ns: null,
-          room: null
-        }
+          room: null,
+          questId: null
+        },
+       resolve: {
+          quest: function(QuestFactory, $stateParams){
+            return QuestFactory.getOneQuest($stateParams.questId);
+          }
+       }
    });
 });
