@@ -1,7 +1,6 @@
 'use strict'
 
 app.controller('HomeCtrl', function($scope, $rootScope, $stateParams, $ionicPlatform, $state, quests, startedQuests, Session, QuestFactory, StartedQuestFactory) {
-  console.log('back home'); // to insure controller is running again
 
     // Get user's location, and sort in ascending order of distance from user
     $ionicPlatform.ready(function() {
@@ -11,6 +10,7 @@ app.controller('HomeCtrl', function($scope, $rootScope, $stateParams, $ionicPlat
       });
     });
 
+    // Set other $scope paramerters
     $scope.home = true;
     $scope.user = Session.user;
     $scope.startedQuests = startedQuests;

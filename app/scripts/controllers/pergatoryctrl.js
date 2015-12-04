@@ -1,6 +1,7 @@
 'use strict'
 
 app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, NavigationFactory, Session, StartedQuestFactory, ContactsFactory){
+    
     // Receive contacts and put them on scope when factory gets them
     $rootScope.$on('contacts', function(event, contacts) {
         $scope.contacts = contacts;
@@ -10,7 +11,7 @@ app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $stat
 
     // Get other necessary things on $scope
     var questId = $stateParams.questId; // From user's choice in Home state
-    var room = Date.Now(); // This will be the roomId that the user asks server to join
+    var room = Date.now(); // This will be the roomId that the user asks server to join
     console.log('questId in perg', questId);
     $scope.user = Session.user;  // Get user on scope
     $scope.abandon = NavigationFactory.abandon; // For going back to Home state
