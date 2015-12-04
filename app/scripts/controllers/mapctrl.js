@@ -1,49 +1,47 @@
 'use strict'
 
 app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFactory, $stateParams, $state, NavigationFactory, quest) {
+
     
-    // QUEST VARIABLES
-    console.log("resolved quest", quest)
+    // MAPSTATE VARIABLES
     $scope.mapStates = {
         states: quest.mapstates,
         regions: quest.regions,
-        startingState: this.states[0],
-        endingState: this.states[this.states.length-1],
-        currentStateIndex: 0
     };
-    //used later to define the targetRegion which will be our trip wire for changing state
+
+    $scope.mapStates.startingState =  $scope.mapStates.states[0],
+    $scope.mapStates.endingState = $scope.mapStates.states[$scope.mapStates.states.length-1],
+    $scope.mapStates.currentState = $scope.mapStates.states[0];
+    $scope.mapStates.currentStateIndex = 0;
+    $scope.mapStates.states.map(function(state){ 
+        if (state.targetRegion.shapeObject) {
+            state.targetRegion.shapeObject = L.circle(state.targetRegion.locationPoints, state.targetRegion.radius)
+        }
+        return state;
+    })
+
+    console.log("$scope.mapStates", $scope.mapStates);
     var targetRegion;
 
     // USER VARIABLES 
-    //object to contain current status of client
     $scope.me = {};
     $scope.fellows = [];
 
 
-    // MAP
+    // // MAP
     $scope.map = MapFactory.generateMap(document.getElementById('map'));
-    //object to contain arrays and other quest information - > to b pulled from db
+
+    // var mapElem = document.getElementById('map');
+    // $scope.map = L.map('map', {zoomControl:false}).setView([51.505, -0.09], 13);
+
     $scope.map.locate({
         setView: false, 
         maxZoom: 20, 
         watch: true,
         enableHighAccuracy: true
     })
-    //currently visible regions on the map, in a single array of shape object
-    $scope.map.mapRegionLayer;
-    
-    // fix the zoom - do we still need this?
-    // $scope.map.on('zoomend', changeLocateZoom);
-    // function changeLocateZoom(e){
-    //   if ($scope.map._locateOptions){
-    //     $scope.map._locateOptions.maxZoom = $scope.map.getZoom();
-    //   }
-    // }
 
-    // $scope.map.whenReady(function(){
-    //     $scope.startMapFunctions();
-    // })
-
+    console.log("mapStates", quest)
 
     function addUserMarker() {
         var meIcon = L.icon({
@@ -58,6 +56,8 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         $scope.map.addLayer($scope.myMarker);
     }
  
+
+    // EXECUTION LOOP
     $scope.map.on('locationfound', function (e) {
             //set user location
             $scope.me.location = e.latlng;
@@ -66,96 +66,81 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
             else $scope.myMarker.setLatLng($scope.me.location);
             //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
             $scope.nsSocket.emit('hereIAm', $scope.me.location);
+            checkRegion()
+    })
+
+    function questEnd(){
+        console.log("You have finished the quest");
     }
 
-    // EXECUTION LOOP
-    $scope.startMapFunctions = function () {
-        //this runs at each location found event from the client
-        $scope.map.on('locationfound', function (e) {
-            $scope.me.location = e.latlng;
-            //if no client marker exists, create new marker
-            if (!$scope.myMarker) addUserMarker();
-            else $scope.myMarker.setLatLng($scope.me.location);
-            //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
-            $scope.nsSocket.emit('hereIAm', $scope.me.location);
-            
-            // target region is undefinedo n the first go-through
-            // if the transition condition is not bound to a region, or the 
-
-            // if there is a target region, this is not the first go around
-            if ($scope.targetRegion) {
-                console.log("$scope.targetRegion in conditional", $scope.targetRegion);
-                if ($scope.targetRegion[0].shapeObject.getBounds().contains($scope.me.location)){
-                    $scope.openMapStatus();
+    function checkRegion () {
+    // if inside the target region, or target region is undefined.
+        // target region is undefinedo n the first go-through
+        if ($scope.mapStates.currentState.targetRegion.shapeObject) {
+            if ($scope.mapStates.currentState.targetRegion.shapeObject.getBounds().contains($scope.me.location)){
+                if ($scope.mapStates.currentState.name == $scope.mapStates.endingState.name){
+                    questEnd();
                 }
-            // if there isn't a targetRegion, there isn't a transition condition anyway ... ?
-            } else {
-                $scope.openMapStatus();
+                openModal();
             }
-            // console.log("targetRegion[0]", $scope.targetRegion[0]);
-            //     // if the current state doesn't have a transition condition region ...
-            // if((!$scope.mapStates.currentState.transitionCondition.region) || $scope.targetRegion[0].shapeObject.getBounds().contains($scope.me.location)) {
-            //     // open up modal to client showing map status, notification triggers
-            //     $scope.openMapStatus(); //needs to not move forward until the modal change
-            //     //when you exit the modal udate the currentState
-            // }
-        })
+        // if there isn't a targetRegion.shapeObject, there isn't a target anyway ... 
+        } else {
+            openModal();
+        }
     }
-    $scope.$on('modal.hidden', function () {
 
-        // increment to the next state - this is linear.
+    // function insideTargetRegion(){
+    //     if ($scope.tagetRegion && $scope.targetRegion[0].shapeObject.getBounds().contains($scope.me.location)) {
+    //         return true;
+    //     } else {
+
+    //     }
+    // }
+
+    function goToNextState() {
         $scope.mapStates.currentState = $scope.mapStates.states[$scope.mapStates.currentStateIndex + 1];
         $scope.mapStates.currentStateIndex ++;
+    }
 
-        // to make a non-linear state-change, we could check to see which transition condition they are within 
-
-        //find the next target region of the transition point for the next map state
-        //?? there is a big chance this will not work at all, but...yolo
-        //generate array of shape objects based on what should be visible
+    // only one visible region currently - the target - kept the return as an array for future regions...
+    function getVisibleRegions() {
         var tempRegionArray = [];
         for (var i =0; i<$scope.mapStates.currentState.visibleRegions.length; i++) {
             for (var j=0; j<$scope.mapStates.regions.length; j++) {
                 if($scope.mapStates.currentState.visibleRegions[i] === $scope.mapStates.regions[j]._id) {
-                    console.log("$scope.mapStates.regions[j]", $scope.mapStates.regions[j])
-                    tempRegionArray.push($scope.mapStates.regions[j].shapeObject)
+                    tempRegionArray.push($scope.mapStates.regions[j].locationPoints)
                 }
             }
         }
+        return tempRegionArray; 
+    }
 
-        console.log("tempRegionArray", tempRegionArray);
+    $scope.$on('modal.hidden', function () {
+        // sequential now.
+        goToNextState()
+        
+        console.log("map", $scope.map);
 
         //if the region layer exists, remove it
         if($scope.map.mapRegionLayer) {
             $scope.map.removeLayer($scope.map.mapRegionLayer);
         }
-        
-        $scope.targetRegion = _.filter($scope.mapStates.regions, {_id: $scope.mapStates.currentState.transitionCondition.region})
 
-        console.log("targetRegion", $scope.targetRegion);
+        // should be visible regions because this will never be the first state (assumption that all other states have VRs) 
+        var visibleRegionsArray = getVisibleRegions();
+        $scope.map.mapRegionLayer = L.layerGroup(visibleRegionsArray);
+        $scope.map.addLayer([$scope.me.location, visibleRegionsArray[0]]);
+        // bound the map...
 
-        // if there is a target region for this state...
-        if ($scope.targetRegion) {
-        //define new region layer from array of shape objects
-            $scope.map.mapRegionLayer = L.layerGroup(tempRegionArray);
-            //add layer to map
-            console.log("mapRegionLayer", $scope.map.mapRegionLayer)
-            $scope.map.addLayer($scope.map.mapRegionLayer);
-            //set map view to include yourself and location
-            console.log("$scope.convertToArr($scope.me.location)", convertToArr($scope.me.location))
-            console.log("scope.targetRegion[0].location", $scope.targetRegion[0].location)
-            var bounds = [[$scope.convertToArr($scope.me.location), $scope.targetRegion[0].location]];
+        console.log($scope.me.location, $scope.mapStates.currentState.targetRegion.locationPoints, $scope.map);
+        var bounds = [$scope.me.location, $scope.mapStates.currentState.targetRegion.locationPoints]
+        $scope.map.setBounds(bounds);
 
-            console.log("$scope.map", $scope.map);
-            //end of redrawing map
-        } else {
-            // draw the map on yourself?
-            console.log("no targetRegion")
-        }
+
     })
 
 
-
-    // modal stuff
+    // // MODAL
 
     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
         scope: $scope,
@@ -166,10 +151,10 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
     });
 
     // later will want to pass custom message into the modal
-    $scope.openMapStatus = function() {
+    function openModal() {
       // will be undefined if the modal hasn't had time to load
       $scope.modal.show();    
-      UserNotificationFactory.notifyUser("new region entered!");
+      // UserNotificationFactory.notifyUser("new region entered!");
     };
 
     $scope.closeModal = function(){
@@ -177,10 +162,10 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
     };
 
 
-    // helper funcs
+    // // helper funcs
 
-    function convertToArr = function(object) {
-        var= [];
+    function convertToArr(object) {
+        var arr = [];
         for (var key in object) {
             if(object.hasOwnProperty(key)) {
                 arr.push(object[key])
@@ -255,10 +240,5 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
             $scope.fellows.push(newFellow);
         }
     });
-
-
-
-
-
 
 })
