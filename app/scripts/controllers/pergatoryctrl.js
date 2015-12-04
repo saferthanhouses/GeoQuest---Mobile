@@ -8,16 +8,10 @@ app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $stat
     });
     ContactsFactory.getAndParseContacts();
     var questId = $stateParams.questId; // Defined if client came from home state
+    console.log('questId', questId);
     $scope.user = Session.user;  // Get user on scope
     $scope.abandon = NavigationFactory.abandon;
     $scope.chosenFellows = [];
-    
-    console.log('questId from home', questId);
-
-    // These will be defined if the client got here via external link
-    var ns = $stateParams.ns;
-    var room = $stateParams.room;
-    console.log('IN PERGATORY from link: ns', ns, 'room', room);
 
     // Make a general connection, then ask to connect to the namespace for this quest using $scope.questId as namespace path.
     $scope.socket = io.connect('https://damp-ocean-1851.herokuapp.com', {'forceNew': true, 'sync disconnect on unload': true });
@@ -47,9 +41,6 @@ app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $stat
             $scope.nsSocket.emit('joinRoom', room);
         });
     }); 
-    // Ask to join namespace. Use questId passed in if came from home state,
-    // ns if came from external link
-    var toEmit = (ns) ? ns : questId;
     $scope.socket.emit('joinNs', toEmit);
 
     // Registers method to send a text to each chosen contact, then go to map state. 
@@ -76,5 +67,5 @@ app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $stat
             }
         });
     });
-
 });
+

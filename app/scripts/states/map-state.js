@@ -7,8 +7,8 @@ app.config(function($stateProvider){
        controller: 'MapCtrl',
        templateUrl: 'templates/map.html',
        params: {
-          nsSocket: null,
-          socket: null
+          ns: null,
+          room: null
         }
    });
 });

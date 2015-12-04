@@ -7,8 +7,7 @@ app.config(function($stateProvider){
     templateUrl: 'templates/pergatory.html',
     controller: 'PergatoryCtrl',
     params: {
-      ns: null,
-      room: null
+      questId: null
     }
   });
 });
