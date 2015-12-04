@@ -1,0 +1,28 @@
+<ion-view view-title="Home" align-title="center">
+<ion-content scroll="true">
+	<navbar home="home" abandon="abandon" user="user" startedquests="startedQuests"></navbar>
+
+
+	<section>
+	<div class="container">
+		<h2 class="center">Your Quests in Progress</h2>
+		<form>
+			<div class="form-group">
+				<input class="form-control" placeholder="Filter Quests by Name" type="text" ng-model="desiredQuest.quest.name">
+			</div>
+		</form>
+<!-- When a user clicks quest name, sends them to pergatory with the ns and room id's so goes to map state -->
+		<div class="quest clearfix" ng-repeat="startedQuest in startedQuests | filter:desiredQuest">
+			<div class="pull-left">
+			<!-- Shouldn't go to pergatory: should go to map state with ns and room id's.
+			socket hookup will happen when we get to map state -->
+				<p><a ui-sref="Pergatory({questId: quest._id})">{{startedQuest.quest.name}}</a></p>
+				<p>Started on {{startedQuest.startDate.toString().slice(0,-5)}}</p>
+			</div>
+			<div class="pull-right">
+				<button class="btn btn-danger" ng-click="deleteStartedQuest(startedQuest._id)">X</button>
+			</div>
+		</div>
+	</div>
+</ion-content>
+</ion-view>
