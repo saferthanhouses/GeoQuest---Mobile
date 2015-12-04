@@ -13,7 +13,6 @@ app.config(function($stateProvider){
       },
       startedQuests: function(StartedQuestFactory, Session) {
         if (Session.user) {
-          console.log('resolving startedquests')
           return StartedQuestFactory.getStartedQuestsForUser(Session.user._id);
         }
       }

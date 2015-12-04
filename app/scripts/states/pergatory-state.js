@@ -7,7 +7,8 @@ app.config(function($stateProvider){
     templateUrl: 'templates/pergatory.html',
     controller: 'PergatoryCtrl',
     params: {
-      questId: null
+      questId: null,
+      startedQuestId: null
     }
   });
 });

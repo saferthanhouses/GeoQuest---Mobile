@@ -14,9 +14,7 @@
 <!-- When a user clicks quest name, sends them to pergatory with the ns and room id's so goes to map state -->
 		<div class="quest clearfix" ng-repeat="startedQuest in startedQuests | filter:desiredQuest">
 			<div class="pull-left">
-			<!-- Shouldn't go to pergatory: should go to map state with ns and room id's.
-			socket hookup will happen when we get to map state -->
-				<p><a ui-sref="Pergatory({questId: quest._id})">{{startedQuest.quest.name}}</a></p>
+				<p><a ui-sref="Map({questId: startedQuest.quest._id, room:startedQuest.room, startedQuest: startedQuest})">{{startedQuest.quest.name}}</a></p>
 				<p>Started on {{startedQuest.startDate.toString().slice(0,-5)}}</p>
 			</div>
 			<div class="pull-right">
