@@ -30,32 +30,12 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
 
     // // MAP
     $scope.map = MapFactory.generateMap(document.getElementById('map'));
-
-    // var mapElem = document.getElementById('map');
-    // $scope.map = L.map('map', {zoomControl:false}).setView([51.505, -0.09], 13);
-
     $scope.map.locate({
         setView: false, 
         maxZoom: 20, 
         watch: true,
         enableHighAccuracy: true
     })
-
-    console.log("mapStates", quest)
-
-    function addUserMarker() {
-        var meIcon = L.icon({
-            iconUrl: 'http://icon-park.com/imagefiles/location_map_pin_red8.png',
-            iconSize:     [38, 38], // size of the icon
-            iconAnchor:   [19, 38], // point of the icon which will correspond to marker's location
-            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-        });
-        //create new marker for my location
-        $scope.myMarker = new L.marker($scope.me.location, {icon: meIcon});
-        //add my location to map
-        $scope.map.addLayer($scope.myMarker);
-    }
- 
 
     // EXECUTION LOOP
     $scope.map.on('locationfound', function (e) {
@@ -69,6 +49,28 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
             checkRegion()
     })
 
+
+    $scope.$on('modal.hidden', function () {
+        // sequential now.
+        goToNextState()
+        
+        //if the region layer exists, remove it
+        if($scope.map.mapRegionLayer) {
+            $scope.map.removeLayer($scope.map.mapRegionLayer);
+        }
+
+        // should be visible regions because this will never be the first state (assumption that all other states have VRs) 
+        var visibleRegionsArray = getVisibleRegions();
+        $scope.map.mapRegionLayer = L.layerGroup(visibleRegionsArray);
+        $scope.map.addLayer([$scope.me.location, visibleRegionsArray[0]]);
+        
+        // bound the map...
+        console.log($scope.me.location, $scope.mapStates.currentState.targetRegion.locationPoints, $scope.map);
+        var bounds = [[$scope.me.location.lat, $scope.me.location.lng], $scope.mapStates.currentState.targetRegion.locationPoints]
+        $scope.map.fitBounds(bounds);
+    })
+
+    // MAIN FUNCS
     function questEnd(){
         console.log("You have finished the quest");
     }
@@ -89,14 +91,6 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         }
     }
 
-    // function insideTargetRegion(){
-    //     if ($scope.tagetRegion && $scope.targetRegion[0].shapeObject.getBounds().contains($scope.me.location)) {
-    //         return true;
-    //     } else {
-
-    //     }
-    // }
-
     function goToNextState() {
         $scope.mapStates.currentState = $scope.mapStates.states[$scope.mapStates.currentStateIndex + 1];
         $scope.mapStates.currentStateIndex ++;
@@ -115,30 +109,20 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         return tempRegionArray; 
     }
 
-    $scope.$on('modal.hidden', function () {
-        // sequential now.
-        goToNextState()
-        
-        console.log("map", $scope.map);
 
-        //if the region layer exists, remove it
-        if($scope.map.mapRegionLayer) {
-            $scope.map.removeLayer($scope.map.mapRegionLayer);
-        }
-
-        // should be visible regions because this will never be the first state (assumption that all other states have VRs) 
-        var visibleRegionsArray = getVisibleRegions();
-        $scope.map.mapRegionLayer = L.layerGroup(visibleRegionsArray);
-        $scope.map.addLayer([$scope.me.location, visibleRegionsArray[0]]);
-        // bound the map...
-
-        console.log($scope.me.location, $scope.mapStates.currentState.targetRegion.locationPoints, $scope.map);
-        var bounds = [$scope.me.location, $scope.mapStates.currentState.targetRegion.locationPoints]
-        $scope.map.setBounds(bounds);
-
-
-    })
-
+    function addUserMarker() {
+        var meIcon = L.icon({
+            iconUrl: 'http://icon-park.com/imagefiles/location_map_pin_red8.png',
+            iconSize:     [38, 38], // size of the icon
+            iconAnchor:   [19, 38], // point of the icon which will correspond to marker's location
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
+        //create new marker for my location
+        $scope.myMarker = new L.marker($scope.me.location, {icon: meIcon});
+        //add my location to map
+        $scope.map.addLayer($scope.myMarker);
+    }
+ 
 
     // // MODAL
 
