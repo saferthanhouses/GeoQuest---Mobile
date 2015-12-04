@@ -195,16 +195,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
 
 
     // SOCKETS
-
-    $rootScope.$on('sockets connected', function(event, socketData) {
-        $scope.mainSocket = socketData.socket;
-        $scope.nsSocket = socketData.nsSocket;
-        console.log('registering!!!!! socket', $scope.mainSocket, 'nsSocket', $scope.nsSocket);
-        // registerSocketListeners();
-    });
-    console.log('connecting sockets')
-    SocketFactory.connectSockets(questId, room);
-
     
     function registerSocketListeners() {
         // When a fellow arrives or moves
