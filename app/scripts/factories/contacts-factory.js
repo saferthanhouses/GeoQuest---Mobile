@@ -64,7 +64,7 @@ app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $rootScop
 
 		// Send each chosen fellow an sms with the link to the quest instance
 	    summonFellows: function(chosenFellows, questId, room) {
-	    	var message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/_' + questId + '_' + room;
+	    	var message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/?ns=' + questId + '&room=' + room;
 	        chosenFellows.forEach(function(fellowNumber) {
 	            $cordovaSms.send(fellowNumber, message, {}, success, error);
 	        });      
