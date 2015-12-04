@@ -195,7 +195,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
 
 
     // SOCKETS
-
     
     function registerSocketListeners() {
         // When a fellow arrives or moves
