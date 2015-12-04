@@ -43,7 +43,8 @@ module.exports = function (grunt) {
         constants: {
           ENV: {
             name: 'development',
-            apiEndpoint: 'https://damp-ocean-1851.herokuapp.com/' // https://damp-ocean-1851.herokuapp.com/
+            apiEndpoint: 'https://damp-ocean-1851.herokuapp.com/'
+
           }
         }
       },

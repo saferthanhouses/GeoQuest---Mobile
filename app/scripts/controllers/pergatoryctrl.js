@@ -40,7 +40,8 @@ app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $stat
                 message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/_' + $scope.nsForSMS + '_' + $scope.roomForSMS;
                 // If client knew the room they wanted to join, they followed a link,
                 // and thus should be taken to map state without choosing fellows
-                if (!roomData.newRoom) $state.go('Map', {nsSocket: $scope.nsSocket, socket: $scope.socket});
+                console.log("questId on redirect", questId)
+                if (!roomData.newRoom) $state.go('Map', {nsSocket: $scope.nsSocket, socket: $scope.socket, questId: questId});
             });
             // Request to join room (room will be null if they got here from home state)
             // If room is undefined, server will create a new room in the namespace for this quest
@@ -58,7 +59,7 @@ app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $stat
         ContactsFactory.summonFellows($scope.chosenFellows, message);
         $('.chosen').removeClass('chosen');
         if ($scope.user) StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.nsForSms, $scope.roomForSMS);
-        $state.go('Map', {nsSocket: $scope.nsSocket, socket: $scope.socket});        
+        $state.go('Map', {nsSocket: $scope.nsSocket, socket: $scope.socket, questId: questId});        
     };
 
     // When a contact is clicked, it's added to text queue and highlighted.

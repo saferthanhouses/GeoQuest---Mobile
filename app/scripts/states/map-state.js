@@ -8,7 +8,13 @@ app.config(function($stateProvider){
        templateUrl: 'templates/map.html',
        params: {
           nsSocket: null,
-          socket: null
-        }
+          socket: null,
+          questId: null
+        },
+       resolve: {
+          quest: function(QuestFactory, $stateParams){
+            return QuestFactory.getOneQuest($stateParams.questId)
+          }
+       }
    });
 });
