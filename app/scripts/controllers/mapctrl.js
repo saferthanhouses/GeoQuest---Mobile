@@ -6,6 +6,16 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
     $scope.startedQuest = $stateParams.startedQuest;
     $scope.abandon = SocketFactory.abandon; // To disconnect sockets and go to 'Home' state
 
+    // CONNECT SOCKETS
+    $rootScope.$on('sockets connected', function(event, socketData) {
+        $scope.mainSocket = socketData.socket;
+        $scope.nsSocket = socketData.nsSocket;
+        console.log('registering!!!!! socket', $scope.mainSocket, 'nsSocket', $scope.nsSocket);
+        registerSocketListeners();
+    });
+    console.log('connecting sockets')
+    SocketFactory.connectSockets(questId, room);
+
     // MAPSTATES
     $scope.mapStates = {
         states: quest.mapstates,
@@ -196,52 +206,52 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
     SocketFactory.connectSockets(questId, room);
 
     
-    // function registerSocketListeners() {
-    //     // When a fellow arrives or moves
-    //     $scope.nsSocket.on('fellowLocation', function(fellow) {
-    //         console.log('fellow location', fellow);
-    //         if (fellow.id === $scope.me.id) return;
-    //         for (var i=0; i<$scope.fellows.length; i++) {
-    //             if(fellow.id === $scope.fellows[i].id) {
-    //                 $scope.fellows[i].location = fellow.location;
-    //                 $scope.fellows[i].marker.setLatLng($scope.fellows[i].location);
-    //                 return;
-    //             }
-    //         }
-    //         var newFellow = fellow;
-    //         newFellow.marker = new L.marker(newFellow.location);
-    //         $scope.map.addLayer(newFellow.marker);
-    //         $scope.fellows.push(newFellow);
-    //     });
+    function registerSocketListeners() {
+        // When a fellow arrives or moves
+        $scope.nsSocket.on('fellowLocation', function(fellow) {
+            console.log('fellow location', fellow);
+            if (fellow.id === $scope.me.id) return;
+            for (var i=0; i<$scope.fellows.length; i++) {
+                if(fellow.id === $scope.fellows[i].id) {
+                    $scope.fellows[i].location = fellow.location;
+                    $scope.fellows[i].marker.setLatLng($scope.fellows[i].location);
+                    return;
+                }
+            }
+            var newFellow = fellow;
+            newFellow.marker = new L.marker(newFellow.location);
+            $scope.map.addLayer(newFellow.marker);
+            $scope.fellows.push(newFellow);
+        });
 
-    //     // When a fellow leaves
-    //     $scope.nsSocket.on('death', function(id) {
-    //         var index;
-    //         for (var i=0; i< $scope.fellows.length; i++) {
-    //             if($scope.fellows[i].id === id) {
-    //                 $scope.map.removeLayer($scope.fellows[i].marker);
-    //                 index = i;
-    //             }
-    //         }
-    //         $scope.fellows.splice(index,1);
-    //     });
+        // When a fellow leaves
+        $scope.nsSocket.on('death', function(id) {
+            var index;
+            for (var i=0; i< $scope.fellows.length; i++) {
+                if($scope.fellows[i].id === id) {
+                    $scope.map.removeLayer($scope.fellows[i].marker);
+                    index = i;
+                }
+            }
+            $scope.fellows.splice(index,1);
+        });
 
-    //     // When you first show up, so you can tell who you are relative to your fellows
-    //     $scope.nsSocket.on('yourId', function(id) {
-    //         console.log('my id is: ', id);
-    //         $scope.me.id = id;
-    //     });
+        // When you first show up, so you can tell who you are relative to your fellows
+        $scope.nsSocket.on('yourId', function(id) {
+            console.log('my id is: ', id);
+            $scope.me.id = id;
+        });
 
-    //     // When you first show up, so you know your fellows
-    //     $scope.nsSocket.on('yourFellows', function (everyone) {
-    //         for (var i=0; i< everyone.length; i++) {
-    //             var newFellow = everyone[i];
-    //             newFellow.marker = new L.marker(newFellow.location);
-    //             $scope.map.addLayer(newFellow.marker);
-    //             $scope.fellows.push(newFellow);
-    //         }
-    //     });
-    // }
+        // When you first show up, so you know your fellows
+        $scope.nsSocket.on('yourFellows', function (everyone) {
+            for (var i=0; i< everyone.length; i++) {
+                var newFellow = everyone[i];
+                newFellow.marker = new L.marker(newFellow.location);
+                $scope.map.addLayer(newFellow.marker);
+                $scope.fellows.push(newFellow);
+            }
+        });
+    }
     
 
 });
