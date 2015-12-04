@@ -3,7 +3,7 @@
 app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFactory, $stateParams, $state, NavigationFactory, quest, $cordovaGeolocation) {
 
     
-    // MAPSTATE VARIABLES
+    // MAPSTATES
     $scope.mapStates = {
         states: quest.mapstates,
         regions: quest.regions,
@@ -13,26 +13,12 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
     $scope.mapStates.endingState = $scope.mapStates.states[$scope.mapStates.states.length-1],
     $scope.mapStates.currentState = $scope.mapStates.states[0];
     $scope.mapStates.currentStateIndex = 0;
-    $scope.mapStates.states.map(function(state){ 
-        if (state.targetRegion.shapeObject) {
-            state.targetRegion.shapeObject = L.circle(state.targetRegion.locationPoints, state.targetRegion.radius)
-        }
-        return state;
-    })
-    $scope.mapStates.regions.map(function(region){
-        region.shapeObject = L.circle(region.locationPoints, region.radius);
-    })
-
-    var targetRegion;
 
     // USER VARIABLES 
     $scope.me = {};
     $scope.fellows = [];
 
-
-    // MAP VARIABLES
     // MAP INITIALISATION
-
     // get user position, set user on map, start watching --- kicks everything off.
     $cordovaGeolocation.getCurrentPosition({enableHighAccuracy: true, timeout: 10000})
         .then(function(pos){
@@ -44,14 +30,7 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
             // show user's position
             addUserMarker();
             // set the map watcher
-            startWatchingUser();
-
-            $scope.map.whenReady(function(){
-                setLocationFoundFunctions()
-
-            }, function(err){
-                console.error(err);
-            })
+            setupWatchEvents();
         })
     
     // fit bounds with one target of [lat, lng]
@@ -62,16 +41,14 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         $scope.map.fitBounds(bounds)
     }
 
-    function startWatchingUser() {
+    function setupWatchEvents(){
         $scope.map.locate({
             setView: false, 
             maxZoom: 20, 
             watch: true,
             enableHighAccuracy: true
         })
-    }
 
-    function setLocationFoundFunctions(){
         $scope.map.on('locationfound', function (e) {
                 //set user location
                 $scope.me.location = e.latlng;
@@ -83,49 +60,39 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
                 checkRegion()
         })
     }
-    // EXECUTION LOOP
+
+    // modal is being closed moves to the next state
     $scope.$on('modal.hidden', function () {
-        // sequential now.
-        goToNextState()
-        
-        //if the region layer exists, remove it
+        goToNextState() 
+        // remove areas from map
         if($scope.map.mapRegionLayer) {
             $scope.map.removeLayer($scope.map.mapRegionLayer);
         }
-
-        // should be visible regions because this will never be the first state (assumption that all other states have VRs) 
+        // should be visible regions because this will never be the first state 
+        // (assumption that all other states have VRs bc at least a target region. 
         var visibleRegionsArray = getVisibleRegions();
         $scope.map.mapRegionLayer = L.layerGroup(visibleRegionsArray);
         $scope.map.addLayer($scope.map.mapRegionLayer);
-        
         // bound the map...
         fitBounds($scope.mapStates.currentState.targetRegion.locationPoints);
     })
 
+
     function checkRegion () {
-    // if inside the target region, or target region is undefined.
-        // target region is undefinedo n the first go-through
+        // all states have a target region, even ones without a true 'target', so check their shapeObject
         if ($scope.mapStates.currentState.targetRegion.shapeObject) {
             if ($scope.mapStates.currentState.targetRegion.shapeObject.getBounds().contains($scope.me.location)){
+                // if the last state we might want to do something
                 if ($scope.mapStates.currentState.name == $scope.mapStates.endingState.name){
                     questEnd();
                 }
+                // otherwise open the modal.
                 openModal();
             }
-        // if there isn't a targetRegion.shapeObject, there isn't a target anyway ... 
+        // if there isn't a targetRegion.shapeObject, there isn't a target, so move through the state by opening the modal ... 
         } else {
             openModal();
         }
-    }
-
-    // MAIN FUNCS
-    function questEnd(){
-        console.log("You have finished the quest");
-    }
-
-    function goToNextState() {
-        $scope.mapStates.currentState = $scope.mapStates.states[$scope.mapStates.currentStateIndex + 1];
-        $scope.mapStates.currentStateIndex ++;
     }
 
     // only one visible region currently - the target - kept the return as an array for future regions...
@@ -155,6 +122,15 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         $scope.map.addLayer($scope.myMarker);
     }
  
+    function questEnd(){
+        console.log("You have finished the quest");
+    }
+
+    function goToNextState() {
+        $scope.mapStates.currentState = $scope.mapStates.states[$scope.mapStates.currentStateIndex + 1];
+        $scope.mapStates.currentStateIndex ++;
+    }
+
 
     // // MODAL
 
@@ -163,7 +139,6 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         animation: 'slide-in-up'
       }).then(function(modal){
         $scope.modal = modal;
-        // $scope.startMapFunctions()
     });
 
     // later will want to pass custom message into the modal
