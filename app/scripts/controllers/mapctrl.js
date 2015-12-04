@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFactory, $stateParams, $state, NavigationFactory, quest) {
+app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFactory, $stateParams, $state, NavigationFactory, quest, $cordovaGeolocation) {
 
     
     // MAPSTATE VARIABLES
@@ -19,6 +19,9 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         }
         return state;
     })
+    $scope.mapStates.regions.map(function(region){
+        region.shapeObject = L.circle(region.locationPoints, region.radius);
+    })
 
     console.log("$scope.mapStates", $scope.mapStates);
     var targetRegion;
@@ -28,28 +31,61 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
     $scope.fellows = [];
 
 
-    // // MAP
-    $scope.map = MapFactory.generateMap(document.getElementById('map'));
-    $scope.map.locate({
-        setView: false, 
-        maxZoom: 20, 
-        watch: true,
-        enableHighAccuracy: true
-    })
+    // MAP VARIABLES
+    // MAP INITIALISATION
 
+    // get user position, set user on map, start watching --- kicks everything off.
+    $cordovaGeolocation.getCurrentPosition({enableHighAccuracy: true, timeout: 10000})
+        .then(function(pos){
+            // generate the map
+            $scope.map = MapFactory.generateMap('map');
+            // need to set a position to start loading tileLayer
+            $scope.me.location = [pos.coords.latitude, pos.coords.longitude];
+            $scope.map.setView($scope.me.location, 15);
+            // show user's position
+            addUserMarker();
+            // set the map watcher
+            startWatchingUser();
+
+            $scope.map.whenReady(function(){
+                setLocationFoundFunctions()
+
+            }, function(err){
+                console.error(err);
+            })
+        })
+    
+    // fit bounds with one target of [lat, lng]
+    function fitBounds(target){
+         var usr = L.latLng($scope.me.location.lat, $scope.me.location.lng);
+         var target = L.latLng(target[0], target[1]);
+         var bounds = L.latLngBounds(usr, target);
+         console.log(usr, target, bounds);
+        $scope.map.fitBounds(bounds)
+    }
+
+    function startWatchingUser() {
+        $scope.map.locate({
+            setView: false, 
+            maxZoom: 20, 
+            watch: true,
+            enableHighAccuracy: true
+        })
+    }
+
+    function setLocationFoundFunctions(){
+        $scope.map.on('locationfound', function (e) {
+                //set user location
+                $scope.me.location = e.latlng;
+                // user marker
+                if (!$scope.myMarker) addUserMarker();
+                else $scope.myMarker.setLatLng($scope.me.location);
+                //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
+                $scope.nsSocket.emit('hereIAm', $scope.me.location);
+                checkRegion()
+        })
+    }
     // EXECUTION LOOP
-    $scope.map.on('locationfound', function (e) {
-            //set user location
-            $scope.me.location = e.latlng;
-            // user marker
-            if (!$scope.myMarker) addUserMarker();
-            else $scope.myMarker.setLatLng($scope.me.location);
-            //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
-            $scope.nsSocket.emit('hereIAm', $scope.me.location);
-            checkRegion()
-    })
-
-
     $scope.$on('modal.hidden', function () {
         // sequential now.
         goToNextState()
@@ -61,19 +97,18 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
 
         // should be visible regions because this will never be the first state (assumption that all other states have VRs) 
         var visibleRegionsArray = getVisibleRegions();
+        
+
+        console.log("visibleRegionsArray", visibleRegionsArray)
+        console.log("targetRegion.locationPoints", $scope.mapStates.currentState.targetRegion.locationPoints)
+        // problems in these two parst.
+
         $scope.map.mapRegionLayer = L.layerGroup(visibleRegionsArray);
-        $scope.map.addLayer([$scope.me.location, visibleRegionsArray[0]]);
+        $scope.map.addLayer($scope.map.mapRegionLayer);
         
         // bound the map...
-        console.log($scope.me.location, $scope.mapStates.currentState.targetRegion.locationPoints, $scope.map);
-        var bounds = [[$scope.me.location.lat, $scope.me.location.lng], $scope.mapStates.currentState.targetRegion.locationPoints]
-        $scope.map.fitBounds(bounds);
+        fitBounds($scope.mapStates.currentState.targetRegion.locationPoints);
     })
-
-    // MAIN FUNCS
-    function questEnd(){
-        console.log("You have finished the quest");
-    }
 
     function checkRegion () {
     // if inside the target region, or target region is undefined.
@@ -91,6 +126,12 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         }
     }
 
+    // MAIN FUNCS
+    function questEnd(){
+        console.log("You have finished the quest");
+    }
+
+
     function goToNextState() {
         $scope.mapStates.currentState = $scope.mapStates.states[$scope.mapStates.currentStateIndex + 1];
         $scope.mapStates.currentStateIndex ++;
@@ -102,7 +143,7 @@ app.controller('MapCtrl', function ($scope, $ionicModal, $ionicPlatform, MapFact
         for (var i =0; i<$scope.mapStates.currentState.visibleRegions.length; i++) {
             for (var j=0; j<$scope.mapStates.regions.length; j++) {
                 if($scope.mapStates.currentState.visibleRegions[i] === $scope.mapStates.regions[j]._id) {
-                    tempRegionArray.push($scope.mapStates.regions[j].locationPoints)
+                    tempRegionArray.push($scope.mapStates.regions[j].shapeObject)
                 }
             }
         }
