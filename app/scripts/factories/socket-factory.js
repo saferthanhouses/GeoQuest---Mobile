@@ -4,7 +4,7 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 
 	return {
 		connectSockets: function(questId, room) {
-			console.log('joining questId', questid, 'and room', room)
+			console.log('joining questId', questId, 'and room', room);
 			// 1. Make a general connection.
 			// 2. Ask to connect to the namespace for this quest using questId as namespace path
 			// 3. Ask to join room
