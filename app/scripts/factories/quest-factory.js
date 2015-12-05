@@ -63,7 +63,7 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
 	            quests.sort(function(a,b) {
 	                return a.distFromMe - b.distFromMe;
 	            });
-	            $rootScope.$broadcast('sorted quests', quests);
+	            return quests;
 	        })
 	        .catch(function(err) {
 	          console.log('Had a problem getting location: ' + err);

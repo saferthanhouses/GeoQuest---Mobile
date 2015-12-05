@@ -1,13 +1,12 @@
 'use strict'
 
-app.controller('PergatoryCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, Session, StartedQuestFactory, ContactsFactory){
+app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, Session, StartedQuestFactory, ContactsFactory){
     
-    // Receive contacts and put them on scope when factory gets them
-    $rootScope.$on('contacts', function(event, contacts) {
+    // Get contacts and put them on scope 
+    ContactsFactory.getAndParseContacts()
+    .then(function(contacts) {
         $scope.contacts = contacts;
-        $scope.$digest();
     });
-    ContactsFactory.getAndParseContacts(); // The factory $rootScope.$broadcasts the contacts
 
     // Get other necessary things on $scope
     $scope.questId = $stateParams.questId; // From user's choice in Home state

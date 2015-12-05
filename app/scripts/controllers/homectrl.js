@@ -1,12 +1,12 @@
 'use strict'
 
-app.controller('HomeCtrl', function($scope, $rootScope, $stateParams, $ionicPlatform, $state, quests, startedQuests, Session, QuestFactory, StartedQuestFactory) {
+app.controller('HomeCtrl', function($scope, $rootScope, $ionicPlatform, quests, startedQuests, Session, QuestFactory, StartedQuestFactory) {
 
     // Get user's location, and sort in ascending order of distance from user
     $ionicPlatform.ready(function() {
-      QuestFactory.sortQuestsByDistanceFromMe(quests);
-      $rootScope.$on('sorted quests', function(event, quests) {
-        $scope.quests = quests;
+      QuestFactory.sortQuestsByDistanceFromMe(quests)
+      .then(function(sortedQuests) {
+        $scope.quests = sortedQuests;
       });
     });
 
@@ -30,4 +30,5 @@ app.controller('HomeCtrl', function($scope, $rootScope, $stateParams, $ionicPlat
     }
         
 });
+
 
