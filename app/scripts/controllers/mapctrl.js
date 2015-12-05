@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatform, MapFactory, $stateParams, quest, SocketFactory, $cordovaGeolocation) {
+app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, quest, SocketFactory, $cordovaGeolocation) {
     var questId = $stateParams.questId; // namespace is same as questId
     var room = $stateParams.room; // room Id was set when user entered 'Pergatory' state
     $scope.startedQuest = $stateParams.startedQuest;
@@ -59,47 +59,19 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
         // Call map function to delete previous markers and lay down new ones
     });
 
-    // MAP INITIALISATION
-    // get user position, set user on map, start watching --- kicks everything off.
-    $cordovaGeolocation.getCurrentPosition({enableHighAccuracy: true, timeout: 10000})
-        .then(function(pos){
-            // generate the map
-            $scope.map = MapFactory.generateMap('map');
-            // need to set a position to start loading tileLayer
-            $scope.me.location = [pos.coords.latitude, pos.coords.longitude];
-            $scope.map.setView($scope.me.location, 15);
-            // show user's position
-            addUserMarker();
-            // set the map watcher
-            setupWatchEvents();
-        })
-    
-    // fit bounds with one target of [lat, lng]
-    function fitBounds(target){
-         var usr = L.latLng($scope.me.location.lat, $scope.me.location.lng);
-         var target = L.latLng(target[0], target[1]);
-         var bounds = L.latLngBounds(usr, target);
-        $scope.map.fitBounds(bounds)
-    }
-
-    function setupWatchEvents(){
-        $scope.map.locate({
-            setView: false, 
-            maxZoom: 20, 
-            watch: true,
-            enableHighAccuracy: true
-        })
-
-        $scope.map.on('locationfound', function (e) {
+    // Set the map.
+    MapFactory.reloadMap().then(function(){
+        
+        // linking the MapFactory with the game logic.
+        MapFactory.map.on('locationfound', function (e) {
                 //set user location
-                $scope.me.location = e.latlng;
+                GeoFactory.position = [e.latlng.lat, e.latlng.lng];
                 // user marker
-                if (!$scope.myMarker) addUserMarker();
-                else $scope.myMarker.setLatLng($scope.me.location);
+                MapFactory.updateUserMarker()           
+                // TODO: socketService
                 //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
                 if ($scope.nsSocket) {
                     $scope.nsSocket.emit('hereIAm', $scope.me.location);   
-                    console.log('saying here i am')
                 }
                 checkRegion();
         });
@@ -109,23 +81,20 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
     $scope.$on('modal.hidden', function () {
         goToNextState() 
         // remove areas from map
-        if($scope.map.mapRegionLayer) {
-            $scope.map.removeLayer($scope.map.mapRegionLayer);
-        }
+        MapFactory.removeRegionLayer();
         // should be visible regions because this will never be the first state 
         // (assumption that all other states have VRs bc at least a target region. 
         var visibleRegionsArray = getVisibleRegions();
-        $scope.map.mapRegionLayer = L.layerGroup(visibleRegionsArray);
-        $scope.map.addLayer($scope.map.mapRegionLayer);
+        MapFactory.addRegionLayer(visibleRegionsArray);
         // bound the map...
-        fitBounds($scope.mapStates.currentState.targetRegion.locationPoints);
+        MapFactory.fitBounds($scope.mapStates.currentState.targetRegion.locationPoints);
     })
 
-
+    // how to call checkRegion?
     function checkRegion () {
         // all states have a target region, even ones without a true 'target', so check their shapeObject
         if ($scope.mapStates.currentState.targetRegion.shapeObject) {
-            if ($scope.mapStates.currentState.targetRegion.shapeObject.getBounds().contains($scope.me.location)){
+            if ($scope.mapStates.currentState.targetRegion.shapeObject.getBounds().contains(GeoFactory.position)){
                 // if the last state we might want to do something
                 if ($scope.mapStates.currentState.name == $scope.mapStates.endingState.name){
                     questEnd();
@@ -150,20 +119,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
             }
         }
         return tempRegionArray; 
-    }
-
-
-    function addUserMarker() {
-        var meIcon = L.icon({
-            iconUrl: 'http://icon-park.com/imagefiles/location_map_pin_red8.png',
-            iconSize:     [38, 38], // size of the icon
-            iconAnchor:   [19, 38], // point of the icon which will correspond to marker's location
-            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-        });
-        //create new marker for my location
-        $scope.myMarker = new L.marker($scope.me.location, {icon: meIcon});
-        //add my location to map
-        $scope.map.addLayer($scope.myMarker);
     }
  
     function questEnd(){
@@ -208,7 +163,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
         }
         return arr;
     };
-
 
 });
 
