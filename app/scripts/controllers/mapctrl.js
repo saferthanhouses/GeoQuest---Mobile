@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, quest, SocketFactory, $cordovaGeolocation) {
+app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, quest, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory) {
 
     // QUEST VARIABLES
     $scope.steps = quest.questSteps;
@@ -36,7 +36,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
 
         // When a fellow makes progress in his/her quest, update user's progress tracker
         $scope.nsSocket.on('progress', function(eventData) {
-            console.log('progress data', eventData);
             // update progress dictionary on scope, which will update progress bars
         });
     }
@@ -51,10 +50,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
             //set user location
             GeoFactory.position = [e.latlng.lat, e.latlng.lng];
             // user marker
-            MapFactory.updateUserMarker();           
+            MapFactory.updateUserMarker();        
             // Tell server where you are so it can tell others in the room
             if ($scope.nsSocket) {
-                $scope.nsSocket.emit('hereIAm', [e.latlng.lat, e.latlng.lng]);   
+                $scope.nsSocket.emit('hereIAm', [e.latlng.lat, e.latlng.lng]);  
             }
             checkRegion();
         });
@@ -68,7 +67,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         // All steps except the first one have a targetCircle
         // If quest is not over, add new targetCircle to map and reset map bounds
         if ($scope.currentStepIndex < $scope.steps.length) {
-            MapFactory.addtargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
+            MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
             // Set the map bounds to client and targetCircle
             MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
         }
@@ -76,12 +75,13 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
 
     // Gets called on 'locationfound'. 
     function checkRegion () {
-        // If there's a targetCirlce, check if we're in it, and if so open modal for this step
-        if ($scope.currentStep.targetRegion) {
-            if ($scope.currentStep.targetRegion.shapeObject.getBounds().contains(GeoFactory.position)){
-                openModal();
-            }
-        // If no targetCirlce, open modal regarless of location (only instance of this is on map load)
+        // If there's a targetCircle, check if we're in it, and if so open modal for this step
+        if ($scope.currentStep.targetCircle.center.length) {
+            var circleCenter = $scope.currentStep.targetCircle.center;
+            var circleRadius = $scope.currentStep.targetCircle.radius;
+            var distanceFromtargetCircleCenter = QuestFactory.getDistanceFromLatLonInMi(circleCenter[0], circleCenter[1], GeoFactory.position[0], GeoFactory.position[1]) * (1.60934 * 1000);
+            if (distanceFromtargetCircleCenter < circleRadius) openModal();
+        // If no targetCircle, open modal regarless of location (only instance of this is on map load)
         } else {
             openModal();
         }
@@ -94,8 +94,15 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     }
 
     function goToNextStep() {
-        $scope.currentStep = $scope.mapSteps[$scope.currentStepIndex + 1];
-        if (++$scope.currentStepIndex > $scope.steps.length) questEnd(); 
+        $scope.currentStep = $scope.steps[$scope.currentStepIndex + 1];
+        if ($scope.startedQuest) $scope.startedQuest = StartedQuestFactory.nextMapStep($scope.startedQuest._id);
+        if (++$scope.currentStepIndex > $scope.steps.length) {
+            if ($scope.startedQuest) {
+                StartedQuestFactory.deleteStartedQuest($scope.startedQuest._id);
+                $scope.startedQuest = null;
+            }
+            questEnd(); 
+        }
     }
 
 

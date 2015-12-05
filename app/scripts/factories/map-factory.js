@@ -44,6 +44,7 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 	 }
 
 	MapFactory.fitBounds = function(target){
+		console.log('fitting bounds');
 	 	var usr = L.latLng(GeoFactory.position);
         var target = L.latLng(target[0], target[1]);
         var bounds = L.latLngBounds(usr, target);
@@ -51,6 +52,7 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 	}
 
 	MapFactory.updateUserMarker = function() {
+		console.log('updating user marker');
 		if (!MapFactory.myMarker) MapFactory.addUserMarker();
         else MapFactory.myMarker.setLatLng(GeoFactory.position);
 	};
@@ -86,6 +88,7 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 			fillColor: '#f03',
 			fillOpacity: 0.5
 		}).addTo(this.map);
+		console.log('adding target circle', this.targetCirle);
 	};
 
 	MapFactory.stopWatch = function(){
