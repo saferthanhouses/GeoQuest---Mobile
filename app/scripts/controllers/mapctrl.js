@@ -75,7 +75,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
                 }
                 checkRegion();
         });
-    }
+    })
 
     // modal is being closed moves to the next state
     $scope.$on('modal.hidden', function () {
