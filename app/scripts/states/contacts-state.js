@@ -2,13 +2,13 @@
 
 app.config(function($stateProvider){
   $stateProvider
-  .state('Pergatory', {
-    url: '/pergatory/:questId',
+  .state('Contacts', {
+    url: '/contacts/:questId',
     templateUrl: 'templates/pergatory.html',
-    controller: 'PergatoryCtrl',
+    controller: 'ContactsCtrl',
     params: {
       questId: null,
-      startedQuestId: null
+      startedQuestId: null, 
     }
   });
 });
