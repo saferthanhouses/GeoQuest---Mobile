@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatform, MapFactory, $stateParams, $state, quest, SocketFactory, $cordovaGeolocation) {
+app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatform, MapFactory, $stateParams, quest, SocketFactory, $cordovaGeolocation) {
     var questId = $stateParams.questId; // namespace is same as questId
     var room = $stateParams.room; // room Id was set when user entered 'Pergatory' state
     $scope.startedQuest = $stateParams.startedQuest;
@@ -17,9 +17,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
 
     // Called when sockets are connected
     function registerSocketListeners() {
-        console.log('hi')
         // All fellow-related logic happend in the SocketsFactory
-        $scope.nsSocket.on('fellowEvent', function(event, eventData) {
+        $scope.nsSocket.on('fellowEvent', function(eventData) {
             console.log('fellowEvent', eventData);
             SocketFactory[eventData.callMethod](eventData, $scope.fellows);
         });
