@@ -7,22 +7,30 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 	var MapFactory = {};
 	MapFactory.map = undefined;
 	MapFactory.mapElem = 'map';
+	MapFactory.fellowMarkers = [];
+	MapFactory.targetCirle;
+
+	var fellowIcon = L.icon({
+        iconUrl: 'http://2.bp.blogspot.com/-fQuA-G2XLw8/VX4TFzAtVeI/AAAAAAAAB-w/-MWtUdnzOAw/s1600/BlueDot64.png',
+        iconSize:     [38, 38], // size of the icon
+        iconAnchor:   [19, 38], // point of the icon which will correspond to marker's location
+        popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
 
 	MapFactory.reloadMap = function(){
 		if (this.map){
-			map.destroy();
+			this.map.destroy();
 		}
 		
 		return GeoFactory.getCurrentPosition()
 			.then(function() { 
-				MapFactory.generateMap()
+				MapFactory.generateMap();
 				return MapFactory.map;
-			})
-	}
+			});
+	};
 
 	MapFactory.generateMap = function() {
 		MapFactory.map = L.map(MapFactory.mapElem, {zoomControl:false});
-		console.log("GeoFactory.position", GeoFactory.position);
 		MapFactory.map.setView(GeoFactory.position, 15);
 		MapFactory.addUserMarker();
 
@@ -45,7 +53,19 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 	MapFactory.updateUserMarker = function() {
 		if (!MapFactory.myMarker) MapFactory.addUserMarker();
         else MapFactory.myMarker.setLatLng(GeoFactory.position);
-	}
+	};
+
+	MapFactory.updateFellowMarkers = function(fellowArr) {
+		this.fellowMarkers.forEach(function(marker) {
+			this.map.removeLayer(marker);
+		});
+		this.fellowMarkers = [];
+		fellowArr.forEach(function(fellow) {
+			var marker = new L.marker(fellow.location, {icon: fellowIcon});
+			this.map.addLayer(marker);
+			this.fellowMarkers.push(marker);
+		});
+	};
 
 	MapFactory.setupWatchEvents = function(){
 		this.map.locate({
@@ -53,23 +73,24 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 			maxZoom: 20, 
             watch: true,
             enableHighAccuracy: true
-        }) 
-	}
+        }) ;
+	};
 
-	MapFactory.removeRegionLayer = function(){
-		if(this.map.mapRegionLayer) {
-            this.map.removeLayer(this.map.mapRegionLayer);
-        }
-	}
+	MapFactory.removeTargetCircle = function(){
+		if(this.targetCirle) this.targetCirle.revoveFrom(this.map);
+	};
 
-	MapFactory.addRegionLayer = function(region){
-		this.map.mapRegionLayer = L.layerGroup(region);
-        this.map.addLayer(this.map.mapRegionLayer);
-	}
+	MapFactory.addTargetCircle = function(coords, radius){
+		this.targetCirle = L.circle(coords, radius, {
+			color: 'blue',
+			fillColor: '#f03',
+			fillOpacity: 0.5
+		}).addTo(this.map);
+	};
 
 	MapFactory.stopWatch = function(){
 		this.map.stopLocate();
-	}
+	};
 
 	MapFactory.addUserMarker = function(){
 	    var meIcon = L.icon({
@@ -78,11 +99,9 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
             iconAnchor:   [19, 38], // point of the icon which will correspond to marker's location
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
-        //create new marker for my location
-        this.myMarker = new L.marker(GeoFactory.position, {icon: meIcon});
-        //add my location to map
-        this.map.addLayer(this.myMarker);
-    }
+        //create new marker for my location and add it to map
+        this.myMarker = new L.marker(GeoFactory.position, {icon: meIcon}).addTo(this.map);
+    };
 
 	return MapFactory;
 

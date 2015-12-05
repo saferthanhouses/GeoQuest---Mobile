@@ -1,8 +1,18 @@
 'use strict'
 
 app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, quest, SocketFactory, $cordovaGeolocation) {
+
+    // QUEST VARIABLES
+    $scope.steps = quest.questSteps;
+    $scope.currentStep = $scope.steps[0];
+    $scope.currentStepIndex = 0;
+    $scope.questNotOver = true;
     $scope.startedQuest = $stateParams.startedQuest; // Defined if creator was logged in when they summoned
     $scope.abandon = SocketFactory.abandon; // To disconnect sockets and go to 'Home' state
+
+    // USER VARIABLES 
+    $scope.me = {};
+    $scope.fellows = [];
 
     // CONNECT SOCKETS AND REGISTER LISTENERS
     $rootScope.$on('sockets connected', function(event, theSockets) {
@@ -12,7 +22,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     });
     SocketFactory.connectSockets($stateParams.questId, $stateParams.room);
 
-    // Called once sockets are connected
     function registerSocketListeners() {
         // So I can differentiate myself from others
         $scope.nsSocket.on('yourId', function(id) {
@@ -22,110 +31,71 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         // All fellow-related logic happens in the SocketsFactory, and a new fellows array is returned
         $scope.nsSocket.on('fellowEvent', function(eventData) {
             $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
-            // Call map function to delete previous markers and lay down new ones for new $scope.fellows
+            MapFactory.updateFellowMarkers($scope.fellows);
         });
 
+        // When a fellow makes progress in his/her quest, update user's progress tracker
         $scope.nsSocket.on('progress', function(eventData) {
+            console.log('progress data', eventData);
             // update progress dictionary on scope, which will update progress bars
         });
     }
 
 
+    // QUEST LOGIC
 
-    // MAPSTATES
-    $scope.mapStates = {
-        states: quest.mapstates,
-        regions: quest.regions,
-    };
-
-    $scope.mapStates.startingState =  $scope.mapStates.states[0],
-    $scope.mapStates.endingState = $scope.mapStates.states[$scope.mapStates.states.length-1],
-    $scope.mapStates.currentState = $scope.mapStates.states[0];
-    $scope.mapStates.currentStateIndex = 0;
-
-    // USER VARIABLES 
-    $scope.me = {};
-    // Comes from socket factory when user enters Map state
-    $rootScope.$on('yourId', function(event ,id) {
-        $scope.me.id = id;
-        console.log('my id is: ', id);
-    });
-    $scope.fellows = [];
-    // Any time there's a 'fellowEvent' registered
-    $rootScope.$on('fellows', function(event, fellowArr) {
-        console.log('fellowEvent', fellowArr);
-        $scope.fellows = fellowArr;
-        // Call map function to delete previous markers and lay down new ones
-    });
-
-    // Set the map.
+    // Set the map (If returning to map state, reload map)
     MapFactory.reloadMap().then(function(){   
         // linking the MapFactory with the game logic.
         MapFactory.map.on('locationfound', function (e) {
-                //set user location
-                GeoFactory.position = [e.latlng.lat, e.latlng.lng];
-                // user marker
-                MapFactory.updateUserMarker()           
-                // TODO: socketService
-                //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
-                if ($scope.nsSocket) {
-                    $scope.nsSocket.emit('hereIAm', $scope.me.location);   
-                }
-                checkRegion();
+            //set user location
+            GeoFactory.position = [e.latlng.lat, e.latlng.lng];
+            // user marker
+            MapFactory.updateUserMarker();           
+            // Tell server where you are so it can tell others in the room
+            if ($scope.nsSocket) {
+                $scope.nsSocket.emit('hereIAm', [e.latlng.lat, e.latlng.lng]);   
+            }
+            checkRegion();
         });
     });
 
-    // modal is being closed moves to the next state
+    // Closing of modal brings us to next step
     $scope.$on('modal.hidden', function () {
-        goToNextState() 
         // remove areas from map
-        MapFactory.removeRegionLayer();
-        // should be visible regions because this will never be the first state 
-        // (assumption that all other states have VRs bc at least a target region. 
-        var visibleRegionsArray = getVisibleRegions();
-        MapFactory.addRegionLayer(visibleRegionsArray);
-        // bound the map...
-        MapFactory.fitBounds($scope.mapStates.currentState.targetRegion.locationPoints);
-    })
+        MapFactory.removeTargetCircle();
+        goToNextStep(); 
+        // All steps except the first one have a targetCircle
+        // If quest is not over, add new targetCircle to map and reset map bounds
+        if ($scope.currentStepIndex < $scope.steps.length) {
+            MapFactory.addtargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
+            // Set the map bounds to client and targetCircle
+            MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
+        }
+    });
 
-    // how to call checkRegion?
+    // Gets called on 'locationfound'. 
     function checkRegion () {
-        // all states have a target region, even ones without a true 'target', so check their shapeObject
-        if ($scope.mapStates.currentState.targetRegion.shapeObject) {
-            if ($scope.mapStates.currentState.targetRegion.shapeObject.getBounds().contains(GeoFactory.position)){
-                // if the last state we might want to do something
-                if ($scope.mapStates.currentState.name == $scope.mapStates.endingState.name){
-                    questEnd();
-                }
-                // otherwise open the modal.
+        // If there's a targetCirlce, check if we're in it, and if so open modal for this step
+        if ($scope.currentStep.targetRegion) {
+            if ($scope.currentStep.targetRegion.shapeObject.getBounds().contains(GeoFactory.position)){
                 openModal();
             }
-        // if there isn't a targetRegion.shapeObject, there isn't a target, so move through the state by opening the modal ... 
+        // If no targetCirlce, open modal regarless of location (only instance of this is on map load)
         } else {
             openModal();
         }
     }
-
-    // only one visible region currently - the target - kept the return as an array for future regions...
-    function getVisibleRegions() {
-        var tempRegionArray = [];
-        for (var i =0; i<$scope.mapStates.currentState.visibleRegions.length; i++) {
-            for (var j=0; j<$scope.mapStates.regions.length; j++) {
-                if($scope.mapStates.currentState.visibleRegions[i] === $scope.mapStates.regions[j]._id) {
-                    tempRegionArray.push($scope.mapStates.regions[j].shapeObject)
-                }
-            }
-        }
-        return tempRegionArray; 
-    }
  
     function questEnd(){
-        console.log("You have finished the quest");
+        $scope.questNotOver = false;
+        // Put up modal with quest.closingInfo.title and quest.closingInfo.text
+        // Maybe make a dynamic controllerCreator function
     }
 
-    function goToNextState() {
-        $scope.mapStates.currentState = $scope.mapStates.states[$scope.mapStates.currentStateIndex + 1];
-        $scope.mapStates.currentStateIndex ++;
+    function goToNextStep() {
+        $scope.currentStep = $scope.mapSteps[$scope.currentStepIndex + 1];
+        if (++$scope.currentStepIndex > $scope.steps.length) questEnd(); 
     }
 
 
@@ -143,7 +113,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
       // will be undefined if the modal hasn't had time to load
       $scope.modal.show();    
       // UserNotificationFactory.notifyUser("new region entered!");
-    };
+    }
 
     $scope.closeModal = function(){
       $scope.modal.hide();
@@ -151,17 +121,25 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
 
 
     // helper funcs
-
     function convertToArr(object) {
         var arr = [];
         for (var key in object) {
             if(object.hasOwnProperty(key)) {
-                arr.push(object[key])
+                arr.push(object[key]);
             }
         }
         return arr;
-    };
+    }
+
+
+
+
+
+
 
 });
+
+
+
 
 
