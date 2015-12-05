@@ -6,25 +6,31 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
     $scope.startedQuest = $stateParams.startedQuest;
     $scope.abandon = SocketFactory.abandon; // To disconnect sockets and go to 'Home' state
 
-    // CONEECT SOCKETS AND REGISTER LISTENERS
+    // CONNECT SOCKETS AND REGISTER LISTENERS
     $rootScope.$on('sockets connected', function(event, theSockets) {
         $scope.mainSocket = theSockets.socket;
         $scope.nsSocket = theSockets.nsSocket;
-        console.log('registering!!!!! socket', $scope.mainSocket, 'nsSocket', $scope.nsSocket);
         registerSocketListeners();
     });
     SocketFactory.connectSockets(questId, room);
 
-    // Called when sockets are connected
+    // Called once sockets are connected
     function registerSocketListeners() {
-        // All fellow-related logic happend in the SocketsFactory
-        $scope.nsSocket.on('fellowEvent', function(eventData) {
-            console.log('fellowEvent', eventData);
-            SocketFactory[eventData.callMethod](eventData, $scope.fellows);
+        // So I can differentiate myself from others
+        $scope.nsSocket.on('yourId', function(id) {
+            $scope.me.id = id;
         });
-        // Also need a listener for when it's time to go to next step,
-        // and for when a region in a step is knocked off
-        // and for when a team makes progress 
+
+        // All fellow-related logic happens in the SocketsFactory, and a new fellows array is returned
+        $scope.nsSocket.on('fellowEvent', function(eventData) {
+            $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
+            // Call map function to delete previous markers and lay down new ones for new $scope.fellows
+            console.log('newFellowArr', $scope.fellows);
+        });
+
+        $scope.nsSocket.on('progress', function(eventData) {
+            // update progress dictionary on scope, which will update progress bars
+        });
     }
 
     // MAPSTATES
@@ -41,12 +47,13 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
     // USER VARIABLES 
     $scope.me = {};
     // Comes from socket factory when user enters Map state
-    $rootScope.$on('yourId', function(id) {
+    $rootScope.$on('yourId', function(event ,id) {
         $scope.me.id = id;
+        console.log('my id is: ', id);
     });
     $scope.fellows = [];
     // Any time there's a 'fellowEvent' registered
-    $rootScope.$on('fellows', function(fellowArr) {
+    $rootScope.$on('fellows', function(event, fellowArr) {
         console.log('fellowEvent', fellowArr);
         $scope.fellows = fellowArr;
         // Call map function to delete previous markers and lay down new ones
@@ -90,10 +97,12 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
                 if (!$scope.myMarker) addUserMarker();
                 else $scope.myMarker.setLatLng($scope.me.location);
                 //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
-                if ($scope.snSocket) $scope.nsSocket.emit('hereIAm', $scope.me.location);
-                console.log('I AM SAYING HERE I AM')
+                if ($scope.nsSocket) {
+                    $scope.nsSocket.emit('hereIAm', $scope.me.location);   
+                    console.log('saying here i am')
+                }
                 checkRegion();
-        })
+        });
     }
 
     // modal is being closed moves to the next state

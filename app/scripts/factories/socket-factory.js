@@ -2,8 +2,6 @@
 
 app.factory('SocketFactory', function($rootScope, $state, ENV) {
 
-	var myId;
-
 	return {
 		connectSockets: function(questId, room) {
 			console.log('joining questId', questId, 'and room', room);
@@ -29,32 +27,25 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 		    socket.emit('joinNs', questId);
 		},
 
-		// When you first show up. You must be able to tell you from others
-		yourId: function(eventData) {
-			myId = eventData.yourId;
-			$rootScope.$broadcast('yourId', eventData.yourId);
-		},
-
 		// When you first show up, you are told who's already there. 
-		yourFellows: function(eventData, fellowArr) {
-			$rootScope.$broadcast('fellows', eventData.fellows);
+		yourFellows: function(eventData) {
+			console.log('your fellows: ', eventData.fellows);
+			return eventData.fellows;
 		},
 
 		// Any time a fellow moves or a new one appears
-		fellowLocation: function(evenData, fellowArr) {
+		fellowLocation: function(eventData, fellowArr, myId) {
 			var fellow = eventData.fellow;
-			console.log('fellow location', fellow);
-            if (fellow.id === myId) return;
+            if (fellow.id === myId) return fellowArr;
             for (var i = 0; i < fellowArr.length; i++) {
                 if(fellow.id === fellowArr[i].id) {
                     fellowArr[i].location = fellow.location;
-                    $rootScope.$broadcast('fellows', fellowArr);
-                    return;
+                    return fellowArr;
                 }
             }
             // If not already have them, include them. 
             fellowArr.push(fellow);
-            $rootScope.$broadcast('fellows', fellowArr);
+            return fellowArr;
 		},
 
 		// When a fellow leaves the game
@@ -62,9 +53,10 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 			var newFellowArr = fellowArr.filter(function(fellow) {
 				return fellow.id !== eventData.deathId;
 			});
-			$rootScope.$broadcast('fellows', newFellowArr);
+			return newFellowArr;
 		},
 
+		// Disconnect from quest and go to 'Home' state
 		abandon: function(nsSocket, socket) {
 			if (nsSocket) nsSocket.disconnect();
 			if (socket) socket.disconnect();
@@ -73,3 +65,4 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 	};
 
 });
+
