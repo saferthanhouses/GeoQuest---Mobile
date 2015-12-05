@@ -1,9 +1,7 @@
 'use strict'
 
 app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, quest, SocketFactory, $cordovaGeolocation) {
-    var questId = $stateParams.questId; // namespace is same as questId
-    var room = $stateParams.room; // room Id was set when user entered 'Pergatory' state
-    $scope.startedQuest = $stateParams.startedQuest;
+    $scope.startedQuest = $stateParams.startedQuest; // Defined if creator was logged in when they summoned
     $scope.abandon = SocketFactory.abandon; // To disconnect sockets and go to 'Home' state
 
     // CONNECT SOCKETS AND REGISTER LISTENERS
@@ -12,7 +10,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         $scope.nsSocket = theSockets.nsSocket;
         registerSocketListeners();
     });
-    SocketFactory.connectSockets(questId, room);
+    SocketFactory.connectSockets($stateParams.questId, $stateParams.room);
 
     // Called once sockets are connected
     function registerSocketListeners() {
@@ -25,13 +23,14 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         $scope.nsSocket.on('fellowEvent', function(eventData) {
             $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
             // Call map function to delete previous markers and lay down new ones for new $scope.fellows
-            console.log('newFellowArr', $scope.fellows);
         });
 
         $scope.nsSocket.on('progress', function(eventData) {
             // update progress dictionary on scope, which will update progress bars
         });
     }
+
+
 
     // MAPSTATES
     $scope.mapStates = {
@@ -60,8 +59,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     });
 
     // Set the map.
-    MapFactory.reloadMap().then(function(){
-        
+    MapFactory.reloadMap().then(function(){   
         // linking the MapFactory with the game logic.
         MapFactory.map.on('locationfound', function (e) {
                 //set user location
@@ -75,7 +73,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
                 }
                 checkRegion();
         });
-    }
+    });
 
     // modal is being closed moves to the next state
     $scope.$on('modal.hidden', function () {
@@ -131,7 +129,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     }
 
 
-    // // MODAL
+    // MODAL
 
     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
         scope: $scope,
