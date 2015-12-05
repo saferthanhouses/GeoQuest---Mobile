@@ -6,15 +6,27 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
     $scope.startedQuest = $stateParams.startedQuest;
     $scope.abandon = SocketFactory.abandon; // To disconnect sockets and go to 'Home' state
 
-    // CONNECT SOCKETS
-    $rootScope.$on('sockets connected', function(event, socketData) {
-        $scope.mainSocket = socketData.socket;
-        $scope.nsSocket = socketData.nsSocket;
+    // CONEECT SOCKETS AND REGISTER LISTENERS
+    $rootScope.$on('sockets connected', function(event, theSockets) {
+        $scope.mainSocket = theSockets.socket;
+        $scope.nsSocket = theSockets.nsSocket;
         console.log('registering!!!!! socket', $scope.mainSocket, 'nsSocket', $scope.nsSocket);
         registerSocketListeners();
     });
-    console.log('connecting sockets')
     SocketFactory.connectSockets(questId, room);
+
+    // Called when sockets are connected
+    function registerSocketListeners() {
+        console.log('hi')
+        // All fellow-related logic happend in the SocketsFactory
+        $scope.nsSocket.on('fellowEvent', function(event, eventData) {
+            console.log('fellowEvent', eventData);
+            SocketFactory[eventData.callMethod](eventData, $scope.fellows);
+        });
+        // Also need a listener for when it's time to go to next step,
+        // and for when a region in a step is knocked off
+        // and for when a team makes progress 
+    }
 
     // MAPSTATES
     $scope.mapStates = {
@@ -29,7 +41,17 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
 
     // USER VARIABLES 
     $scope.me = {};
+    // Comes from socket factory when user enters Map state
+    $rootScope.$on('yourId', function(id) {
+        $scope.me.id = id;
+    });
     $scope.fellows = [];
+    // Any time there's a 'fellowEvent' registered
+    $rootScope.$on('fellows', function(fellowArr) {
+        console.log('fellowEvent', fellowArr);
+        $scope.fellows = fellowArr;
+        // Call map function to delete previous markers and lay down new ones
+    });
 
     // MAP INITIALISATION
     // get user position, set user on map, start watching --- kicks everything off.
@@ -69,8 +91,9 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
                 if (!$scope.myMarker) addUserMarker();
                 else $scope.myMarker.setLatLng($scope.me.location);
                 //emit notification to server (function defined in 'generateSocketListeners') //possibly send $scope.me
-                $scope.nsSocket.emit('hereIAm', $scope.me.location);
-                checkRegion()
+                if ($scope.snSocket) $scope.nsSocket.emit('hereIAm', $scope.me.location);
+                console.log('I AM SAYING HERE I AM')
+                checkRegion();
         })
     }
 
@@ -178,71 +201,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, $ionicPlatf
         return arr;
     };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // SOCKETS
-    
-    function registerSocketListeners() {
-        // When a fellow arrives or moves
-        $scope.nsSocket.on('fellowLocation', function(fellow) {
-            console.log('fellow location', fellow);
-            if (fellow.id === $scope.me.id) return;
-            for (var i=0; i<$scope.fellows.length; i++) {
-                if(fellow.id === $scope.fellows[i].id) {
-                    $scope.fellows[i].location = fellow.location;
-                    $scope.fellows[i].marker.setLatLng($scope.fellows[i].location);
-                    return;
-                }
-            }
-            var newFellow = fellow;
-            newFellow.marker = new L.marker(newFellow.location);
-            $scope.map.addLayer(newFellow.marker);
-            $scope.fellows.push(newFellow);
-        });
-
-        // When a fellow leaves
-        $scope.nsSocket.on('death', function(id) {
-            var index;
-            for (var i=0; i< $scope.fellows.length; i++) {
-                if($scope.fellows[i].id === id) {
-                    $scope.map.removeLayer($scope.fellows[i].marker);
-                    index = i;
-                }
-            }
-            $scope.fellows.splice(index,1);
-        });
-
-        // When you first show up, so you can tell who you are relative to your fellows
-        $scope.nsSocket.on('yourId', function(id) {
-            console.log('my id is: ', id);
-            $scope.me.id = id;
-        });
-
-        // When you first show up, so you know your fellows
-        $scope.nsSocket.on('yourFellows', function (everyone) {
-            for (var i=0; i< everyone.length; i++) {
-                var newFellow = everyone[i];
-                newFellow.marker = new L.marker(newFellow.location);
-                $scope.map.addLayer(newFellow.marker);
-                $scope.fellows.push(newFellow);
-            }
-        });
-    }
-    
 
 });
 

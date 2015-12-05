@@ -12,7 +12,7 @@
 			<button ng-click="summonFellows()" class="btn btn-info">Travel Alone</button>
 		</form>
 		<div class="contacts">
-			<div ng-repeat="contact in contacts | filter:desiredContact" class="contact clearfix">
+			<div ng-click="choose(contact)" ng-repeat="contact in contacts | filter:desiredContact" class="contact clearfix">
 				<span class="name">{{contact.name}} </span>
 				<span class=" pull-right number">{{contact.number}}</span>
 			</div>
