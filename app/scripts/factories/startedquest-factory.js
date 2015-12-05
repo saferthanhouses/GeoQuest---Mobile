@@ -26,7 +26,7 @@ app.factory('StartedQuestFactory', function($http, Session, ENV) {
 			});
 		},
 		// increment startedquest.currentMapState and delete if done
-		nextMapState: function(startedQuestId) {
+		nextMapStep: function(startedQuestId) {
 			return $http.put(ENV.apiEndpoint + 'api/startedQuests/' + startedQuestId)
 			.then(function(res) {
 				var updatedStartedQuest = res.data;

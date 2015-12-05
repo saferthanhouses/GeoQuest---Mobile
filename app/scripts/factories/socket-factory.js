@@ -4,7 +4,6 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 
 	return {
 		connectSockets: function(questId, room) {
-			console.log('joining questId', questId, 'and room', room);
 			// 1. Make a general connection.
 			// 2. Ask to connect to the namespace for this quest using questId as namespace path
 			// 3. Ask to join room
@@ -29,12 +28,13 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 
 		// When you first show up, you are told who's already there. 
 		yourFellows: function(eventData) {
-			console.log('your fellows: ', eventData.fellows);
+			console.log('your fellows: ', eventData);
 			return eventData.fellows;
 		},
 
 		// Any time a fellow moves or a new one appears
 		fellowLocation: function(eventData, fellowArr, myId) {
+			console.log('got a fellow location', eventData);
 			var fellow = eventData.fellow;
             if (fellow.id === myId) return fellowArr;
             for (var i = 0; i < fellowArr.length; i++) {

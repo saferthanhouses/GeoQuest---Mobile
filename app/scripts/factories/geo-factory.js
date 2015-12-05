@@ -14,7 +14,7 @@ app.factory('GeoFactory', function($cordovaGeolocation){
 					console.error(error);
 				})
 		}
-	}
+	};
 
 	return GeoFactory;
-})
+});
