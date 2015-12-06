@@ -14,12 +14,16 @@ body {
   text-align: center;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .form-group input {
   font-size: 16px;
   padding: 5px 0 0 3px;
 }
 
-#map, html, body {
+.full-screen, #map, html, body {
   height: 100%;
 }
 
@@ -79,6 +83,9 @@ div.container {
     min-height: calc(100vh - 50px);
     height: auto;
 }
+div.container.progress-view {
+  height: 100vh;
+}
 
 .container p {
   font-size: 16px;
@@ -98,7 +105,7 @@ div.container {
   margin-bottom: 20px;
 }
 
-/* Pergatory */
+/* Contacts */
 .contact {
   font-size: 16px;
   margin-top: 2px;
@@ -124,7 +131,13 @@ div.container {
   top: 20px;
   left: 20px;
 }
-.go-home a:link, .go-home a:visited, .go-home a:hover, .go-home a:active, .go-home a {
+.view-progress {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+.go-home a:link, .go-home a:visited, .go-home a:hover, .go-home a:active, .go-home a,
+.view-progress a:link, .view-progress a:visited, .view-progress a:hover, .view-progress a:active, .view-progress a {
   color: white;
   font-weight: bold;
   font-family: 'Josefin Sans', sans-serif;

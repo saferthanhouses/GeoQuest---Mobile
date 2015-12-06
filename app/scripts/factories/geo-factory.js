@@ -12,7 +12,7 @@ app.factory('GeoFactory', function($cordovaGeolocation){
 					return GeoFactory.position;
 				}, function(error){
 					console.error(error);
-				})
+				});
 		}
 	};
 
