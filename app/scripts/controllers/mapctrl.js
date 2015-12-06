@@ -6,12 +6,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     // If there's a startedQuest object, use the embedded quest as our quest object
     if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts' state
         $scope.quest = $stateParams.startedQuest.quest;
-    console.log('quest from startedQuest', $scope.quest);
     } else if ($stateParams.quest) { // if was not logged in when went through 'Contacts' state
         $scope.quest = $stateParams.quest;
     } else if (quest) { // if came from external link
         $scope.quest = quest;
-        console.log('quest from resolve', quest);
     }
     $scope.steps = $scope.quest.questSteps; 
     // If there's a startedQuest object, check to see whether we should pick up in the middle
@@ -24,10 +22,16 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         $scope.justStarting = true; // So know to show opening message on first modal
     }
     $scope.questNotOver = true;
+    $scope.viewProgress = false;
 
     // USER VARIABLES 
-    $scope.me = {};
+    $scope.me = {name: $stateParams.myName};
     $scope.fellows = [];
+    $scope.getPercentage = function(stepIndex) {
+        var percentage = (stepIndex / $scope.steps.length) * 100;
+        return percentage + '%';
+    };
+
     // CONNECT SOCKETS AND REGISTER LISTENERS
     $scope.abandon = SocketFactory.abandon; // To disconnect sockets and go to 'Home' state
     $rootScope.$on('sockets connected', function(event, theSockets) {
@@ -69,7 +73,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
             MapFactory.updateUserMarker();        
             // Tell server where you are so it can tell others in the room
             if ($scope.nsSocket) {
-                $scope.nsSocket.emit('hereIAm', [e.latlng.lat, e.latlng.lng]);  
+                $scope.nsSocket.emit('hereIAm', {
+                    location: [e.latlng.lat, e.latlng.lng],
+                    currentStepIndex: $scope.currentStepIndex
+                });
             }
             checkRegion();
         });

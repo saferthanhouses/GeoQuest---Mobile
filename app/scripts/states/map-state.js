@@ -11,7 +11,8 @@ app.config(function($stateProvider){
         room: null,
         quest: null,
         startedQuest: null,
-        questId: null
+        questId: null,
+        myName: null
       },
       resolve: {
         quest: function($stateParams, QuestFactory) {

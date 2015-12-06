@@ -8,6 +8,13 @@ var app = angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'ngAnim
 
 app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal, AuthModal) {
   $ionicPlatform.ready(function() {
+
+    $ionicPlatform.onHardwareBackButton(function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      console.log('oh no ya don\'t');
+    });
+
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if(window.cordova && window.cordova.plugins.Keyboard) {
