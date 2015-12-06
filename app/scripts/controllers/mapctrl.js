@@ -2,14 +2,17 @@
 
 app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory) {
 
+
+    console.log("$scope.startedQuest", $scope.startedQuest);
     // QUEST VARIABLES
     // If there's a startedQuest object, use the embedded quest as our quest object
     if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts'
         $scope.startedQuest = true;
     } 
-    $scope.quest = $stateParams.quest ? $stateParams.quest : $stateParams.startedQuest;
+    $scope.quest = $stateParams.quest ? $stateParams.quest : $stateParams.startedQuest.quest;
+    console.log("$scope.quest", $scope.quest)
     $scope.steps = $scope.quest.questSteps;
-    $scope.startedQuest = $stateParams.startedQuest; 
+    // $scope.startedQuest = $stateParams.startedQuest; 
     // If there's a startedQuest object, check to see whether we should pick up in the middle
     if ($scope.startedQuest && $scope.startedQuest.currentStep > 0) {
         $scope.currentStepIndex = $scope.startedQuest.currentStep; 
@@ -24,7 +27,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     // USER VARIABLES 
     $scope.me = {};
     $scope.fellows = [];
-
+    console.log("startedQuest", $scope.startedQuest)
     // CONNECT SOCKETS AND REGISTER LISTENERS
     $scope.abandon = SocketFactory.abandon; // To disconnect sockets and go to 'Home' state
     $rootScope.$on('sockets connected', function(event, theSockets) {
@@ -33,7 +36,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         console.log('connected', $scope.mainSocket, $scope.nsSocket);
         registerSocketListeners();
     });
-    SocketFactory.connectSockets($stateParams.quest._id, $stateParams.room);
+    SocketFactory.connectSockets($scope.quest._id, $stateParams.room);
 
     function registerSocketListeners() {
         // So I can differentiate myself from others

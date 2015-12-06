@@ -11,7 +11,7 @@ app.controller('HomeCtrl', function($scope, $rootScope, $state, $ionicPlatform, 
     });
 
     $scope.toContacts = function(quest) {
-      $state.gp('Contacts', {quest: quest});
+      $state.go('Contacts', {quest: quest});
     };
 
     // Set other $scope paramerters
