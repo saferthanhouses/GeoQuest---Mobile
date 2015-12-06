@@ -164,8 +164,9 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     function openModal() {
       // will be undefined if the modal hasn't had time to load
+      console.log("currentState.transitionInfo.question", $scope.currentState.transitionInfo.question);
       $scope.modal.show();    
-      // UserNotificationFactory.notifyUser("new region entered!");
+      UserNotificationFactory.notifyUser("new region entered!");
     }
 
     $scope.attemptCloseModal = function(){
@@ -174,6 +175,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             if ($scope.regex.test($scope.currentStep.answer)) { 
                 $scope.modal.hide();
             } else {
+                console.log("wrong answer");
                 // turn button gradually red than back
             }
         } else {
