@@ -175,6 +175,35 @@ div.container {
 	padding:10px;
 }
 
+.questButton {
+  padding-bottom: 10px;
+  width: 100%;
+} 
+
+.questButton:hover {
+  border: 1px solid black;
+  border-radius: 3px;
+}
+
+.menuButton:active {
+  background-color: #068ABF !important
+}
+
+ul.rating li {
+  display: inline;
+  border: 0px;
+  background: none;
+  padding: 5px 10px;
+}
+ul.rating li i {
+  font-size: 30px;
+}
+
+.my-element.ng-hide-add-active,
+.my-element.ng-hide-remove-active {
+  /* the transition is defined in the active class */
+  transition: 1s linear all;
+}
 
 /* THIS IS ALL OF BOOTSTRAP */
 /*!

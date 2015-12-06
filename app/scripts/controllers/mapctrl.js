@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory) {
+app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory) {
 
 
     console.log("$scope.startedQuest", $scope.startedQuest);
@@ -180,6 +180,15 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
             $scope.modal.hide();
         }
     };
+
+    // REVIEW
+    $scope.isReviewSubmitted = false;
+    $scope.submitReview = function(){
+        $scope.isReviewSubmitted = true;
+        console.log("review submitted");
+        $timeout(function(){ $scope.hideReviewBox = true; }, 2000)
+    }
+
 
 });
 

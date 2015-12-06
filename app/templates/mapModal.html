@@ -14,9 +14,18 @@
 	<input ng-show="currentState.transitionInfo.question.length && !justStarting && questNotOver" type="text" ng-model="answer">
 
 	<!-- Closing info: show when quest ends -->
-	<h2 ng-show="!questNotOver">{{currentStep.closingInfo.title}}</h2>
-	<p ng-show="!questNotOver">{{currentStep.closingInfo.text}}</p>
+	<h2 ng-show="questNotOver">{{currentStep.closingInfo.title}}</h2>
+	<p ng-show="questNotOver">{{currentStep.closingInfo.text}}</p>
+	<div ng-show="questNotOver && !hideReviewBox">
+		<p>Review This Quest:</p>
+		<rating ng-model="rate" max="5" ng-change="submitReview()"></rating>
+		<div class="submitReview()" ng-show="isReviewSubmitted">Thanks For Your Input :)</div>
+	</div>
+    <button ng-show="questNotOver" ui-sref="Home" class="btn btn-success">Stay & Explore</button>
+    <button ng-show="questNotOver" class="btn btn-success">Choose Another Quest</button>
+
   <button class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
+
   	Gottit
   </button>
 </ion-content>
