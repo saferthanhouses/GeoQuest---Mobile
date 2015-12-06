@@ -22,7 +22,6 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal,
       var arr = externalUrl.split('_');
       var ns = arr[1];
       var room = arr[2];
-      console.log('in app.run: ns', ns, 'room', room);
       window.localStorage.clear();
       $state.go('Map', {questId: ns, room: room});
     } else {
