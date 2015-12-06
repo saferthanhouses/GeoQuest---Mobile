@@ -18,8 +18,9 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
     });
 
 	MapFactory.reloadMap = function(){
-		if (this.map){
-			this.map.destroy();
+		if (MapFactory.map){
+			console.log('aboutto destroymapfacory.map', MapFactory.map);
+			MapFactory.map.destroy();
 		}
 		
 		return GeoFactory.getCurrentPosition()
@@ -44,33 +45,31 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 	 }
 
 	MapFactory.fitBounds = function(target){
-		console.log('fitting bounds');
 	 	var usr = L.latLng(GeoFactory.position);
         var target = L.latLng(target[0], target[1]);
         var bounds = L.latLngBounds(usr, target);
-        this.map.fitBounds(bounds);
+        MapFactory.map.fitBounds(bounds);
 	}
 
 	MapFactory.updateUserMarker = function() {
-		console.log('updating user marker');
 		if (!MapFactory.myMarker) MapFactory.addUserMarker();
         else MapFactory.myMarker.setLatLng(GeoFactory.position);
 	};
 
 	MapFactory.updateFellowMarkers = function(fellowArr) {
-		this.fellowMarkers.forEach(function(marker) {
-			this.map.removeLayer(marker);
+		MapFactory.fellowMarkers.forEach(function(marker) {
+			MapFactory.map.removeLayer(marker);
 		});
-		this.fellowMarkers = [];
+		MapFactory.fellowMarkers = [];
 		fellowArr.forEach(function(fellow) {
 			var marker = new L.marker(fellow.location, {icon: fellowIcon});
-			this.map.addLayer(marker);
-			this.fellowMarkers.push(marker);
+			MapFactory.map.addLayer(marker);
+			MapFactory.fellowMarkers.push(marker);
 		});
 	};
 
 	MapFactory.setupWatchEvents = function(){
-		this.map.locate({
+		MapFactory.map.locate({
 			setView: false,
 			maxZoom: 20, 
             watch: true,
@@ -79,20 +78,19 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 	};
 
 	MapFactory.removeTargetCircle = function(){
-		if(this.targetCirle) this.targetCirle.revoveFrom(this.map);
+		if(MapFactory.targetCirle) MapFactory.targetCirle.revoveFrom(MapFactory.map);
 	};
 
 	MapFactory.addTargetCircle = function(coords, radius){
-		this.targetCirle = L.circle(coords, radius, {
+		MapFactory.targetCirle = L.circle(coords, radius, {
 			color: 'blue',
 			fillColor: '#f03',
 			fillOpacity: 0.5
-		}).addTo(this.map);
-		console.log('adding target circle', this.targetCirle);
+		}).addTo(MapFactory.map);
 	};
 
 	MapFactory.stopWatch = function(){
-		this.map.stopLocate();
+		MapFactory.map.stopLocate();
 	};
 
 	MapFactory.addUserMarker = function(){
@@ -103,7 +101,7 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
         //create new marker for my location and add it to map
-        this.myMarker = new L.marker(GeoFactory.position, {icon: meIcon}).addTo(this.map);
+        MapFactory.myMarker = new L.marker(GeoFactory.position, {icon: meIcon}).addTo(MapFactory.map);
     };
 
 	return MapFactory;

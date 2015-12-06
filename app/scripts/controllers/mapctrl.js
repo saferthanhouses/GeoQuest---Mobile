@@ -18,6 +18,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     $rootScope.$on('sockets connected', function(event, theSockets) {
         $scope.mainSocket = theSockets.socket;
         $scope.nsSocket = theSockets.nsSocket;
+        console.log('connected', $scope.mainSocket, $scope.nsSocket);
         registerSocketListeners();
     });
     SocketFactory.connectSockets($stateParams.questId, $stateParams.room);
@@ -90,7 +91,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     function questEnd(){
         $scope.questNotOver = false;
         // Put up modal with quest.closingInfo.title and quest.closingInfo.text
-        // Maybe make a dynamic controllerCreator function
+            // modal has option to stay in room or go view quests
+        // Maybe make a dynamic modalCreator function
     }
 
     function goToNextStep() {
