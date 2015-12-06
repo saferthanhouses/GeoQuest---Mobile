@@ -8,9 +8,17 @@ app.config(function($stateProvider){
        controller: 'MapCtrl',
        templateUrl: 'templates/map.html',
        params: {
-          room: null,
-          quest: null,
-          startedQuest: null
+        room: null,
+        quest: null,
+        startedQuest: null,
+        questId: null
+      },
+      resolve: {
+        quest: function($stateParams, QuestFactory) {
+          if ($stateParams.questId) {
+            return QuestFactory.getOneQuest($stateParams.questId);
+          }
         }
+      }
    });
 });
