@@ -12,7 +12,7 @@
 		</form>
 
 		<div class="quest" ng-repeat="quest in quests | filter:desiredQuest">
-			<p><a ui-sref="Contacts({questId: quest._id})">{{quest.name}}</a></p>
+			<p><a ng-click="toContacts(quest)">{{quest.name}}</a></p>
 			<p>Starts {{quest.distFromMe}} Miles From You</p>
 			<p>Covers {{quest.distance}} Miles</p>
 			<p>Takes Roughly {{quest.time}} Hours</p>

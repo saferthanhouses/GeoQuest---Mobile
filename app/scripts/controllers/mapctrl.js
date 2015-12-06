@@ -1,11 +1,15 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, quest, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory) {
+app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory) {
 
     // QUEST VARIABLES
-    $scope.quest = quest;
-    $scope.steps = quest.questSteps;
-    $scope.startedQuest = $stateParams.startedQuest; // Defined if creator was logged in when they summoned
+    // If there's a startedQuest object, use the embedded quest as our quest object
+    if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts'
+        $scope.startedQuest = true;
+    } 
+    $scope.quest = $stateParams.quest ? $stateParams.quest : $stateParams.startedQuest;
+    $scope.steps = $scope.quest.questSteps;
+    $scope.startedQuest = $stateParams.startedQuest; 
     // If there's a startedQuest object, check to see whether we should pick up in the middle
     if ($scope.startedQuest && $scope.startedQuest.currentStep > 0) {
         $scope.currentStepIndex = $scope.startedQuest.currentStep; 
@@ -29,7 +33,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         console.log('connected', $scope.mainSocket, $scope.nsSocket);
         registerSocketListeners();
     });
-    SocketFactory.connectSockets($stateParams.questId, $stateParams.room);
+    SocketFactory.connectSockets($stateParams.quest._id, $stateParams.room);
 
     function registerSocketListeners() {
         // So I can differentiate myself from others

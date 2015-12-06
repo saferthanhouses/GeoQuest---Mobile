@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, Session, StartedQuestFactory, ContactsFactory){
+app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, AuthService, StartedQuestFactory, ContactsFactory){
     
     // Get contacts and put them on scope 
     ContactsFactory.getAndParseContacts()
@@ -9,27 +9,28 @@ app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state
     });
 
     // Get other necessary things on $scope
-    $scope.questId = $stateParams.questId; // From user's choice in Home state
-    $scope.startedQuestId = $stateParams.startedQuestId; // Defined if user got here via a startedQuest link
+    $scope.quest = $stateParams.quest; // From user's choice in Home state
     $scope.room = Date.now(); // This will be the roomId that the user asks server to join
-
-    $scope.user = Session.user;  // Get user on scope
+    AuthService.getLoggedInUser()
+    .then(function(loggedInUser) {
+        $scope.user = loggedInUser;
+    });
     $scope.abandon = SocketFactory.abandon; // For going back to Home state
     $scope.chosenFellows = []; // Array gets populated as user selects contacts
 
     // Registers method to send a text to each chosen contact, then go to map state. 
     $scope.summonFellows = function() {
-        ContactsFactory.summonFellows($scope.chosenFellows, $scope.questId, $scope.room);
+        ContactsFactory.summonFellows($scope.chosenFellows, $scope.quest._id, $scope.room);
         $scope.chosenFellows = [];
         $('.chosen').removeClass('chosen');
         // Save the quest instance as a startedQuest in the DB
         if ($scope.user) {
-            StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.questId, $scope.room)
+            StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.quest, $scope.room)
             .then(function(startedQuest) {
-                $state.go('Map', {questId: $scope.questId, room: $scope.room, startedQuest: startedQuest});
+                $state.go('Map', {room: $scope.room, startedQuest: startedQuest});
             });
         } else {
-            $state.go('Map', {questId: $scope.questId, room: $scope.room});        
+            $state.go('Map', {quest: $scope.quest, room: $scope.room});        
         }
     };
 
