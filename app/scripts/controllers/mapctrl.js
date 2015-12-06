@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory) {
+app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory) {
 
 
     console.log("$scope.startedQuest", $scope.startedQuest);
@@ -90,6 +90,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     // Closing of modal brings us to next step
     $scope.$on('modal.hidden', function () {
         // remove areas from map
+        console.log("modal hidden");
         MapFactory.removeTargetCircle();
         if (!$scope.questNotOver) return; //If quest is done, no need to continue 
         goToNextStep(); 
@@ -108,9 +109,9 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         } else {
         // If that wasn't the opening modal, we now move to the next questStep      
             $scope.currentStep = $scope.steps[$scope.currentStepIndex + 1];
-            setRegex();
             updateStartedQuest();
         }
+        console.log("$scope.justStarting", $scope.justStarting)
         // If quest is finished, delete startedQuest object, and call quest end modal
         if (++$scope.currentStepIndex > $scope.steps.length) {
             prepareForEnd();
@@ -129,8 +130,11 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     // If a question must be ansered to pass this new step, set the regex
     function setRegex() {
-        if ($scope.currentStep.question.length) {
-            $scope.regex = new RegExp('/' + $scope.currentStep.question + '/', 'i');
+        // console.log("inside setReg", $scope.currentStep.transitionInfo.question.length)
+        if ($scope.currentStep.transitionInfo.question) {
+            console.log("inside setReg: there is a ", $scope.currentStep.transitionInfo)
+            $scope.regex = new RegExp($scope.currentStep.transitionInfo.answer, 'i');
+            console.log("regex", $scope.regex)
         }
     }
 
@@ -163,16 +167,20 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     });
 
     function openModal() {
-      // will be undefined if the modal hasn't had time to load
-      console.log("currentState.transitionInfo.question", $scope.currentState.transitionInfo.question);
       $scope.modal.show();    
-      UserNotificationFactory.notifyUser("new region entered!");
+      // UserNotificationFactory.notifyUser("new region entered!");
     }
 
     $scope.attemptCloseModal = function(){
         // If there's a question to answer, only close modal if answer is correct
-        if (!$scope.justStarting && $scope.currentStep.question.length) {
-            if ($scope.regex.test($scope.currentStep.answer)) { 
+        if (!$scope.justStarting && $scope.currentStep.transitionInfo.question.length) {
+          // will be undefined if the modal hasn't had time to load
+          // need to have the regex defined before we close the modal.
+          setRegex();
+              if ($scope.currentStep.transitionInfo.question.length) {
+                  console.log("currentStep.transitionInfo.question", $scope.currentStep.transitionInfo.question);
+              }
+            if ($scope.regex.test($scope.currentStep.transitionInfo.answer)) { 
                 $scope.modal.hide();
             } else {
                 console.log("wrong answer");
@@ -185,12 +193,16 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     // REVIEW
     $scope.isReviewSubmitted = false;
+
     $scope.submitReview = function(){
         $scope.isReviewSubmitted = true;
-        console.log("review submitted");
-        $timeout(function(){ $scope.hideReviewBox = true; }, 2000)
+        QuestFactory.addReview(quest._id, $scope.rating)
+            .then(function(){
+                $scope.isReviewSubmitted = false;
+                $scope.reviewIsSubmitted = true;
+                $timeout(function(){ $scope.hideReviewBox = true; }, 2000)
+            })
     }
-
 
 });
 

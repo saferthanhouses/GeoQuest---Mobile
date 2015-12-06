@@ -10,19 +10,20 @@
 	<h2 ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.title}}</h2>
 	<p ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.text}}</p>
 	<!-- Show only when an answer is required to move to next step -->
-	<p ng-show="currentState.transitionInfo.question.length && !justStarting && questNotOver">{{currentState.transitionInfo.question}}</p>
-	<input ng-show="currentState.transitionInfo.question.length && !justStarting && questNotOver" type="text" ng-model="answer">
+	<p ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver">{{currentStep.transitionInfo.question}}</p>
+	<input ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver" type="text" ng-model="answer">
 
 	<!-- Closing info: show when quest ends -->
-	<h2 ng-show="questNotOver">{{currentStep.closingInfo.title}}</h2>
-	<p ng-show="questNotOver">{{currentStep.closingInfo.text}}</p>
-	<div ng-show="questNotOver && !hideReviewBox">
+	<h2 ng-show="!questNotOver">{{currentStep.closingInfo.title}}</h2>
+	<p ng-show="!questNotOver">{{currentStep.closingInfo.text}}</p>
+	<div ng-show="!questNotOver && !hideReviewBox">
 		<p>Review This Quest:</p>
 		<rating ng-model="rate" max="5" ng-change="submitReview()"></rating>
-		<div class="submitReview()" ng-show="isReviewSubmitted">Thanks For Your Input :)</div>
+		<div class="" ng-show="isReviewSubmitted">Submitting review ... </div>
+		<div class="" ng-show="reviewIsSubmitted">Thanks for the review :) </div>
 	</div>
-    <button ng-show="questNotOver" ui-sref="Home" class="btn btn-success">Stay & Explore</button>
-    <button ng-show="questNotOver" class="btn btn-success">Choose Another Quest</button>
+    <button ng-show="!questNotOver" ui-sref="Home" class="btn btn-success">Stay & Explore</button>
+    <button ng-show="!questNotOver" ng-click="attemptCloseModal()" class="btn btn-success">Choose Another Quest</button>
 
   <button class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
 

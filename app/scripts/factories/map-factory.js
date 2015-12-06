@@ -19,6 +19,7 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 
 	MapFactory.reloadMap = function(){
 		if (MapFactory.map){
+			console.log("inside map reload destroy map", MapFactory.map);
 			if (MapFactory.targetCirle) MapFactory.removeTargetCircle();
 			MapFactory.map.remove();
 		}
