@@ -17,8 +17,8 @@ app.factory('StartedQuestFactory', function($http, Session, ENV) {
 			});
 		},
 		// add started quest for a user. Called when user sends text
-		saveStartedQuestForUser: function(userId, questId, roomId) {
-			return $http.post(ENV.apiEndpoint + 'api/users/' + userId + '/startedQuests/', {quest: questId, room: roomId})
+		saveStartedQuestForUser: function(userId, quest, roomId) {
+			return $http.post(ENV.apiEndpoint + 'api/users/' + userId + '/startedQuests/', {quest: quest, room: roomId})
 			.then(function(res) {
 				var newStartedQuest = res.data;
 				startedQuestCache.push(newStartedQuest);

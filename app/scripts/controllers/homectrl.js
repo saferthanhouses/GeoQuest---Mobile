@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('HomeCtrl', function($scope, $rootScope, $ionicPlatform, quests, startedQuests, Session, QuestFactory, StartedQuestFactory) {
+app.controller('HomeCtrl', function($scope, $rootScope, $state, $ionicPlatform, quests, startedQuests, AuthService, QuestFactory, StartedQuestFactory) {
 
     // Get user's location, and sort in ascending order of distance from user
     $ionicPlatform.ready(function() {
@@ -10,9 +10,16 @@ app.controller('HomeCtrl', function($scope, $rootScope, $ionicPlatform, quests, 
       });
     });
 
+    $scope.toContacts = function(quest) {
+      $state.gp('Contacts', {quest: quest});
+    };
+
     // Set other $scope paramerters
     $scope.home = true;
-    $scope.user = Session.user;
+    AuthService.getLoggedInUser()
+    .then(function(loggedInUser) {
+        $scope.user = loggedInUser;
+    });
     $scope.startedQuests = startedQuests;
 
     // When user logs in, get them on scope and their startedQuests on scope

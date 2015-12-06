@@ -3,12 +3,11 @@
 app.config(function($stateProvider){
   $stateProvider
   .state('Contacts', {
-    url: '/contacts/:questId',
+    url: '/contacts',
     templateUrl: 'templates/contacts.html',
     controller: 'ContactsCtrl',
     params: {
-      questId: null,
-      startedQuestId: null, 
+      quest: null
     }
   });
 });
