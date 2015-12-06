@@ -3,13 +3,20 @@
   <h1 class="modalTitle">Region Information</h1>
 </ion-header-bar>
 <ion-content class="modalContent">
-	<h2 ng-show="questNotOver">{{currentStep.transitionInfo.title}}</h2>
-	<p ng-show="questNotOver">{{currentStep.transitionInfo.text}}</p>
-	<p ng-show="currentState.transitionInfo.question">{{currentState.transitionInfo.question}}</p>
-	<input ng-show="currentState.transitionInfo.question" type="text" ng-model="answer">
+	<!-- Opening info: show when quest begins -->
+	<h2 ng-show="justStarting">{{quest.openingInfo.title}}</h2>
+	<p ng-show="justStarting">{{quest.openingInfo.text}}</p>
+
+	<h2 ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.title}}</h2>
+	<p ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.text}}</p>
+	<!-- Show only when an answer is required to move to next step -->
+	<p ng-show="currentState.transitionInfo.question.length && !justStarting && questNotOver">{{currentState.transitionInfo.question}}</p>
+	<input ng-show="currentState.transitionInfo.question.length && !justStarting && questNotOver" type="text" ng-model="answer">
+
+	<!-- Closing info: show when quest ends -->
 	<h2 ng-show="!questNotOver">{{currentStep.closingInfo.title}}</h2>
-	<h2 ng-show="!questNotOver">{{currentStep.closingInfo.text}}</h2>
-  <button class="button button-full button-energized closeModalButton" ng-click="closeModal()">
+	<p ng-show="!questNotOver">{{currentStep.closingInfo.text}}</p>
+  <button class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
   	Gottit
   </button>
 </ion-content>

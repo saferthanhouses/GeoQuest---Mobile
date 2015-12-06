@@ -19,10 +19,9 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 
 	MapFactory.reloadMap = function(){
 		if (MapFactory.map){
-			console.log('aboutto destroymapfacory.map', MapFactory.map);
-			MapFactory.map.destroy();
+			if (MapFactory.targetCirle) MapFactory.removeTargetCircle();
+			MapFactory.map.remove();
 		}
-		
 		return GeoFactory.getCurrentPosition()
 			.then(function() { 
 				MapFactory.generateMap();
@@ -49,7 +48,7 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
         var target = L.latLng(target[0], target[1]);
         var bounds = L.latLngBounds(usr, target);
         MapFactory.map.fitBounds(bounds);
-	}
+	};
 
 	MapFactory.updateUserMarker = function() {
 		if (!MapFactory.myMarker) MapFactory.addUserMarker();
@@ -78,13 +77,15 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 	};
 
 	MapFactory.removeTargetCircle = function(){
-		if(MapFactory.targetCirle) MapFactory.targetCirle.revoveFrom(MapFactory.map);
+		if(MapFactory.targetCirle) {
+			MapFactory.map.removeLayer(MapFactory.targetCirle);
+		} 
 	};
 
 	MapFactory.addTargetCircle = function(coords, radius){
 		MapFactory.targetCirle = L.circle(coords, radius, {
-			color: 'blue',
-			fillColor: '#f03',
+			color: '#2a9e56',
+			fillColor: '#2a9e56',
 			fillOpacity: 0.5
 		}).addTo(MapFactory.map);
 	};
