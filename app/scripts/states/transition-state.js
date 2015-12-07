@@ -11,6 +11,13 @@ app.config(function($stateProvider) {
 	        room: null,
 	        questId: null,
 	        quest: null
+        },
+        resolve: {
+        	resolvedQuest: function(QuestFactory, $stateParams) {
+        		if ($stateParams.questId) {
+	        		return QuestFactory.getOneQuest($stateParams.questId);
+        		}
+        	}
         }
 	});
 });

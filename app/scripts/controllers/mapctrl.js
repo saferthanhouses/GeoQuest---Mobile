@@ -4,25 +4,25 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
 
     // QUEST VARIABLES
     console.log('$stateParams in map', $stateParams);
-    console.log('quest in map', quest)
     // If there's a startedQuest object, use the embedded quest as our quest object
     if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts' state
         $scope.quest = $stateParams.startedQuest.quest;
-    } else if ($stateParams.quest) { // if was not logged in when went through 'Contacts' state
-        $scope.quest = $stateParams.quest;
-    } else if (quest) { // if came from external link
+        var room = $stateParams.startedQuest.room;
+        // If this starteQuest is partially finished, pick up where user left off
+        if ($stateParams.startedQuest.currentStepIndex > 0) {
+            $scope.currentStepIndex = $scope.quest.currentStepIndex; 
+        } else {
+            $scope.currentStepIndex = -1; // Incremented to 0 when first modal closes
+        }
+    } else if ($stateParams.quest) { // if user did not log in at 'Transition' state
         $scope.quest = quest;
-    }
-    $scope.steps = $scope.quest.questSteps; 
-    // If there's a startedQuest object, check to see whether we should pick up in the middle
-    if ($stateParams.startedQuest && $stateParams.startedQuest.currentStep > 0) {
-        $scope.currentStepIndex = $scope.quest.currentStep; 
-        $scope.currentStep = $scope.steps[$scope.currentStepIndex];
-    } else {
-        $scope.currentStep = $scope.steps[0];
+        var room = $stateParams.room;
         $scope.currentStepIndex = -1; // Incremented to 0 when first modal closes
-        $scope.justStarting = true; // So know to show opening message on first modal
-    }
+    } 
+    $scope.steps = $scope.quest.questSteps;
+    // Set currentStep if the currentStep index is 0 or greater (true once first modal is closed)
+    if ($scope.currentStepIndex >= 0) $scope.currentStep = $scope.steps[$scope.currentStepIndex]; 
+
     $scope.questNotOver = true;
     $scope.viewProgress = false;
 
@@ -42,6 +42,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         console.log('connected', $scope.mainSocket, $scope.nsSocket);
         registerSocketListeners();
     });
+    var room = $stateParams.startedQuest ? $stateParams.startedQuest.room : $stateParams.room;
+    console.log('rooooom', room);
     SocketFactory.connectSockets($scope.quest._id, $stateParams.room);
 
     function registerSocketListeners() {
@@ -49,7 +51,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         $scope.nsSocket.on('yourId', function(id) {
             $scope.me.id = id;
         });
-
         // All fellow-related logic happens in the SocketsFactory, and a new fellows array is returned
         $scope.nsSocket.on('fellowEvent', function(eventData) {
             $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
@@ -111,6 +112,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     function goToNextStep() {
         if ($scope.justStarting) {
             $scope.justStarting = false;
+            $scope.currentStep = $scope.steps[++$scope.currentStepIndex];
         } else {
         // If that wasn't the opening modal, we now move to the next questStep      
             $scope.currentStep = $scope.steps[$scope.currentStepIndex + 1];
