@@ -24,6 +24,9 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     }
     $scope.questNotOver = true;
 
+    $scope.form ={}
+    $scope.form.answer = "";
+
     // USER VARIABLES 
     $scope.me = {};
     $scope.fellows = [];
@@ -90,23 +93,28 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     // Closing of modal brings us to next step
     $scope.$on('modal.hidden', function () {
         // remove areas from map
-        console.log("modal hidden");
-        MapFactory.removeTargetCircle();
-        if ($scope.questNotOver === false) {
-            console.log("quest is over");
-            return; //If quest is done, no need to continue 
-        }
-        goToNextStep(); 
+        $timeout(function(){ 
+            console.log("modal hidden");
+
+            // $timeout(function(){
+                MapFactory.removeTargetCircle();
+                if ($scope.questNotOver === false) {
+                    console.log("quest is over");
+                    return; //If quest is done, no need to continue 
+                }
+                goToNextStep(); 
 
 
 
-        // All steps except the first one have a targetCircle
-        // If quest is not over, add new targetCircle to map and reset map bounds
-        if ($scope.currentStepIndex <= $scope.steps.length - 1) {
-            MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
-            // Set the map bounds to client and targetCircle
-            MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
-        }
+                // All steps except the first one have a targetCircle
+                // If quest is not over, add new targetCircle to map and reset map bounds
+                if ($scope.currentStepIndex <= $scope.steps.length - 1) {
+                    MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
+                    // Set the map bounds to client and targetCircle
+                    MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
+                }
+        }, 100);
+
     });
 
     function goToNextStep() {
@@ -185,15 +193,15 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     }
 
     $scope.attemptCloseModal = function(){
+
+        console.log("$scope", $scope);
         // If there's a question to answer, only close modal if answer is correct
-        if (!$scope.justStarting && $scope.currentStep.transitionInfo.question.length) {
+        if ($scope.questNotOver && (!$scope.justStarting && $scope.currentStep.transitionInfo.question.length)) {
           // will be undefined if the modal hasn't had time to load
           // need to have the regex defined before we close the modal.
-          setRegex();
-              if ($scope.currentStep.transitionInfo.question.length) {
-                  console.log("currentStep.transitionInfo.question", $scope.currentStep.transitionInfo.question);
-              }
-            if ($scope.regex.test($scope.currentStep.transitionInfo.answer)) { 
+            setRegex();
+            if ($scope.regex.test($scope.form.answer)) { 
+                console.log("tesst passed");
                 $scope.modal.hide();
             } else {
                 console.log("wrong answer");
@@ -203,6 +211,11 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             $scope.modal.hide();
         }
     };
+
+    $scope.timeToGoHome = function(){
+        $scope.modal.hide()
+        SocketFactory.abandon();
+    }
 
     // REVIEW
     $scope.isReviewSubmitted = false;

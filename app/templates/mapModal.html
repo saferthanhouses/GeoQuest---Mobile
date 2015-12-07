@@ -11,7 +11,7 @@
 	<p ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.text}}</p>
 	<!-- Show only when an answer is required to move to next step -->
 	<p ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver">{{currentStep.transitionInfo.question}}</p>
-	<input ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver" type="text" ng-model="answer">
+	<input ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver" type="text" ng-model="form.answer">
 
 	<!-- Closing info: show when quest ends -->
 	<h2 ng-show="!questNotOver">{{currentStep.closingInfo.title}}</h2>
@@ -22,8 +22,8 @@
 		<div class="" ng-show="isReviewSubmitted">Submitting review ... </div>
 		<div class="" ng-show="reviewIsSubmitted">Thanks for the review :) </div>
 	</div>
-    <button ng-show="!questNotOver" ui-sref="Home()" class="btn btn-success">Stay & Explore</button>
-    <button ng-show="!questNotOver" ng-click="attemptCloseModal()" class="btn btn-success">Choose Another Quest</button>
+    <button ng-show="!questNotOver" ng-click="timeToGoHome();" class="btn btn-success">Choose Another Quest</button>
+    <button ng-show="!questNotOver" ng-click="attemptCloseModal()" class="btn btn-success">Stay And Explore</button>
 
   <button class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
 

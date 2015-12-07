@@ -38,7 +38,14 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
 	};
 
   QuestFactory.addReview = function(questId, review){
-    return $http.put(ENV.apiEndpoint + 'api/quests/' + questId + '/review', {reviewToAdd: review});
+    return $http({
+      method: 'PUT',
+      url: ENV.apiEndpoint + 'api/quests/' + questId + '/review', review,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: { reviewToAdd: review }      
+    })
   }
 
 	QuestFactory.sortQuestsByDistanceFromMe = function(quests) {

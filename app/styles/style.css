@@ -180,12 +180,14 @@ div.container {
   width: 100%;
 } 
 
-.questButton:hover {
+.questButton:hover,
+.questButton:active,
+.questButton:focus {
   border: 1px solid black;
   border-radius: 3px;
 }
 
-.menuButton:active {
+.menuButtonAactive {
   background-color: #068ABF !important
 }
 
