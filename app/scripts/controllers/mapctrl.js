@@ -105,7 +105,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             var circleCenter = $scope.currentStep.targetCircle.center;
             var circleRadius = $scope.currentStep.targetCircle.radius;
             var distanceFromtargetCircleCenter = QuestFactory.getDistanceFromLatLonInMi(circleCenter[0], circleCenter[1], GeoFactory.position[0], GeoFactory.position[1]) * (1.60934 * 1000);
-            if (distanceFromtargetCircleCenter < circleRadius) {openModal();
+            if (distanceFromtargetCircleCenter < circleRadius) openModal();
         }
     }
 
@@ -113,7 +113,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $scope.$on('modal.hidden', function () {
         // remove areas from map
         $timeout(function(){ 
-            modalOpen = false;
+            $scope.modalOpen = false;
             console.log("modal hidden");
 
             // $timeout(function(){
@@ -200,9 +200,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         animation: 'slide-in-up',
         backdropClickToClose: true,
         hardwareBackButtonClose: false
-      }).then(function(modal){
+    }).then(function(modal){
         $scope.winModal = modal;
     });
+ 
 
     function openModal() {
         console.log("openModal", $scope.modalIsOpen );
