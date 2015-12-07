@@ -12,7 +12,7 @@ app.config(function($stateProvider){
         quest: null,
         startedQuest: null,
         questId: null,
-        myName: null
+        name: null
       },
       resolve: {
         quest: function($stateParams, QuestFactory) {

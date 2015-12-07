@@ -1,0 +1,21 @@
+<ion-view view-title="Transition" align-title="center">
+<ion-content scroll="true">
+	<navbar transitionstate="transitionState" user="user"></navbar>
+
+	<section>
+	<div class="container">
+		<h2 class="center">Who Goes There?</h2>
+		<p ng-show="!isLoggedInUser()">Please either log in/sign up, or enter a temporary trail name. Then be on your way!</p>
+		<p ng-show="user" class="lead">Proceed!</p>
+
+		<form>
+			<div class="form-group">
+				<input ng-show="!user" class="form-control" placeholder="Trail Name Here" type="text" ng-model="trailName">
+			</div>
+			<a ng-click="toMap(trailName)" class="btn btn-info">Onward!</a>
+			<p id="identify" class="lead" ng-show="forgotName">Identify yourself!</p>
+		</form>
+
+	</div>
+</ion-content>
+</ion-view>

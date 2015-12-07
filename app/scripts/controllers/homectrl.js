@@ -27,6 +27,7 @@ app.controller('HomeCtrl', function($scope, $rootScope, $state, $ionicPlatform, 
       $scope.user = user;
       getStartedQuests($scope.user._id);
     });
+    $rootScope.$on('logout', function() {$scope.user = null;});
 
     // Get user's startedQuests on $scope. Called when there's a login event fired.
     function getStartedQuests(userId) {

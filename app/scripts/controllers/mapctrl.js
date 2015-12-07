@@ -3,6 +3,8 @@
 app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, quest) {
 
     // QUEST VARIABLES
+    console.log('$stateParams in map', $stateParams);
+    console.log('quest in map', quest)
     // If there's a startedQuest object, use the embedded quest as our quest object
     if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts' state
         $scope.quest = $stateParams.startedQuest.quest;
@@ -25,7 +27,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     $scope.viewProgress = false;
 
     // USER VARIABLES 
-    $scope.me = {name: $stateParams.myName};
+    $scope.me = {name: $stateParams.name};
     $scope.fellows = [];
     $scope.getPercentage = function(stepIndex) {
         var percentage = (stepIndex / $scope.steps.length) * 100;
@@ -54,10 +56,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
             MapFactory.updateFellowMarkers($scope.fellows);
         });
 
-        // When a fellow makes progress in his/her quest, update user's progress tracker
-        $scope.nsSocket.on('progress', function(eventData) {
-            // update progress dictionary on scope, which will update progress bars
-        });
     }
 
 
@@ -75,7 +73,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
             if ($scope.nsSocket) {
                 $scope.nsSocket.emit('hereIAm', {
                     location: [e.latlng.lat, e.latlng.lng],
-                    currentStepIndex: $scope.currentStepIndex
+                    currentStepIndex: $scope.currentStepIndex,
+                    name: $scope.me.name
                 });
             }
             checkRegion();
