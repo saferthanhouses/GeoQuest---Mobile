@@ -65,8 +65,8 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 		});
 		MapFactory.fellowMarkers = [];
 		fellowArr.forEach(function(fellow) {
-			var marker = new L.marker(fellow.location, {icon: fellowIcon});
-			MapFactory.map.addLayer(marker);
+			var fellowIcon = L.MakiMarkers.icon({icon: 'school', color: fellow.color, size: 'm'});
+			var fellowMarker = L.marker(fellow.location, {icon: fellowIcon}).addTo(MapFactory.map);
 			MapFactory.fellowMarkers.push(marker);
 		});
 	};
@@ -107,6 +107,7 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
         });
         //create new marker for my location and add it to map
         MapFactory.myMarker = new L.marker(GeoFactory.position, {icon: meIcon}).addTo(MapFactory.map);
+
     };
 
 	return MapFactory;
