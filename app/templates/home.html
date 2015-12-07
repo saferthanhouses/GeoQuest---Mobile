@@ -12,13 +12,15 @@
 		</form>
 
 		<div class="quest" ng-repeat="quest in quests | filter:desiredQuest">
-			<p><a ng-click="toContacts(quest)">{{quest.name}}</a></p>
+			<p><a class="questButton" ng-click="toContacts(quest)">{{quest.name}}</a></p>
 			<p>Starts {{quest.distFromMe}} Miles From You</p>
 			<p>Covers {{quest.distance}} Miles</p>
 			<p>Takes Roughly {{quest.time}} Hours</p>
-			<p>68 Reviews: Avg 3.6/5</p>
+			<p>{{quest.reviews.length}} Reviews: Avg {{quest.averageReview}}/5</p>
 			<p>Summary: {{quest.summary}}</p>
 		</div>
 	</div>
 </ion-content>
 </ion-view>
+
+<!-- ui-sref="toContacts(quest)"" -->

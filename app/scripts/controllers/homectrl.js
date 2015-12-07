@@ -36,6 +36,10 @@ app.controller('HomeCtrl', function($scope, $rootScope, $state, $ionicPlatform, 
         $scope.startedQuests = startedQuests;
       });
     }
+
+    $scope.buttonClicked = function(){
+      console.log("buttonClicked")
+    }
         
 });
 

@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, quest) {
+app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory, quest) {
 
     // QUEST VARIABLES
     console.log('$stateParams in map', $stateParams);
@@ -25,6 +25,9 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
 
     $scope.questNotOver = true;
     $scope.viewProgress = false;
+
+    $scope.form ={}
+    $scope.form.answer = "";
 
     // USER VARIABLES 
     $scope.me = {name: $stateParams.name};
@@ -78,7 +81,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
                     name: $scope.me.name
                 });
             }
-            checkRegion();
+            if ($scope.questNotOver) checkRegion();
         });
     });
 
@@ -97,16 +100,28 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     // Closing of modal brings us to next step
     $scope.$on('modal.hidden', function () {
         // remove areas from map
-        MapFactory.removeTargetCircle();
-        if (!$scope.questNotOver) return; //If quest is done, no need to continue 
-        goToNextStep(); 
-        // All steps except the first one have a targetCircle
-        // If quest is not over, add new targetCircle to map and reset map bounds
-        if ($scope.currentStepIndex < $scope.steps.length - 1) {
-            MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
-            // Set the map bounds to client and targetCircle
-            MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
-        }
+        $timeout(function(){ 
+            console.log("modal hidden");
+
+            // $timeout(function(){
+                MapFactory.removeTargetCircle();
+                if ($scope.questNotOver === false) {
+                    console.log("quest is over");
+                    return; //If quest is done, no need to continue 
+                }
+                goToNextStep(); 
+
+
+
+                // All steps except the first one have a targetCircle
+                // If quest is not over, add new targetCircle to map and reset map bounds
+                if ($scope.currentStepIndex <= $scope.steps.length - 1) {
+                    MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
+                    // Set the map bounds to client and targetCircle
+                    MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
+                }
+        }, 100);
+
     });
 
     function goToNextStep() {
@@ -116,13 +131,17 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
         } else {
         // If that wasn't the opening modal, we now move to the next questStep      
             $scope.currentStep = $scope.steps[$scope.currentStepIndex + 1];
-            setRegex();
             updateStartedQuest();
         }
         // If quest is finished, delete startedQuest object, and call quest end modal
-        if (++$scope.currentStepIndex > $scope.steps.length) {
-            prepareForEnd();
+        $scope.currentStepIndex++;
+        if ($scope.currentStepIndex > $scope.steps.length-1) {
+            console.log("about to preparefor the end")
+            $timeout(prepareForEnd, 500);
+            
         }
+        console.log("currentStepIndex", $scope.currentStepIndex)
+        console.log("steps.length", $scope.steps.length);
     }
 
     // If there is a startedQuest object, increment currentStep
@@ -134,8 +153,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
 
     // If a question must be ansered to pass this new step, set the regex
     function setRegex() {
-        if ($scope.currentStep.question.length) {
-            $scope.regex = new RegExp('/' + $scope.currentStep.answer + '/', 'i');
+        if ($scope.currentStep.transitionInfo.question) {
+            $scope.regex = new RegExp($scope.currentStep.transitionInfo.answer, 'i');
         }
     }
 
@@ -148,7 +167,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     }
 
     function questEnd(){
+        console.log("quest is ending");
         $scope.questNotOver = false;
+        console.log("questNotOver", $scope.questNotOver);
+        openModal();
         // Put up modal with quest.closingInfo.title and quest.closingInfo.text
             // modal has option to stay in room or go view quests
         // Maybe make a dynamic modalCreator function
@@ -167,23 +189,47 @@ app.controller('MapCtrl', function ($scope, $rootScope, $ionicModal, MapFactory,
     });
 
     function openModal() {
-      // will be undefined if the modal hasn't had time to load
       $scope.modal.show();    
       // UserNotificationFactory.notifyUser("new region entered!");
     }
 
     $scope.attemptCloseModal = function(){
+
+        console.log("$scope", $scope);
         // If there's a question to answer, only close modal if answer is correct
-        if (!$scope.justStarting && $scope.currentStep.question.length) {
-            if ($scope.regex.test($scope.currentStep.answer)) { 
+        if ($scope.questNotOver && (!$scope.justStarting && $scope.currentStep.transitionInfo.question.length)) {
+          // will be undefined if the modal hasn't had time to load
+          // need to have the regex defined before we close the modal.
+            setRegex();
+            if ($scope.regex.test($scope.form.answer)) { 
+                console.log("tesst passed");
                 $scope.modal.hide();
             } else {
+                console.log("wrong answer");
                 // turn button gradually red than back
             }
         } else {
             $scope.modal.hide();
         }
     };
+
+    $scope.timeToGoHome = function(){
+        $scope.modal.hide()
+        SocketFactory.abandon();
+    }
+
+    // REVIEW
+    $scope.isReviewSubmitted = false;
+
+    $scope.submitReview = function(){
+        $scope.isReviewSubmitted = true;
+        QuestFactory.addReview($scope.quest._id, $scope.rating)
+            .then(function(){
+                $scope.isReviewSubmitted = false;
+                $scope.reviewIsSubmitted = true;
+                $timeout(function(){ $scope.hideReviewBox = true; }, 2000)
+            })
+    }
 
 });
 
