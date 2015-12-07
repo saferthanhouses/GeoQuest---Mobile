@@ -138,8 +138,9 @@ section.login, div.login {
 }
 .modal-image {
   width: 100%;
+  margin: 0 auto;
 }
-.modal-image {
+.modal-image img {
   width: 100%;
 }
 .go-home {

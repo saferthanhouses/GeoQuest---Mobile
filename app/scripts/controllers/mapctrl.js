@@ -27,7 +27,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $scope.form.answer = "";
 
     // USER VARIABLES 
-    $scope.me = {name: $stateParams.name};
+    $scope.me = {name: $stateParams.name, color: getRandomColor()};
     $scope.fellows = [];
     $scope.getPercentage = function(stepIndex) {
         var percentage = (stepIndex / $scope.steps.length) * 100;
@@ -87,7 +87,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 $scope.nsSocket.emit('hereIAm', {
                     location: [e.latlng.lat, e.latlng.lng],
                     currentStepIndex: $scope.currentStepIndex,
-                    name: $scope.me.name
+                    name: $scope.me.name,
+                    color: $scope.me.color
                 });
             }
             if ($scope.questNotOver) checkRegion();
@@ -248,6 +249,16 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 $timeout(function(){ $scope.hideReviewBox = true; }, 2000)
             })
     }
+
+    // Used for generating color that your fellows see you as
+    function getRandomColor() {
+    var letters = '0123456789ABCDEFABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 22)];
+    }
+    return color;
+}
 
 });
 
