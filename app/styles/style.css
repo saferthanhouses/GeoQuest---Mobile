@@ -132,7 +132,12 @@ div.container.progress-view {
 #map {
   position: static;
 }
-
+.modal-image {
+  width: 100%;
+}
+.modal-image {
+  width: 100%;
+}
 .go-home {
   position: fixed;
   top: 20px;
