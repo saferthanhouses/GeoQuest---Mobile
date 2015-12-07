@@ -5,6 +5,8 @@ app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootSco
 	// Use the resolvedQuest if we have it (came from link and didn't log in),
 	// or else use the quest on $stateParams (came from 'Home', didn't log in)
 	$scope.quest = resolvedQuest ? resolvedQuest : $stateParams.quest;
+	console.log('statepars', $stateParams)
+	console.log('the quest', $scope.quest)
 	// When user logs in, get them on scope and their startedQuests on scope
     $rootScope.$on('auth-login-success', function(event, user) {
       $scope.user = user;
@@ -12,7 +14,6 @@ app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootSco
     $rootScope.$on('logout', function() {$scope.user = null;});
     $scope.isLoggedInUser = function() {
     	if ($scope.user) {
-    		console.log('ther eis');
     		return true;
     	}
     	return false;
@@ -20,7 +21,8 @@ app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootSco
 
 	$scope.toMap = function(trailName) {
 		$scope.trailName = trailName;
-		if ($scope.user) {
+		// If logged in, create a startedQuest and go to 'Map' state with that. Map will use embedded quest object
+		if ($scope.user) { 
             StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.quest, $stateParams.room)
             .then(function(startedQuest) {
                 $state.go('Map', {
@@ -43,3 +45,5 @@ app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootSco
 	};
 
 });
+
+// {quest: $scope.quest, room: $scope.room}); from contacts state

@@ -80,10 +80,9 @@ div.container {
     background: url('../images/paper.png') repeat;
     margin: 0 2%;
     min-height: calc(100vh - 50px);
-    height: auto;
 }
 div.container.progress-view {
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .container p {
