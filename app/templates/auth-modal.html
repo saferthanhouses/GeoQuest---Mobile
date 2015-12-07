@@ -1,10 +1,7 @@
  <ion-modal-view class="authModal">
-    <ion-header-bar>
-      
-    </ion-header-bar>
     <ion-content>
-    <section>
-	    <div class="container">
+    <section class="login">
+	    <div class="container login">
 		    <h2 class="center">Log on in there, Partner!</h2>
 		    <div class="list">
 		    	<div class="form-group">
@@ -13,22 +10,9 @@
 				<div class="form-group">
 					<input class="form-control" placeholder="Password" type="text" ng-model="userInfo.password">
 				</div>
-<!-- 		 		<label class="item item-input">
-		    		<span class="input-label">Username</span>
-		    		<input type="text" ng-model="userInfo.userName">
-		  		</label> -->
-<!-- 			  	<label class="item item-input">
-		    		<span class="input-label">Password</span>
-		    		<input type="password" ng-model="userInfo.password">
-		  		</label> -->
-			<!-- </div> -->
-<!-- 			<div class="modalButtons">
-				<button ng-click="login(userInfo)" class="btn btn-success login-button">Login</button> 
-				<button ng-click="signup(userInfo)" class="btn btn-success login-button">Signup</button> 
-			</div> -->
 			<a ng-click="login(userInfo)" class="btn btn-info">Login</a>
 			<a ng-click="signup(userInfo)" class="btn btn-info">Signup</a>
-			<div class="lead invalid" ng-show="loginFail">Invalid Credentials</div>
+			<div class="lead invalid" ng-show="validationError">Invalid Credentials</div>
 		</div>
 	</section>
     </ion-content>

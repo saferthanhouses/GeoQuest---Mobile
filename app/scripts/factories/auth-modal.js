@@ -1,4 +1,4 @@
-app.service('AuthModal', function($ionicModal, AuthService, $rootScope){
+app.service('AuthModal', function($ionicModal, AuthService, $rootScope, $timeout){
 	
 	// this modal should be opened at various points throughout the application in response
 	// to an event.
@@ -22,16 +22,24 @@ app.service('AuthModal', function($ionicModal, AuthService, $rootScope){
 	$rootScope.login = function(userInfo) {
 		AuthService.login(userInfo).then(function(user){
 			self.modal.hide()
-		}, function(){
+		}, function() {
 			$rootScope.validationError = true;
-		})
-	}
+			$timeout(function(){
+				$rootScope.validationError = false;
+			}, 2000);
+		});
+	};
 
 	$rootScope.signup = function(userInfo) {
 		AuthService.signup(userInfo).then(function(user){
 			self.modal.hide()
-		}, function(){
+		}, function() {
 			$rootScope.validationError = true;
-		})
-	}
-})
+			$timeout(function(){
+				$rootScope.validationError = false;
+			}, 2000);
+		});
+	};
+});
+
+
