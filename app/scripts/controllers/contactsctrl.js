@@ -33,7 +33,7 @@ app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state
         if ($scope.user) {
             StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.quest, $scope.room)
             .then(function(startedQuest) {
-                $state.go('Map', {room: $scope.room, startedQuest: startedQuest, name:$scope.user.userName});
+                $state.go('Map', {startedQuest: startedQuest, name:$scope.user.userName});
             });
         } else {
             $state.go('Transition', {quest: $scope.quest, room: $scope.room});

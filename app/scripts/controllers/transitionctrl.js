@@ -1,8 +1,10 @@
 'use strict';
 
-app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootScope, $timeout) {
+app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, StartedQuestFactory, resolvedQuest) {
 	$scope.transitionState = true;
-
+	// Use the resolvedQuest if we have it (came from link and didn't log in),
+	// or else use the quest on $stateParams (came from 'Home', didn't log in)
+	$scope.quest = resolvedQuest ? resolvedQuest : $stateParams.quest;
 	// When user logs in, get them on scope and their startedQuests on scope
     $rootScope.$on('auth-login-success', function(event, user) {
       $scope.user = user;
@@ -18,20 +20,24 @@ app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootSco
 
 	$scope.toMap = function(trailName) {
 		$scope.trailName = trailName;
-		if ($scope.user) $scope.name = $scope.user.userName;
-		else if ($scope.trailName) $scope.name = $scope.trailName;
-
-		if ($scope.name) {
+		if ($scope.user) {
+            StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.quest, $stateParams.room)
+            .then(function(startedQuest) {
+                $state.go('Map', {
+                	startedQuest: startedQuest, 
+                	name: $scope.user.userName
+                });
+            });
+		} else if ($scope.trailName) {
 			$state.go('Map', {
-				quest: $stateParams.quest,
-				questId: $stateParams.questId, 
+				quest: $scope.quest,
 				room: $stateParams.room, 
-				name: $scope.name
+				name: $scope.trailName
 			});
 		} else {
-			$scope.forgotName = true;
+			$scope.noName = true;
 			$timeout(function() {
-				$scope.forgotName = false;
+				$scope.noName = false;
 			}, 2000);
 		}
 	};
