@@ -13,7 +13,7 @@
 	<!-- Show only when an answer is required to move to next step -->
 	<p ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver">{{currentStep.transitionInfo.question}}</p>
 	<input ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver" type="text" ng-model="form.answer">
-
+	<p ng-show="wrongAnswer" class="wrongAnswer">Incorrect!</p>
 	<!-- Closing info: show when quest ends -->
 	<h2 ng-show="!questNotOver">{{currentStep.closingInfo.title}}</h2>
 	<p ng-show="!questNotOver">{{currentStep.closingInfo.text}}</p>
@@ -26,7 +26,7 @@
     <button ng-show="!questNotOver" ng-click="timeToGoHome();" class="btn btn-success">Choose Another Quest</button>
     <button ng-show="!questNotOver" ng-click="attemptCloseModal()" class="btn btn-success">Stay And Explore</button>
 
-  <button class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
+  <button ng-hide="!questNotOver" class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
 
   	Gottit
   </button>

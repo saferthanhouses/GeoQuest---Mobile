@@ -116,7 +116,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                     // Set the map bounds to client and targetCircle
                     MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
                 }
-        }, 100);
+        }, 200);
 
     });
 
@@ -198,8 +198,13 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 $scope.modal.hide();
             } else {
                 console.log("wrong answer");
+                $scope.wrongAnswer = true;
+                $timeout(function(){
+                    $scope.wrongAnswer = false;
+                }, 2000)
                 // turn button gradually red than back
             }
+            $scope.form.answer = "";
         } else {
             $scope.modal.hide();
         }

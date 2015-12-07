@@ -236,6 +236,11 @@ ul.rating li i {
   transition: 1s linear all;
 }
 
+.wrongAnswer {
+  color: red;
+  font-size: 1.3em;
+}
+
 /* THIS IS ALL OF BOOTSTRAP */
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
