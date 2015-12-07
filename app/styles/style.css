@@ -120,8 +120,13 @@ div.container.progress-view {
   margin-top: 8px;
 }
 
+/* Login */
+section.login, div.login {
+  min-height: 100vh;
+}
+
 /* Transition */
-#identify {
+.invalid {
   color: #cc0202;
   font-weight: bold;
   text-align: center;

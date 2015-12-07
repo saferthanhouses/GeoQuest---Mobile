@@ -1,22 +1,19 @@
  <ion-modal-view class="authModal">
-    <ion-header-bar>
-      <h1 class="title">My Modal title</h1>
-    </ion-header-bar>
     <ion-content>
-	    <div class="list">
-	 		<label class="item item-input">
-	    		<span class="input-label">Username</span>
-	    		<input type="text" ng-model="userInfo.userName">
-	  		</label>
-		  	<label class="item item-input">
-	    		<span class="input-label">Password</span>
-	    		<input type="password" ng-model="userInfo.password">
-	  		</label>
-	  		<div class="validationError" ng-show="validationError">Invalid Credentials</div>
+    <section class="login">
+	    <div class="container login">
+		    <h2 class="center">Log on in there, Partner!</h2>
+		    <div class="list">
+		    	<div class="form-group">
+					<input class="form-control" placeholder="Username" type="text" ng-model="userInfo.userName">
+				</div>
+				<div class="form-group">
+					<input class="form-control" placeholder="Password" type="text" ng-model="userInfo.password">
+				</div>
+			<a ng-click="login(userInfo)" class="btn btn-info">Login</a>
+			<a ng-click="signup(userInfo)" class="btn btn-info">Signup</a>
+			<div class="lead invalid" ng-show="validationError">Invalid Credentials</div>
 		</div>
-		<div class="modalButtons">
-			<button ng-click="login(userInfo)" class ="btn btn-success login-button">Login</button> 
-			<button ng-click="signup(userInfo)" class="btn btn-success login-button">Signup</button> 
-		</div>
+	</section>
     </ion-content>
   </ion-modal-view>
