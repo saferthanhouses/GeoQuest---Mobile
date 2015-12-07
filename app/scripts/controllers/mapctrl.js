@@ -52,6 +52,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         });
         // All fellow-related logic happens in the SocketsFactory, and a new fellows array is returned
         $scope.nsSocket.on('fellowEvent', function(eventData) {
+            console.log("fellowEvent data", eventData);
+            if (eventData.callMethod === 'fellowLocation') {
+                checkWinner(eventData.fellow);
+            }
             $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
             MapFactory.updateFellowMarkers($scope.fellows);
         });
@@ -60,6 +64,15 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
 
     // QUEST LOGIC
+    $scope.wins = {};
+    function checkWinner(fellow){
+        console.log("fellow in checkWinner", fellow);
+        if (fellow.currentStepIndex == $scope.steps.length+1){
+            viewProgress = false;
+            $scope.wins.winner = fellow.name
+            $scope.winModal.open();
+        }
+    }
 
     // Set the map (If returning to map state, reload map)
     MapFactory.reloadMap().then(function(){   
@@ -107,8 +120,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                     return; //If quest is done, no need to continue 
                 }
                 goToNextStep(); 
-
-
 
                 // All steps except the first one have a targetCircle
                 // If quest is not over, add new targetCircle to map and reset map bounds
@@ -181,9 +192,19 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.modal = modal;
     });
 
+    $ionicModal.fromTemplateUrl('templates/winModal.html', {
+        scope: $scope,
+        animation: 'slide-in-up',
+        backdropClickToClose: true,
+        hardwareBackButtonClose: false
+      }).then(function(modal){
+        $scope.winModal = modal;
+    });
+
     function openModal() {
-      $scope.modal.show();    
-      // UserNotificationFactory.notifyUser("new region entered!");
+        // modalOpen = true;
+        $scope.modal.show();    
+        // UserNotificationFactory.notifyUser("new region entered!");
     }
 
     $scope.attemptCloseModal = function(){
