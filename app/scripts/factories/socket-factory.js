@@ -62,10 +62,6 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 			if (nsSocket) nsSocket.disconnect();
 			if (socket) socket.disconnect();
 			$state.go('Home');
-		},
-
-		isWinner: function() {
-			return this.isWinner
 		}
 	};
 
