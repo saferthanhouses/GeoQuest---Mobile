@@ -25,6 +25,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     $scope.form ={}
     $scope.form.answer = "";
+    $scope.modalOpen = false;
 
     // USER VARIABLES 
     $scope.me = {name: $stateParams.name, color: getRandomColor()};
@@ -67,11 +68,11 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $scope.wins = {};
     function checkWinner(fellow){
         console.log("fellow in checkWinner", fellow);
-        if (fellow.currentStepIndex == $scope.steps.length){
-            viewProgress = false;
+        if (fellow.currentStepIndex == $scope.steps.length && fellow.name !== $scope.me.name){
+            var viewProgress = false;
             $scope.wins.winner = fellow.name;
             UserNotificationFactory.notifyUser(fellow.name + " Won the game!")
-            $scope.winModal.open();
+            $scope.winModal.show();
         }
     }
 
@@ -104,7 +105,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             var circleCenter = $scope.currentStep.targetCircle.center;
             var circleRadius = $scope.currentStep.targetCircle.radius;
             var distanceFromtargetCircleCenter = QuestFactory.getDistanceFromLatLonInMi(circleCenter[0], circleCenter[1], GeoFactory.position[0], GeoFactory.position[1]) * (1.60934 * 1000);
-            if (distanceFromtargetCircleCenter < circleRadius) openModal();
+            if (distanceFromtargetCircleCenter < circleRadius) {openModal();
         }
     }
 
@@ -112,6 +113,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $scope.$on('modal.hidden', function () {
         // remove areas from map
         $timeout(function(){ 
+            modalOpen = false;
             console.log("modal hidden");
 
             // $timeout(function(){
@@ -203,10 +205,13 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     });
 
     function openModal() {
-        // modalOpen = true;
+        console.log("openModal", $scope.modalIsOpen );
         $scope.modal.show();
-        console.log("!!!!firing notification");    
-        UserNotificationFactory.notifyUser("new region entered!");
+        if ($scope.modalIsOpen === false){
+            console.log("!!!!firing notification");    
+            UserNotificationFactory.notifyUser("new region entered!");
+        }
+        $scope.modalIsOpen = true;
     }
 
     $scope.attemptCloseModal = function(){
