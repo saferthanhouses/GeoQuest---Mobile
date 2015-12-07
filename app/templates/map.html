@@ -16,7 +16,7 @@
 		<div class="quest" ng-repeat="fellow in fellows">
 			<p class="bold">{{fellow.name}}</p> 
 			<div class="progress">
-			  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(fellow.currentStepIndex)}">
+			  <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(fellow.currentStepIndex), 'background-color': fellow.color}">
 			  </div>
 			</div>
 		</div>

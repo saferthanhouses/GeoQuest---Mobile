@@ -231,13 +231,13 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     // Used for generating color that your fellows see you as
     function getRandomColor() {
-    var letters = '0123456789ABCDEFABCDEF'.split('');
-    var color = '#';
-    for (var i = 0; i < 6; i++ ) {
-        color += letters[Math.floor(Math.random() * 22)];
+        var letters = '0123456789ABCDEFABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 22)];
+        }
+        return color;
     }
-    return color;
-}
 
 });
 

@@ -39,6 +39,9 @@ section {
   font-weight: bold;
   text-align: center;
 }
+.progress-bar {
+  background-image: none;
+}
 
 /* navbar */
 nav.navbar.navbar-static-top {
