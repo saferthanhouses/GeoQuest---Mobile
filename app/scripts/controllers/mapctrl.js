@@ -67,8 +67,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     // QUEST LOGIC
     $scope.wins = {};
     function checkWinner(fellow){
-        console.log("fellow in checkWinner", fellow);
-        if (fellow.currentStepIndex == $scope.steps.length && fellow.name !== $scope.me.name){
+        if (fellow.currentStepIndex == $scope.steps.length && fellow.name !== $scope.me.name && !scope.wins.winner){
             var viewProgress = false;
             $scope.wins.winner = fellow.name;
             UserNotificationFactory.notifyUser(fellow.name + " Won the game!")
