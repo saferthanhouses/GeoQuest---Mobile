@@ -8,6 +8,7 @@
 	<p ng-show="justStarting">{{quest.openingInfo.text}}</p>
 
 	<h2 ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.title}}</h2>
+	<div ng-show="currentStep.transitionInfo.imageUrl" class="modal-image"><img src="{{currentStep.transitionInfo.imageUrl}}"></div>
 	<p ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.text}}</p>
 	<!-- Show only when an answer is required to move to next step -->
 	<p ng-show="currentState.transitionInfo.question.length && !justStarting && questNotOver">{{currentState.transitionInfo.question}}</p>
