@@ -15,6 +15,9 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
         iconSize:     [38, 38], // size of the icon
         iconAnchor:   [19, 38], // point of the icon which will correspond to marker's location
         popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+    	// iconSize: [10,10],
+    	// IconAnchor: [5,5]
+    	// popupAnchor: [0,0]
     });
 
 	MapFactory.reloadMap = function(){

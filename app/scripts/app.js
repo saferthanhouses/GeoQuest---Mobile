@@ -12,7 +12,6 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal,
     $ionicPlatform.onHardwareBackButton(function(event) {
       event.preventDefault();
       event.stopPropagation();
-      console.log('oh no ya don\'t');
     });
 
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard

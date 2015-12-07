@@ -46,4 +46,3 @@ app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootSco
 
 });
 
-// {quest: $scope.quest, room: $scope.room}); from contacts state
