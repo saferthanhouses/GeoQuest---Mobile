@@ -121,7 +121,7 @@ div.container.progress-view {
 }
 
 /* Transition */
-#identify {
+.invalid {
   color: #cc0202;
   font-weight: bold;
   text-align: center;
