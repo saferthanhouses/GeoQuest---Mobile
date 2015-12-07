@@ -71,7 +71,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             if ($scope.nsSocket) {
                 $scope.nsSocket.emit('hereIAm', [e.latlng.lat, e.latlng.lng]);  
             }
-            checkRegion();
+            if ($scope.questNotOver) checkRegion();
         });
     });
 
@@ -92,11 +92,17 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         // remove areas from map
         console.log("modal hidden");
         MapFactory.removeTargetCircle();
-        if (!$scope.questNotOver) return; //If quest is done, no need to continue 
+        if ($scope.questNotOver === false) {
+            console.log("quest is over");
+            return; //If quest is done, no need to continue 
+        }
         goToNextStep(); 
+
+
+
         // All steps except the first one have a targetCircle
         // If quest is not over, add new targetCircle to map and reset map bounds
-        if ($scope.currentStepIndex < $scope.steps.length - 1) {
+        if ($scope.currentStepIndex <= $scope.steps.length - 1) {
             MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
             // Set the map bounds to client and targetCircle
             MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
@@ -111,11 +117,15 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             $scope.currentStep = $scope.steps[$scope.currentStepIndex + 1];
             updateStartedQuest();
         }
-        console.log("$scope.justStarting", $scope.justStarting)
         // If quest is finished, delete startedQuest object, and call quest end modal
-        if (++$scope.currentStepIndex > $scope.steps.length) {
-            prepareForEnd();
+        $scope.currentStepIndex++;
+        if ($scope.currentStepIndex > $scope.steps.length-1) {
+            console.log("about to preparefor the end")
+            $timeout(prepareForEnd, 500);
+            
         }
+        console.log("currentStepIndex", $scope.currentStepIndex)
+        console.log("steps.length", $scope.steps.length);
     }
 
     // If there is a startedQuest object, increment currentStep
@@ -148,7 +158,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     }
 
     function questEnd(){
+        console.log("quest is ending");
         $scope.questNotOver = false;
+        console.log("questNotOver", $scope.questNotOver);
+        openModal();
         // Put up modal with quest.closingInfo.title and quest.closingInfo.text
             // modal has option to stay in room or go view quests
         // Maybe make a dynamic modalCreator function
@@ -196,7 +209,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     $scope.submitReview = function(){
         $scope.isReviewSubmitted = true;
-        QuestFactory.addReview(quest._id, $scope.rating)
+        QuestFactory.addReview($scope.quest._id, $scope.rating)
             .then(function(){
                 $scope.isReviewSubmitted = false;
                 $scope.reviewIsSubmitted = true;

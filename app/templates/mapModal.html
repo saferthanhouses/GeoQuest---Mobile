@@ -22,7 +22,7 @@
 		<div class="" ng-show="isReviewSubmitted">Submitting review ... </div>
 		<div class="" ng-show="reviewIsSubmitted">Thanks for the review :) </div>
 	</div>
-    <button ng-show="!questNotOver" ui-sref="Home" class="btn btn-success">Stay & Explore</button>
+    <button ng-show="!questNotOver" ui-sref="Home()" class="btn btn-success">Stay & Explore</button>
     <button ng-show="!questNotOver" ng-click="attemptCloseModal()" class="btn btn-success">Choose Another Quest</button>
 
   <button class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
