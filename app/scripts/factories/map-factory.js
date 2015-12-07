@@ -67,7 +67,7 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 		fellowArr.forEach(function(fellow) {
 			var fellowIcon = L.MakiMarkers.icon({icon: 'school', color: fellow.color, size: 'm'});
 			var fellowMarker = L.marker(fellow.location, {icon: fellowIcon}).addTo(MapFactory.map);
-			MapFactory.fellowMarkers.push(marker);
+			MapFactory.fellowMarkers.push(fellowMarker);
 		});
 	};
 
