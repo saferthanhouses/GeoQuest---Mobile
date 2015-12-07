@@ -36,7 +36,8 @@ app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $q) {
                                 number: number.value
                             });
                         } else {
-                            var parsedNumber = number.value.replace(/[\W]/g,"");
+                            var parsedNumber = number.value.replace(/[\W]/g,'');
+                            parsedNumber = parsedNumber.match(/^[0-9]*/)[0];
                             parsedContacts.push({
                                 name: contact.name.givenName,
                                 number: parsedNumber
