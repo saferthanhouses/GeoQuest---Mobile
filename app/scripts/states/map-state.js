@@ -8,9 +8,11 @@ app.config(function($stateProvider){
        controller: 'MapCtrl',
        templateUrl: 'templates/map.html',
        params: {
-          room: null,
-          quest: null,
-          startedQuest: null
-        }
+        room: null,
+        quest: null,
+        startedQuest: null,
+        questId: null,
+        name: null
+      }
    });
 });

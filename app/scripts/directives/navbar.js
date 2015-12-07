@@ -11,7 +11,8 @@ app.directive('navbar', function ($rootScope, $state, $ionicModal, AuthService, 
             nssocket: '=',
             socket: '=',
             user: '=',
-            startedquests: '='
+            startedquests: '=',
+            transitionstate: '='
         },
         templateUrl: 'templates/navbar.html',
         link: function (scope) {
@@ -29,13 +30,10 @@ app.directive('navbar', function ($rootScope, $state, $ionicModal, AuthService, 
             })
 
             scope.logout = function() {
-                $state.go('Home', {}, {reload:true});
-                console.log(Session.user);
                 AuthService.logout().then(function(){
-                    // flash logout successful
-                    console.log("logout successful");
-                })
-            } 
+                    $rootScope.$broadcast('logout');
+                });
+            } ;
 
         }
 

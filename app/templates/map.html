@@ -1,6 +1,27 @@
 <ion-view view-title="Map" align-title="center">
 
-	<div id="map"></div>
-	<div class="go-home"><a ng-click="abandon(nsSocket, mainSocket)">Home</a></div>
+	<div ng-show="!viewProgress" id="map"></div>
+	<div ng-show="!viewProgress" class="go-home"><a ng-click="abandon(nsSocket, mainSocket)">Home</a></div>
+	<div ng-show="!viewProgress" class="view-progress"><a ng-click="viewProgress = true">Progress</a></div>
+	<section ng-show="viewProgress" class="full-screen">
+	<div class="container progress-page">
+		<div>
+			<h2 class="center">Progress</h2>
+			<p class="bold">{{me.name}}</p>
+			<div class="progress">
+			  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(currentStepIndex)}">
+			  </div>
+			</div>
+		</div>
+		<div class="quest" ng-repeat="fellow in fellows">
+			<p class="bold">{{fellow.name}}</p> 
+			<div class="progress">
+			  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(fellow.currentStepIndex)}">
+			  </div>
+			</div>
+		</div>
+		<a class="btn btn-info" ng-click="viewProgress = false">Back to Map</a>
+	</div>
+	</section>
 
 </ion-view>

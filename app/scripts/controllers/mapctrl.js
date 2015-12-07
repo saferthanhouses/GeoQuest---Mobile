@@ -1,36 +1,42 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory) {
+app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory, quest) {
 
-
-    console.log("$scope.startedQuest", $scope.startedQuest);
     // QUEST VARIABLES
+    console.log('$stateParams in map', $stateParams);
     // If there's a startedQuest object, use the embedded quest as our quest object
-    if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts'
-        $scope.startedQuest = true;
-    } 
-    $scope.quest = $stateParams.quest ? $stateParams.quest : $stateParams.startedQuest.quest;
-    console.log("$scope.quest", $scope.quest)
-    $scope.steps = $scope.quest.questSteps;
-    // $scope.startedQuest = $stateParams.startedQuest; 
-    // If there's a startedQuest object, check to see whether we should pick up in the middle
-    if ($scope.startedQuest && $scope.startedQuest.currentStep > 0) {
-        $scope.currentStepIndex = $scope.startedQuest.currentStep; 
-        $scope.currentStep = $scope.steps[$scope.currentStepIndex];
-    } else {
-        $scope.currentStep = $scope.steps[0];
+    if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts' state
+        $scope.quest = $stateParams.startedQuest.quest;
+        var room = $stateParams.startedQuest.room;
+        // If this starteQuest is partially finished, pick up where user left off
+        if ($stateParams.startedQuest.currentStepIndex > 0) {
+            $scope.currentStepIndex = $scope.quest.currentStepIndex; 
+        } else {
+            $scope.currentStepIndex = -1; // Incremented to 0 when first modal closes
+        }
+    } else if ($stateParams.quest) { // if user did not log in at 'Transition' state
+        $scope.quest = quest;
+        var room = $stateParams.room;
         $scope.currentStepIndex = -1; // Incremented to 0 when first modal closes
-        $scope.justStarting = true; // So know to show opening message on first modal
-    }
+    } 
+    $scope.steps = $scope.quest.questSteps;
+    // Set currentStep if the currentStep index is 0 or greater (true once first modal is closed)
+    if ($scope.currentStepIndex >= 0) $scope.currentStep = $scope.steps[$scope.currentStepIndex]; 
+
     $scope.questNotOver = true;
+    $scope.viewProgress = false;
 
     $scope.form ={}
     $scope.form.answer = "";
 
     // USER VARIABLES 
-    $scope.me = {};
+    $scope.me = {name: $stateParams.name};
     $scope.fellows = [];
-    console.log("startedQuest", $scope.startedQuest)
+    $scope.getPercentage = function(stepIndex) {
+        var percentage = (stepIndex / $scope.steps.length) * 100;
+        return percentage + '%';
+    };
+
     // CONNECT SOCKETS AND REGISTER LISTENERS
     $scope.abandon = SocketFactory.abandon; // To disconnect sockets and go to 'Home' state
     $rootScope.$on('sockets connected', function(event, theSockets) {
@@ -39,6 +45,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         console.log('connected', $scope.mainSocket, $scope.nsSocket);
         registerSocketListeners();
     });
+    var room = $stateParams.startedQuest ? $stateParams.startedQuest.room : $stateParams.room;
+    console.log('rooooom', room);
     SocketFactory.connectSockets($scope.quest._id, $stateParams.room);
 
     function registerSocketListeners() {
@@ -46,17 +54,12 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.nsSocket.on('yourId', function(id) {
             $scope.me.id = id;
         });
-
         // All fellow-related logic happens in the SocketsFactory, and a new fellows array is returned
         $scope.nsSocket.on('fellowEvent', function(eventData) {
             $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
             MapFactory.updateFellowMarkers($scope.fellows);
         });
 
-        // When a fellow makes progress in his/her quest, update user's progress tracker
-        $scope.nsSocket.on('progress', function(eventData) {
-            // update progress dictionary on scope, which will update progress bars
-        });
     }
 
 
@@ -72,7 +75,11 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             MapFactory.updateUserMarker();        
             // Tell server where you are so it can tell others in the room
             if ($scope.nsSocket) {
-                $scope.nsSocket.emit('hereIAm', [e.latlng.lat, e.latlng.lng]);  
+                $scope.nsSocket.emit('hereIAm', {
+                    location: [e.latlng.lat, e.latlng.lng],
+                    currentStepIndex: $scope.currentStepIndex,
+                    name: $scope.me.name
+                });
             }
             if ($scope.questNotOver) checkRegion();
         });
@@ -120,6 +127,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     function goToNextStep() {
         if ($scope.justStarting) {
             $scope.justStarting = false;
+            $scope.currentStep = $scope.steps[++$scope.currentStepIndex];
         } else {
         // If that wasn't the opening modal, we now move to the next questStep      
             $scope.currentStep = $scope.steps[$scope.currentStepIndex + 1];
@@ -138,29 +146,22 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     // If there is a startedQuest object, increment currentStep
     function updateStartedQuest() { 
-        if ($scope.startedQuest) {    
-            StartedQuestFactory.nextMapStep($scope.startedQuest._id)
-            .then(function(updatedStartedQuest) {
-                $scope.startedQuest = updatedStartedQuest;
-            });
+        if ($stateParams.startedQuest) {    
+            StartedQuestFactory.nextMapStep($stateParams.startedQuest._id);
         }
     }
 
     // If a question must be ansered to pass this new step, set the regex
     function setRegex() {
-        // console.log("inside setReg", $scope.currentStep.transitionInfo.question.length)
         if ($scope.currentStep.transitionInfo.question) {
-            console.log("inside setReg: there is a ", $scope.currentStep.transitionInfo)
             $scope.regex = new RegExp($scope.currentStep.transitionInfo.answer, 'i');
-            console.log("regex", $scope.regex)
         }
     }
 
     // Delete startedQuest object if there is one, and call for questEnd modal
     function prepareForEnd() {
-        if ($scope.startedQuest) {
-            StartedQuestFactory.deleteStartedQuest($scope.startedQuest._id);
-            $scope.startedQuest = null;
+        if ($stateParams.startedQuest) {
+            StartedQuestFactory.deleteStartedQuest($stateParams.startedQuest._id);
         }
         questEnd(); 
     }
