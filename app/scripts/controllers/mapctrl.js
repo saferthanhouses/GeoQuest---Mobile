@@ -67,9 +67,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $scope.wins = {};
     function checkWinner(fellow){
         console.log("fellow in checkWinner", fellow);
-        if (fellow.currentStepIndex == $scope.steps.length+1){
+        if (fellow.currentStepIndex == $scope.steps.length){
             viewProgress = false;
-            $scope.wins.winner = fellow.name
+            $scope.wins.winner = fellow.name;
+            UserNotificationFactory.notifyUser(fellow.name + " Won the game!")
             $scope.winModal.open();
         }
     }
@@ -128,7 +129,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                     // Set the map bounds to client and targetCircle
                     MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
                 }
-        }, 200);
+        }, 300);
 
     });
 
@@ -203,8 +204,9 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     function openModal() {
         // modalOpen = true;
-        $scope.modal.show();    
-        // UserNotificationFactory.notifyUser("new region entered!");
+        $scope.modal.show();
+        console.log("!!!!firing notification");    
+        UserNotificationFactory.notifyUser("new region entered!");
     }
 
     $scope.attemptCloseModal = function(){

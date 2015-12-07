@@ -1,7 +1,7 @@
 app.factory('UserNotificationFactory', function($cordovaVibration, $cordovaLocalNotification){
 	var factory = {
 		notifyUser : function(message){
-      		$cordovaVibration.vibrate(200);
+      		// $cordovaVibration.vibrate(200);
       		$cordovaLocalNotification.add({
         		id: 1,
         		title: 'GeoQuest Alert!',
