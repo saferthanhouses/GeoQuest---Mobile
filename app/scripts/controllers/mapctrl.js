@@ -163,6 +163,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                         // Set the map bounds to client and targetCircle
                         MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
                     }
+
             }, 300);
         } else {
             openedWinModal = false;
@@ -244,7 +245,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
  
 
     function openModal() {
-        if (!$scope.justStarting && $scope.currentStepIndex.transitionInfo && $scope.currentStepIndex.transitionInfo.question) {
+        // console.log("about to open modal", $scope.justStarting, $scope.currentStepIndex.transitionInfo, $scope.currentStepIndex.transitionInfo.question)
+        if (!$scope.justStarting && $scope.currentStep && $scope.currentStep.transitionInfo && $scope.currentStep.transitionInfo.question) {
             $scope.button.buttonMessage = "Submit!";
         } else {
             $scope.button.buttonMessage = "Got It!";
