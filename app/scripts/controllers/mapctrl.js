@@ -156,7 +156,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                         return; //If quest is done, no need to continue 
                     }
                     goToNextStep(); 
-                    console.log("scope vars just updated", $scope.currentStep);
 
                     // All steps except the first one have a targetCircle
                     // If quest is not over, add new targetCircle to map and reset map bounds
