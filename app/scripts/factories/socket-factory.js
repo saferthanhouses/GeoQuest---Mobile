@@ -28,16 +28,13 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 
 		// When you first show up, you are told who's already there. 
 		yourFellows: function(eventData) {
-			// console.log('your fellows: ', eventData);
 			return eventData.fellows;
 		},
 
 		// Any time a fellow moves or a new one appears
 		fellowLocation: function(eventData, fellowArr, myId) {
-			// console.log('got a fellow location', eventData);
 			var fellow = eventData.fellow;
             if (fellow.id === myId) return fellowArr;
-			console.log("eventData", fellow);
             for (var i = 0; i < fellowArr.length; i++) {
                 if(fellow.id === fellowArr[i].id) {
                     fellowArr[i].location = fellow.location;

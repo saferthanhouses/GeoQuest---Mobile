@@ -8,7 +8,6 @@ app.factory('ClickFactory', function($timeout){
 			elem.addClass('pressed');
 			$timeout(function() {
 		        elem.removeClass('pressed');
-		        console.log('Off!');
 		    }, 500);
 		},
 
@@ -16,7 +15,6 @@ app.factory('ClickFactory', function($timeout){
 			elem.addClass('bold');
 			$timeout(function() {
 		        elem.removeClass('bold');
-		        console.log('Off!');
 		    }, 500);
 		},
 
@@ -24,7 +22,6 @@ app.factory('ClickFactory', function($timeout){
 			elem.addClass('map-link');
 			$timeout(function() {
 		        elem.removeClass('map-link');
-		        console.log('Off!');
 		    }, 500);
 		},
 

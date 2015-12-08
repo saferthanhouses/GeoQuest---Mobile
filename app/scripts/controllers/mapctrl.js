@@ -78,6 +78,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             }
             $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
             MapFactory.updateFellowMarkers($scope.fellows);
+            $scope.$digest();
         });
 
     }
@@ -146,12 +147,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         // remove areas from map
             $timeout(function(){ 
                 $scope.modalIsOpen = false;
-                console.log("modal hidden");
 
                 // $timeout(function(){
                     MapFactory.removeTargetCircle();
                     if ($scope.questNotOver === false) {
-                        console.log("quest is over");
                         return; //If quest is done, no need to continue 
                     }
                     goToNextStep(); 
@@ -183,11 +182,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         // If quest is finished, delete startedQuest object, and call quest end modal
         if ($scope.currentStepIndex > $scope.steps.length-1) {
             alreadyWon = true;
-            console.log("winner", $scope.wins.winner);
             $timeout(prepareForEnd, 500);
         }
-        console.log("currentStepIndex", $scope.currentStepIndex)
-        console.log("steps.length", $scope.steps.length);
     }
 
     // If there is a startedQuest object, increment currentStep
@@ -213,9 +209,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     }
 
     function questEnd(){
-        console.log("quest is ending");
         $scope.questNotOver = false;
-        console.log("questNotOver", $scope.questNotOver);
         openModal();
         // Put up modal with quest.closingInfo.title and quest.closingInfo.text
             // modal has option to stay in room or go view quests
@@ -245,15 +239,13 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
  
 
     function openModal() {
-        // console.log("about to open modal", $scope.justStarting, $scope.currentStepIndex.transitionInfo, $scope.currentStepIndex.transitionInfo.question)
         if (!$scope.justStarting && $scope.currentStep && $scope.currentStep.transitionInfo && $scope.currentStep.transitionInfo.question) {
             $scope.button.buttonMessage = "Submit!";
         } else {
             $scope.button.buttonMessage = "Got It!";
         }
         $scope.modal.show().then(function(){ 
-            if ($scope.modalIsOpen === false && !$scope.justStarting && $scope.questNotOver){
-                console.log("!!!!firing notification");    
+            if ($scope.modalIsOpen === false && !$scope.justStarting && $scope.questNotOver){  
                 UserNotificationFactory.notifyUser("new region entered!");
             }
             $scope.modalIsOpen = true;
@@ -261,18 +253,14 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     }
 
     $scope.attemptCloseModal = function(){
-
-        console.log("$scope", $scope);
         // If there's a question to answer, only close modal if answer is correct
         if ($scope.questNotOver && (!$scope.justStarting && $scope.currentStep.transitionInfo.question.length)) {
           // will be undefined if the modal hasn't had time to load
           // need to have the regex defined before we close the modal.
             setRegex();
             if ($scope.regex.test($scope.form.answer)) { 
-                console.log("tesst passed");
                 $scope.modal.hide();
             } else {
-                console.log("wrong answer");
                 $scope.wrongAnswer = true;
                 $timeout(function(){
                     $scope.wrongAnswer = false;
