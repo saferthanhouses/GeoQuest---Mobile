@@ -37,6 +37,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $scope.form ={}
     $scope.form.answer = "";
     $scope.wins = {};
+    var alreadyWon = false;
 
     // lame modal variables
     $scope.modalIsOpen = false;
@@ -86,7 +87,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     // QUEST LOGIC
     function checkWinner(fellow){
         // if the fellow is at the end, and it's not me (cause get own events) and no one has 'won' previously
-        if ((fellow.currentStepIndex == $scope.steps.length) && (fellow.name !== $scope.me.name) && !$scope.wins.winner){
+        if ((fellow.currentStepIndex == $scope.steps.length) && (fellow.name !== $scope.me.name) && (!$scope.wins.winner) && (!alreadyWon)){
             // close progress
             var viewProgress = false;
             // set the winner
@@ -181,7 +182,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
         // If quest is finished, delete startedQuest object, and call quest end modal
         if ($scope.currentStepIndex > $scope.steps.length-1) {
-            $scope.wins.winner = $scope.me.name;
+            alreadyWon = true;
+            console.log("winner", $scope.wins.winner);
             $timeout(prepareForEnd, 500);
         }
         console.log("currentStepIndex", $scope.currentStepIndex)
@@ -243,7 +245,11 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
  
 
     function openModal() {
-        $scope.button.buttonMessage = !$scope.justStarting && $scope.currentStep.transitionInfo.question ? "Submit!" : "Got It!";
+        if (!$scope.justStarting && $scope.currentStepIndex.transitionInfo && $scope.currentStepIndex.transitionInfo.question) {
+            $scope.button.buttonMessage = "Submit!";
+        } else {
+            $scope.button.buttonMessage = "Got It!";
+        }
         $scope.modal.show().then(function(){ 
             if ($scope.modalIsOpen === false){
                 console.log("!!!!firing notification");    

@@ -85,6 +85,11 @@ float: left !important;
 margin-right: -15px !important;
 }
 
+.endButton {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
 /* Home */
 div.container {
     background: url('../images/paper.png') repeat;
