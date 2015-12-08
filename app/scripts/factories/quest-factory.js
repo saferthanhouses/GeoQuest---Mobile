@@ -38,12 +38,13 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
 	};
 
   QuestFactory.addReview = function(questId, review){
+    console.log("review", review);
     return $http({
       method: 'PUT',
       url: ENV.apiEndpoint + 'api/quests/' + questId + '/review', review,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
+      // headers: {
+      //   'Content-Type': 'application/x-www-form-urlencoded'
+      // },
       data: { reviewToAdd: review }      
     })
   }

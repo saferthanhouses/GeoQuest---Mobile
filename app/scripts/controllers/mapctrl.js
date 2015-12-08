@@ -39,6 +39,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $scope.wins = {};
     var alreadyWon = false;
 
+    $scope.review = {};
+
     // lame modal variables
     $scope.modalIsOpen = false;
     $scope.mainModalHidden = false;
@@ -282,7 +284,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     $scope.submitReview = function(){
         $scope.isReviewSubmitted = true;
-        QuestFactory.addReview($scope.quest._id, $scope.rating)
+        QuestFactory.addReview($scope.quest._id, $scope.review.rating)
             .then(function(){
                 $scope.isReviewSubmitted = false;
                 $scope.reviewIsSubmitted = true;
