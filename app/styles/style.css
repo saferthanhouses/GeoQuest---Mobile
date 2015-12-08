@@ -27,6 +27,11 @@ body {
   height: 100%;
 }
 
+h2.title {
+  font-size: 3.0em;
+  text-align: center;
+}
+
 section {
     background: url('../images/denim.png') repeat;
     min-height: calc(100vh - 50px);
@@ -85,9 +90,23 @@ float: left !important;
 margin-right: -15px !important;
 }
 
-.endButton {
+button.chooseAnotherQuest {
+  font-size: 1.4em;
+}
+
+.reviewBox {
+  padding-bottom: 10px;
+}
+
+.reviewBox p {
+  font-size: 1.4em;
+  font-style: italic;
+  text-align: center;
+}
+
+button.endButton {
   width: 100%;
-  margin-bottom: 5px;
+  margin-bottom: 10px !important;
 }
 
 /* Home */
