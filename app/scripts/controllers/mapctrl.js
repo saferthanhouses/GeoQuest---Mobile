@@ -21,6 +21,15 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         var room = $stateParams.room;
     } 
     $scope.steps = $scope.quest.questSteps;
+    // If creator wants questSteps to be shuffled, shuffle them and save new order in startedQuest object
+    if ($scope.justStarting && $scope.quest.shuffle) {
+        $scope.steps = QuestFactory.shuffle($scope.steps);
+        // Reset questStep order in startedQuest object in database
+        if ($stateParams.startedQuest) {
+            StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps);
+        }
+    }
+
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
 
     $scope.form ={}
