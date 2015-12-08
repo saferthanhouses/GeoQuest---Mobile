@@ -156,6 +156,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                         return; //If quest is done, no need to continue 
                     }
                     goToNextStep(); 
+                    console.log("scope vars just updated", $scope.currentStep);
 
                     // All steps except the first one have a targetCircle
                     // If quest is not over, add new targetCircle to map and reset map bounds
@@ -164,6 +165,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                         // Set the map bounds to client and targetCircle
                         MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
                     }
+
             }, 300);
         } else {
             openedWinModal = false;
@@ -245,7 +247,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
  
 
     function openModal() {
-        if (!$scope.justStarting && $scope.currentStepIndex.transitionInfo && $scope.currentStepIndex.transitionInfo.question) {
+        // console.log("about to open modal", $scope.justStarting, $scope.currentStepIndex.transitionInfo, $scope.currentStepIndex.transitionInfo.question)
+        if (!$scope.justStarting && $scope.currentStep && $scope.currentStep.transitionInfo && $scope.currentStep.transitionInfo.question) {
             $scope.button.buttonMessage = "Submit!";
         } else {
             $scope.button.buttonMessage = "Got It!";
