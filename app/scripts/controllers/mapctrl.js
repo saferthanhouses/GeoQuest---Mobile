@@ -21,20 +21,9 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         var room = $stateParams.room;
     } 
     $scope.steps = $scope.quest.questSteps;
-    // If creator wants questSteps to be shuffled, shuffle them and save new order in startedQuest object
-    if ($scope.justStarting && $scope.quest.shuffle) {
-        $scope.steps = QuestFactory.shuffle($scope.steps);
-        // Reset questStep order in startedQuest object in database
-        if ($stateParams.startedQuest) {
-            StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps)
-            .then(function(updateStartedQuest) {
-                $scope.steps = updateStartedQuest.quest.questSteps;
-            });
-        }
-    }
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
 
-    $scope.form ={};
+    $scope.form ={}
     $scope.form.answer = "";
     $scope.wins = {};
 
@@ -44,7 +33,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     var openedWinModal = false;
 
     // USER VARIABLES 
-    $scope.me = {name: $stateParams.name, color: MapFactory.getRandomColor()};
+    $scope.me = {name: $stateParams.name, color: getRandomColor()};
     $scope.fellows = [];
     $scope.getPercentage = function(stepIndex) {
         var percentage = (stepIndex / $scope.steps.length) * 100;
@@ -245,7 +234,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.modal.show().then(function(){ 
             if ($scope.modalIsOpen === false){
                 console.log("!!!!firing notification");    
-                UserNotificationFactory.notifyUser("new region entered!");
+                // UserNotificationFactory.notifyUser("new region entered!");
             }
             $scope.modalIsOpen = true;
         })
@@ -291,9 +280,18 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 $scope.isReviewSubmitted = false;
                 $scope.reviewIsSubmitted = true;
                 $timeout(function(){ $scope.hideReviewBox = true; }, 2000)
-            });
-    };
+            })
+    }
 
+    // Used for generating color that your fellows see you as
+    function getRandomColor() {
+        var letters = '0123456789ABCDEFABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 22)];
+        }
+        return color;
+    }
 
 });
 
