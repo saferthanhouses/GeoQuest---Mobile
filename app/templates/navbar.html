@@ -9,7 +9,7 @@
         <span>Welcome, {{ user.userName }}!</span>
     </div>
     <button ng-show="!home" ng-click="abandon()" class="btn btn-info pull-left">Quests</button>
-    <a ng-show="user && startedquests.length && home" ui-sref="StartedQuests({userId:user._id})" class="btn btn-info pull-left">Quests in Progress</a>
-    <button ng-show="!user" ng-click="openAuth()" class="btn btn-info login-button pull-right">Login / Signup</a>
+    <button ng-show="user && startedquests.length && home" ui-sref="StartedQuests({userId:user._id})" class="btn btn-info pull-left">Quests in Progress</button>
+    <button ng-show="!user" ng-click="openAuth()" class="btn btn-info login-button pull-right">Login / Signup</button>
     <button ng-show="user" class ="btn btn-info login-button pull-right" ng-click="logout()" ui-sref="Home">Logout</button>
 </nav>

@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('HomeCtrl', function($scope, $rootScope, $state, $ionicPlatform, quests, startedQuests, AuthService, QuestFactory, StartedQuestFactory) {
+app.controller('HomeCtrl', function($scope, $rootScope, $state, ClickFactory, $ionicPlatform, quests, startedQuests, AuthService, QuestFactory, StartedQuestFactory) {
 
     // Get user's location, and sort in ascending order of distance from user
     $ionicPlatform.ready(function() {
@@ -37,10 +37,12 @@ app.controller('HomeCtrl', function($scope, $rootScope, $state, $ionicPlatform, 
       });
     }
 
-    $scope.buttonClicked = function(){
-      console.log("buttonClicked")
-    }
-        
+    $('a').click(function() {
+      var theLink = $(this);
+      ClickFactory.linkReact(theLink);
+    });
+
+  
 });
 
 

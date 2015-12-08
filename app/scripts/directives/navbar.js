@@ -1,6 +1,6 @@
 'use strict';
 
-app.directive('navbar', function ($rootScope, $state, $ionicModal, AuthService, Session) {  // other injections: , AuthService, AUTH_EVENTS, 
+app.directive('navbar', function ($rootScope, $state, ClickFactory, $timeout, $ionicModal, AuthService, Session) {  // other injections: , AuthService, AUTH_EVENTS, 
 
     return {
         transclude: true,
@@ -16,6 +16,11 @@ app.directive('navbar', function ($rootScope, $state, $ionicModal, AuthService, 
         },
         templateUrl: 'templates/navbar.html',
         link: function (scope) {
+
+            $('button').click(function() {
+              var theButton = $(this);
+              ClickFactory.buttonReact(theButton);
+            });
 
             scope.openAuth = function() {
                 $rootScope.$emit('openAuthModal');
