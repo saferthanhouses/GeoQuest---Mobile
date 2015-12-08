@@ -23,6 +23,8 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal,
       StatusBar.styleDefault();
     }
 
+    
+
     // If localStorage has property external_load, user followed a link here. Use it to redirect.
     setTimeout(function() {
       var externalUrl = window.localStorage.getItem('external_load');
