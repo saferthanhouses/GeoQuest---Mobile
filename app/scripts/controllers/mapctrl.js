@@ -30,6 +30,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
     }
 
+    $scope.button = {};
+
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
 
     $scope.form ={}
@@ -241,7 +243,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
  
 
     function openModal() {
+        console.log("pre-button,", $scope.currentStep.transitionInfo.question === true);
+        $scope.button.buttonMessage = !$scope.justStarting && $scope.currentStep.transitionInfo.question ? "Submit!" : "Got It!";
         console.log("openModal", $scope.modalIsOpen );
+        console.log("cs", $scope.currentStep.transitionInfo)
         $scope.modal.show().then(function(){ 
             if ($scope.modalIsOpen === false){
                 console.log("!!!!firing notification");    
