@@ -110,6 +110,16 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 
     };
 
+        // Used for generating color that your fellows see you as
+    MapFactory.getRandomColor = function() {
+        var letters = '0123456789ABCDEFABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 22)];
+        }
+        return color;
+    };
+
 	return MapFactory;
 
 });
