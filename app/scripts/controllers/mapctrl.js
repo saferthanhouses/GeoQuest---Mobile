@@ -30,6 +30,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
     }
 
+    $scope.button = {};
+
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
 
     $scope.form ={}
@@ -44,6 +46,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     // USER VARIABLES 
     $scope.me = {name: $stateParams.name, color: getRandomColor()};
     $scope.fellows = [];
+    
+
     $scope.getPercentage = function(stepIndex) {
         var percentage = (stepIndex / $scope.steps.length) * 100;
         return percentage + '%';
@@ -239,7 +243,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
  
 
     function openModal() {
-        console.log("openModal", $scope.modalIsOpen );
+        $scope.button.buttonMessage = !$scope.justStarting && $scope.currentStep.transitionInfo.question ? "Submit!" : "Got It!";
         $scope.modal.show().then(function(){ 
             if ($scope.modalIsOpen === false){
                 console.log("!!!!firing notification");    

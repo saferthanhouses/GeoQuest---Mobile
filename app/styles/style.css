@@ -95,6 +95,10 @@ div.container.progress-view {
   min-height: 100vh;
 }
 
+input.answer {
+  width: 100%;
+}
+
 .container p {
   font-size: 16px;
   margin-bottom: 0;
@@ -196,8 +200,7 @@ section.login, div.login {
 	width: 90%;
 	margin-left: 0px;
 	border-radius: 4px;
-	margin-top: 90% !important;
-
+ 
 }
 
 .modalContent {
