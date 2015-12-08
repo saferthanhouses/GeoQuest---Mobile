@@ -26,10 +26,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.steps = QuestFactory.shuffle($scope.steps);
         // Reset questStep order in startedQuest object in database
         if ($stateParams.startedQuest) {
-            StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps)
-            .then(function(updateStartedQuest) {
-                $scope.steps = updateStartedQuest.quest.questSteps;
-            });
+            StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps);
         }
     }
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
