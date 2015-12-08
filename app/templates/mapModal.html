@@ -28,10 +28,10 @@
 		<div class="" ng-show="isReviewSubmitted">Submitting review ... </div>
 		<div class="" ng-show="reviewIsSubmitted">Thanks for the review :) </div>
 	</div>
-    <button ng-show="!questNotOver" ng-click="timeToGoHome();" class="btn btn-success questFinishButtons">Choose Another Quest</button>
-    <button ng-show="!questNotOver" ng-click="attemptCloseModal()" class="btn btn-success">Stay And Explore</button>
+    <button ng-show="!questNotOver" ng-click="timeToGoHome();" class="btn btn-success questFinishButtons endButton">Choose Another Quest</button>
+    <button ng-show="!questNotOver" ng-click="attemptCloseModal()" class="btn btn-success endButton">Stay And Explore</button>
 
-  <button ng-hide="!questNotOver && currentStep.transitionInfo.question.length" class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
+  <button ng-hide="!questNotOver" class="button button-full button-energized closeModalButton" ng-click="attemptCloseModal()">
   	 {{ button.buttonMessage }}
   </button>
 
