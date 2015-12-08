@@ -44,6 +44,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     // USER VARIABLES 
     $scope.me = {name: $stateParams.name, color: getRandomColor()};
     $scope.fellows = [];
+    
+
     $scope.getPercentage = function(stepIndex) {
         var percentage = (stepIndex / $scope.steps.length) * 100;
         return percentage + '%';
