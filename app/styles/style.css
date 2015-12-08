@@ -234,15 +234,21 @@ ul.rating li i {
   font-size: 30px;
 }
 
-.my-element.ng-hide-add-active,
-.my-element.ng-hide-remove-active {
-  /* the transition is defined in the active class */
-  transition: 1s linear all;
-}
-
 .wrongAnswer {
   color: red;
   font-size: 1.3em;
+}
+
+.hideMainModal {
+  transition: all linear 0.5s;
+  opacity: 1;
+}
+
+.hideMainModal.ng-hide-add-active,
+.hideMainModal.ng-hide-remove-active {
+  /* the transition is defined in the active class */
+  transition: 0.5s linear all;
+  opacity: 0;
 }
 
 /* THIS IS ALL OF BOOTSTRAP */

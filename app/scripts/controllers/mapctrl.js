@@ -29,14 +29,20 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps);
         }
     }
+
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
 
-    $scope.form ={};
+    $scope.form ={}
     $scope.form.answer = "";
-    $scope.modalOpen = false;
+    $scope.wins = {};
+
+    // lame modal variables
+    $scope.modalIsOpen = false;
+    $scope.mainModalHidden = false;
+    var openedWinModal = false;
 
     // USER VARIABLES 
-    $scope.me = {name: $stateParams.name, color: MapFactory.getRandomColor()};
+    $scope.me = {name: $stateParams.name, color: getRandomColor()};
     $scope.fellows = [];
     $scope.getPercentage = function(stepIndex) {
         var percentage = (stepIndex / $scope.steps.length) * 100;
@@ -63,7 +69,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.nsSocket.on('fellowEvent', function(eventData) {
             console.log("fellowEvent data", eventData);
             if (eventData.callMethod === 'fellowLocation') {
-                checkWinner(eventData.fellow);
+
+                if (!$scope.wins.winner) checkWinner(eventData.fellow);
             }
             $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
             MapFactory.updateFellowMarkers($scope.fellows);
@@ -73,14 +80,22 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
 
     // QUEST LOGIC
-    $scope.wins = {};
     function checkWinner(fellow){
-        console.log("fellow in checkWinner", fellow);
-        if (fellow.currentStepIndex == $scope.steps.length && fellow.name !== $scope.me.name){
+        // if the fellow is at the end, and it's not me (cause get own events) and no one has 'won' previously
+        if ((fellow.currentStepIndex == $scope.steps.length) && (fellow.name !== $scope.me.name) && !$scope.wins.winner){
+            // close progress
             var viewProgress = false;
+            // set the winner
             $scope.wins.winner = fellow.name;
+            // send a notification
             UserNotificationFactory.notifyUser(fellow.name + " Won the game!")
+            // hide the main modal if it's open
+                // this will not work because the this will trigger modal.on('hidden')
+            // if ($scope.modalIsOpen) { $scope.modal.hide() }
+            // 
+            $scope.mainModalHidden = true;
             $scope.winModal.show();
+            openedWinModal = true;
         }
     }
 
@@ -117,30 +132,39 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
     }
 
+    $scope.closeWinModal = function() {
+        $scope.winModal.hide();
+    }
+
     // Closing of modal brings us to next step
     $scope.$on('modal.hidden', function () {
+        if (openedWinModal===false) {
         // remove areas from map
-        $timeout(function(){ 
-            $scope.modalOpen = false;
-            console.log("modal hidden");
+            $timeout(function(){ 
+                $scope.modalIsOpen = false;
+                console.log("modal hidden");
 
-            // $timeout(function(){
-                MapFactory.removeTargetCircle();
-                if ($scope.questNotOver === false) {
-                    console.log("quest is over");
-                    return; //If quest is done, no need to continue 
-                }
-                goToNextStep(); 
+                // $timeout(function(){
+                    MapFactory.removeTargetCircle();
+                    if ($scope.questNotOver === false) {
+                        console.log("quest is over");
+                        return; //If quest is done, no need to continue 
+                    }
+                    goToNextStep(); 
 
-                // All steps except the first one have a targetCircle
-                // If quest is not over, add new targetCircle to map and reset map bounds
-                if ($scope.currentStepIndex <= $scope.steps.length - 1) {
-                    MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
-                    // Set the map bounds to client and targetCircle
-                    MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
-                }
-        }, 300);
-
+                    // All steps except the first one have a targetCircle
+                    // If quest is not over, add new targetCircle to map and reset map bounds
+                    if ($scope.currentStepIndex <= $scope.steps.length - 1) {
+                        MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
+                        // Set the map bounds to client and targetCircle
+                        MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
+                    }
+            }, 300);
+        } else {
+            openedWinModal = false;
+            $scope.mainModalHidden = false;
+            // if ($scope.modalIsOpen === true) $scope.modal.show();
+        }
     });
 
     function goToNextStep() {
@@ -153,6 +177,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
         // If quest is finished, delete startedQuest object, and call quest end modal
         if ($scope.currentStepIndex > $scope.steps.length-1) {
+            $scope.wins.winner = $scope.me.name;
             $timeout(prepareForEnd, 500);
         }
         console.log("currentStepIndex", $scope.currentStepIndex)
@@ -215,12 +240,13 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     function openModal() {
         console.log("openModal", $scope.modalIsOpen );
-        $scope.modal.show();
-        if ($scope.modalIsOpen === false){
-            console.log("!!!!firing notification");    
-            UserNotificationFactory.notifyUser("new region entered!");
-        }
-        $scope.modalIsOpen = true;
+        $scope.modal.show().then(function(){ 
+            if ($scope.modalIsOpen === false){
+                console.log("!!!!firing notification");    
+                // UserNotificationFactory.notifyUser("new region entered!");
+            }
+            $scope.modalIsOpen = true;
+        })
     }
 
     $scope.attemptCloseModal = function(){
@@ -250,7 +276,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     $scope.timeToGoHome = function(){
         $scope.modal.hide()
-        SocketFactory.abandon();
+        SocketFactory.abandon($scope.nsSocket, $scope.mainSocket);
     }
 
     // REVIEW
@@ -263,9 +289,18 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 $scope.isReviewSubmitted = false;
                 $scope.reviewIsSubmitted = true;
                 $timeout(function(){ $scope.hideReviewBox = true; }, 2000)
-            });
-    };
+            })
+    }
 
+    // Used for generating color that your fellows see you as
+    function getRandomColor() {
+        var letters = '0123456789ABCDEFABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 22)];
+        }
+        return color;
+    }
 
 });
 
