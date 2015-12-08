@@ -29,10 +29,11 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal,
       var ns = arr[1];
       var room = arr[2];
       window.localStorage.clear();
-      $state.go('Transition', {questId: ns, room: room});
-    } else {
-      $state.go('Home');
-    }
+      
+      setTimeout(function() {
+        $state.go('Transition', {questId: ns, room: room});
+      }, 2000);
+    } 
 
   });
 
