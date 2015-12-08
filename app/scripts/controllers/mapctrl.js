@@ -3,6 +3,7 @@
 app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, ClickFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory) {
 
     // QUEST VARIABLES
+
     $scope.justStarting = true;
     $scope.currentStepIndex = 0; 
     $scope.questNotOver = true;
@@ -29,6 +30,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps);
         }
     }
+    console.log("quest variables", $scope.quest)
 
     $scope.button = {};
 
