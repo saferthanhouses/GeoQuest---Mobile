@@ -5,6 +5,12 @@
 app.factory('StartedQuestFactory', function($http, Session, ENV) {
 
 	var startedQuestCache = [];
+	function replaceInCache(res) {
+		for (var i = 0; i < startedQuestCache.length; i++) {
+			if (startedQuestCache[i] === res.data._id) startedQuestCache[i] = updatedStartedQuest;
+		}
+		return res.data;
+	}
 
 	return {
 		// get all startedQuests for user
@@ -28,13 +34,11 @@ app.factory('StartedQuestFactory', function($http, Session, ENV) {
 		// increment startedquest.currentMapState and delete if done
 		nextMapStep: function(startedQuestId) {
 			return $http.put(ENV.apiEndpoint + 'api/startedQuests/' + startedQuestId)
-			.then(function(res) {
-				var updatedStartedQuest = res.data;
-				for (var i = 0; i < startedQuestCache.length; i++) {
-					if (startedQuestCache[i] === res.data._id) startedQuestCache[i] = updatedStartedQuest;
-				}
-				return updatedStartedQuest;
-			});
+			.then(startedQuestCache);
+		},
+		shuffleSteps: function(startedQuestId, steps) {
+			return $http.put(ENV.apiEndpoint + 'api/startedQuests/reshuffle/' + startedQuestId)
+			.then(startedQuestCache);
 		},
 		// delete a started quest (called by user, or automatically when the quest instance is completed)
 		deleteStartedQuest: function(startedQuestId) {
