@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory) {
+app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, ClickFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory) {
 
     // QUEST VARIABLES
     $scope.justStarting = true;
@@ -265,8 +265,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 $scope.wrongAnswer = true;
                 $timeout(function(){
                     $scope.wrongAnswer = false;
-                }, 2000)
-                // turn button gradually red than back
+                }, 2000);
             }
             $scope.form.answer = "";
         } else {
@@ -301,6 +300,17 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
         return color;
     }
+
+    // Home and Progress links react to click
+    $('a').click(function() {
+      var theLink = $(this);
+      ClickFactory.mapLinkReact(theLink);
+    });
+    // 'Back to map' button reacts to click
+    $('a').click(function() {
+      var theLink = $(this);
+      ClickFactory.mapLinkReact(theLink);
+    });
 
 });
 

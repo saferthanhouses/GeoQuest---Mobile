@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, AuthService, StartedQuestFactory, ContactsFactory){
+app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, AuthService, StartedQuestFactory, ContactsFactory, ClickFactory){
     
     // Get contacts and put them on scope 
     ContactsFactory.getAndParseContacts()
@@ -25,8 +25,8 @@ app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state
     $scope.chosenFellows = []; // Array gets populated as user selects contacts
 
     // Registers method to send a text to each chosen contact, then go to map state. 
-    $scope.summonFellows = function() {
-        ContactsFactory.summonFellows($scope.chosenFellows, $scope.quest._id, $scope.room);
+    $scope.summonFellows = function(isFellows) {
+        if (isFellows) ContactsFactory.summonFellows($scope.chosenFellows, $scope.quest._id, $scope.room);
         $scope.chosenFellows = [];
         $('.chosen').removeClass('chosen');
         // Save the quest instance as a startedQuest in the DB
@@ -55,6 +55,11 @@ app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state
                 $(this).removeClass('chosen');
             }
         });
+    });
+
+    $('button').click(function() {
+      var theButton = $(this);
+      ClickFactory.buttonReact(theButton);
     });
 });
 

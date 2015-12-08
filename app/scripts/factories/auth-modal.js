@@ -1,4 +1,4 @@
-app.service('AuthModal', function($ionicModal, AuthService, $rootScope, $timeout){
+app.service('AuthModal', function($ionicModal, AuthService, ClickFactory, $rootScope, $timeout){
 	
 	// this modal should be opened at various points throughout the application in response
 	// to an event.
@@ -20,6 +20,7 @@ app.service('AuthModal', function($ionicModal, AuthService, $rootScope, $timeout
 	});
 
 	$rootScope.login = function(userInfo) {
+		$rootScope.userInfo = {};
 		AuthService.login(userInfo).then(function(user){
 			self.modal.hide()
 		}, function() {
@@ -31,6 +32,7 @@ app.service('AuthModal', function($ionicModal, AuthService, $rootScope, $timeout
 	};
 
 	$rootScope.signup = function(userInfo) {
+		$rootScope.userInfo = {};
 		AuthService.signup(userInfo).then(function(user){
 			self.modal.hide()
 		}, function() {
@@ -40,6 +42,12 @@ app.service('AuthModal', function($ionicModal, AuthService, $rootScope, $timeout
 			}, 2000);
 		});
 	};
+
+	$('button').click(function() {
+      var theButton = $(this);
+      ClickFactory.buttonReact(theButton);
+    });
+
 });
 
 

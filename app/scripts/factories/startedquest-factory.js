@@ -37,7 +37,7 @@ app.factory('StartedQuestFactory', function($http, Session, ENV) {
 			.then(startedQuestCache);
 		},
 		shuffleSteps: function(startedQuestId, steps) {
-			return $http.put(ENV.apiEndpoint + 'api/startedQuests/reshuffle/' + startedQuestId)
+			return $http.put(ENV.apiEndpoint + 'api/startedQuests/reshuffle/' + startedQuestId, {questSteps: steps})
 			.then(startedQuestCache);
 		},
 		// delete a started quest (called by user, or automatically when the quest instance is completed)

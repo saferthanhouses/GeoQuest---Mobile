@@ -1,6 +1,6 @@
 'use strict';
 
-app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootScope, $timeout, StartedQuestFactory, resolvedQuest) {
+app.controller('TransitionCtrl', function($scope, $state, ClickFactory, $stateParams, $rootScope, $timeout, StartedQuestFactory, resolvedQuest) {
 	// Use the resolvedQuest if we have it (came from link and didn't log in),
 	// or else use the quest on $stateParams (came from 'Home', didn't log in)
 	$scope.quest = resolvedQuest ? resolvedQuest : $stateParams.quest;
@@ -17,6 +17,11 @@ app.controller('TransitionCtrl', function($scope, $state, $stateParams, $rootSco
     	}
     	return false;
     };
+
+    $('button').click(function() {
+        var theButton = $(this);
+        ClickFactory.buttonReact(theButton);
+    });
 
 	$scope.toMap = function(trailName) {
 		$scope.trailName = trailName;

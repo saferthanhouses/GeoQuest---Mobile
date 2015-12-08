@@ -3,6 +3,7 @@
 	<div ng-show="!viewProgress" id="map"></div>
 	<div ng-show="!viewProgress" class="go-home"><a ng-click="abandon(nsSocket, mainSocket)">Home</a></div>
 	<div ng-show="!viewProgress" class="view-progress"><a ng-click="viewProgress = true">Progress</a></div>
+	
 	<section ng-show="viewProgress" class="full-screen">
 	<div class="container progress-page">
 		<div>
@@ -21,7 +22,7 @@
 			  </div>
 			</div>
 		</div>
-		<a class="btn btn-info" ng-click="viewProgress = false">Back to Map</a>
+		<button class="btn btn-info" ng-click="viewProgress = false">Back to Map</button>
 	</div>
 	</section>
 
