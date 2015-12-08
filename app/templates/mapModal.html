@@ -1,8 +1,8 @@
-<ion-modal-view class="myModal">
+<ion-modal-view class="myModal" class="hideMainModal" ng-hide="mainModalHidden">
 <ion-header-bar>
   <h1 class="modalTitle">Region Information</h1>
 </ion-header-bar>
-<ion-content class="modalContent">
+<ion-content class="modalContent" ng-class="{'hideMainModal': mainModalHidden}">
 	<!-- Opening info: show when quest begins -->
 	<h2 ng-show="justStarting">{{quest.openingInfo.title}}</h2>
 	<p ng-show="justStarting">{{quest.openingInfo.text}}</p>
@@ -21,7 +21,7 @@
 		<!-- <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQU65A1hkNSMtB0I1hyvYS78eHbs9QqMdS7q2hzpN3e2RbO6h_eew"  alt="winner"> -->
 	</div>
 	<h2 ng-show="!questNotOver">{{currentStep.closingInfo.title}}</h2>
-	<p ng-show="!questNotOver">{{currentStep.closingInfo.text}}</p>
+	<p ng-show="!questNotOver">{{currentdStep.closingInfo.text}}</p>
 	<div ng-show="!questNotOver && !hideReviewBox">
 		<p>Review This Quest:</p>
 		<rating ng-model="rate" max="5" ng-change="submitReview()"></rating>
