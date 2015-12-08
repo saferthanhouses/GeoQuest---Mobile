@@ -23,16 +23,20 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal,
       StatusBar.styleDefault();
     }
 
-    var externalUrl = window.localStorage.getItem('external_load');
-    if (externalUrl) {
-      var arr = externalUrl.split('_');
-      var ns = arr[1];
-      var room = arr[2];
-      window.localStorage.clear();
-      $state.go('Transition', {questId: ns, room: room});
-    } else {
-      $state.go('Home');
-    }
+    // If localStorage has property external_load, user followed a link here. Use it to redirect.
+    setTimeout(function() {
+      var externalUrl = window.localStorage.getItem('external_load');
+      if (externalUrl) {
+        var arr = externalUrl.split('_');
+        var ns = arr[1];
+        var room = arr[2];
+        window.localStorage.clear();
+        $state.go('Transition', {questId: ns, room: room});
+        console.log('HAVE EXTERNAL URL')
+      } else {
+        $state.go('Home');
+      }
+    }, 10);
 
   });
 
