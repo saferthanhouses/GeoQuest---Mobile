@@ -252,9 +252,9 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             $scope.button.buttonMessage = "Got It!";
         }
         $scope.modal.show().then(function(){ 
-            if ($scope.modalIsOpen === false){
+            if ($scope.modalIsOpen === false && !$scope.justStarting && $scope.questNotOver){
                 console.log("!!!!firing notification");    
-                // UserNotificationFactory.notifyUser("new region entered!");
+                UserNotificationFactory.notifyUser("new region entered!");
             }
             $scope.modalIsOpen = true;
         })
