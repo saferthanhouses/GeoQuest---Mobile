@@ -72,7 +72,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         });
         // All fellow-related logic happens in the SocketsFactory, and a new fellows array is returned
         $scope.nsSocket.on('fellowEvent', function(eventData) {
-            console.log("fellowEvent data", eventData);
             if (eventData.callMethod === 'fellowLocation') {
 
                 if (!$scope.wins.winner) checkWinner(eventData.fellow);

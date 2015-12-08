@@ -36,11 +36,12 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 		fellowLocation: function(eventData, fellowArr, myId) {
 			// console.log('got a fellow location', eventData);
 			var fellow = eventData.fellow;
-			console.log("eventData", eventData);
             if (fellow.id === myId) return fellowArr;
+			console.log("eventData", fellow);
             for (var i = 0; i < fellowArr.length; i++) {
                 if(fellow.id === fellowArr[i].id) {
                     fellowArr[i].location = fellow.location;
+                    fellowArr[i].currentStepIndex = fellow.currentStepIndex;
                     return fellowArr;
                 }
             }
