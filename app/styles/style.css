@@ -1,8 +1,9 @@
 /* Empty. Add your own CSS if you like */
 
 /* General */
-* {
+*, h2 {
   font-family: 'Josefin Sans', sans-serif;
+  font-weight: 700 !important;
 }
 
 body {
