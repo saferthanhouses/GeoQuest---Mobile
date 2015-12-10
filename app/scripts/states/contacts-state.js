@@ -8,6 +8,7 @@ app.config(function($stateProvider){
     controller: 'ContactsCtrl',
     params: {
       quest: null
-    }
+    },
+    cache: false
   });
 });

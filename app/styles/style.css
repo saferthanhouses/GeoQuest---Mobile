@@ -33,6 +33,10 @@ h2.title {
   text-align: center;
 }
 
+.winMessage {
+  text-align: center;
+}
+
 section {
     background: url('../images/denim.png') repeat;
     min-height: calc(100vh - 50px);

@@ -141,6 +141,11 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
     }
 
+    $scope.closeAllModals = function(){
+        if ($scope.modal.isShown()) $scope.modal.hide();
+        if ($scope.winModal.isShown()) $scope.winModal.hide();
+    }
+
     $scope.closeWinModal = function() {
         $scope.winModal.hide();
     }

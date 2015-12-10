@@ -3,13 +3,6 @@
 app.controller('HomeCtrl', function($scope, $rootScope, $state, ClickFactory, $ionicPlatform, $location, quests, startedQuests, AuthService, QuestFactory, StartedQuestFactory) {
     // Get user's location, and sort in ascending order of distance from user
 
-
-    $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-
-      console.log("State changed: ", toState);
-
-      $scope.quest = undefined;
-    })
     
 
     $ionicPlatform.ready(function() {
@@ -20,7 +13,7 @@ app.controller('HomeCtrl', function($scope, $rootScope, $state, ClickFactory, $i
     });
 
     $scope.toContacts = function(quest) {
-      $state.go('Contacts', {quest: quest});
+      $state.go('Contacts', {quest: quest}, {reload: true});
     };
 
     // Set other $scope paramerters

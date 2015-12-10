@@ -3,7 +3,7 @@
 app.config(function($stateProvider) {
 	$stateProvider
 	.state('Transition', {
-		cache: false,
+	cache: false,
         url: '/transition',
         controller: 'TransitionCtrl',
         templateUrl: 'templates/transition.html',

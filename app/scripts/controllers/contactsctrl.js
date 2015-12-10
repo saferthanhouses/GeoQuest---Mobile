@@ -1,7 +1,7 @@
 'use strict'
 
 app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, AuthService, StartedQuestFactory, ContactsFactory, ClickFactory){
-    
+
     // Get contacts and put them on scope 
     ContactsFactory.getAndParseContacts()
     .then(function(contacts) {
