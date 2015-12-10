@@ -20,7 +20,8 @@ app.controller('HomeCtrl', function($scope, $rootScope, $state, ClickFactory, $i
     });
 
     $scope.toContacts = function(quest) {
-      $state.go('Contacts', {quest: quest});
+      console.log("quest", quest);
+      $state.go('Contacts', {quest: quest}, {reload: true});
     };
 
     // Set other $scope paramerters
