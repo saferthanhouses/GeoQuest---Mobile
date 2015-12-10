@@ -1,14 +1,6 @@
 'use strict'
 
 app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, AuthService, StartedQuestFactory, ContactsFactory, ClickFactory){
-    
-
-    console.log("stateParams in ContactsCtrl", $stateParams)
-
-    $scope.$on('$ionicView.enter', function() {
-    // code to run each time view is entered
-        $scope.quest = $stateParams.quest;
-    });
 
     // Get contacts and put them on scope 
     ContactsFactory.getAndParseContacts()
