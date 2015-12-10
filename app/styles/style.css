@@ -10,6 +10,11 @@ body {
   margin: 0;
 }
 
+p {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 700;
+}
+
 .center {
   text-align: center;
 }
