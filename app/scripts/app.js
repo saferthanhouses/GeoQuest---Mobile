@@ -7,6 +7,7 @@
 var app = angular.module('GeoQuest', ['ionic', 'ui.router', 'ngCordova', 'ngAnimate', 'config', 'ionic.rating']);
 
 app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal, AuthModal) {
+
   $ionicPlatform.ready(function() {
 
     $ionicPlatform.onHardwareBackButton(function(event) {
@@ -22,9 +23,7 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal,
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
-
     
-
     // If localStorage has property external_load, user followed a link here. Use it to redirect.
     setTimeout(function() {
       var externalUrl = window.localStorage.getItem('external_load');
@@ -50,8 +49,8 @@ app.run(function($ionicPlatform, $state, $rootScope, $ionicLoading, $ionicModal,
    $httpProvider.interceptors.push(function($rootScope) {
     return {
       request: function(config) {
-        $rootScope.$broadcast('loading:show')
-        return config
+        $rootScope.$broadcast('loading:show');
+        return config;
       },
       response: function(response) {
         $rootScope.$broadcast('loading:hide')

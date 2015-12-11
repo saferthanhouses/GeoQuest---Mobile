@@ -1,6 +1,6 @@
 'use strict'
 
-app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope) {
+app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope, $ionicLoading) {
 
     function deg2rad(deg) {
       return deg * (Math.PI/180)
@@ -24,8 +24,10 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
     };
 
 	QuestFactory.getAllQuests = function() {
-		return $http.get(ENV.apiEndpoint + 'api/quests/')
+      $ionicLoading.show({template: '<ion-spinner></ion-spinner>'})
+  		return $http.get(ENV.apiEndpoint + 'api/quests/')
 		.then(function(res) {
+      $ionicLoading.hide()
 			return res.data;
 		});
 	};
@@ -38,20 +40,18 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
 	};
 
   QuestFactory.addReview = function(questId, review){
-    console.log("review", review);
-    return $http({
-      method: 'PUT',
-      url: ENV.apiEndpoint + 'api/quests/' + questId + '/review', review,
-      // headers: {
-      //   'Content-Type': 'application/x-www-form-urlencoded'
-      // },
-      data: { reviewToAdd: review }      
-    })
+    $ionicLoading.show({template: '<ion-spinner></ion-spinner>'})
+    return $http.put(ENV.apiEndpoint + 'api/quests/' + questId + '/review', { reviewToAdd: review })
+      .then(function() {
+        $ionicLoading.hide();
+      })      
   }
 
 	QuestFactory.sortQuestsByDistanceFromMe = function(quests) {
+    $ionicLoading.show('<ion-spinner></ion-spinner>');
 		return $cordovaGeolocation.getCurrentPosition()
         .then(function (position) {
+          $ionicLoading.hide();
           return [position.coords.latitude, position.coords.longitude];
         })
         .then(function(myLocation) {
