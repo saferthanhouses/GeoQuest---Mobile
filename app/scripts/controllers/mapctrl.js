@@ -281,10 +281,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
     };
 
-    function closeModal(){
-
-    }
-
     $scope.timeToGoHome = function(){
         $scope.modal.hide()
         SocketFactory.abandon($scope.nsSocket, $scope.mainSocket);
