@@ -2,13 +2,12 @@
 
 // This factory is for getting contacts from the user's phone
 // and texting them the link to the quest
-app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $q) {
+app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $q, $ionicLoading) {
 
 	// Success and error callbacks for sending the sms
-	var success = function () { console.log('Message sent successfully'); };
-	var error = function (e) { console.log('Message Failed:' + e); };
-
-	// Used for processing contacts
+	var success = function () { console.log('Message sent successfully');};
+	var error = function (e) { console.log('Message Failed:' + e);};
+  
 	var removeDoublesAndSort = function(parsedContacts) {
 		var numbers = [];
         var noDoubles = [];
@@ -25,6 +24,7 @@ app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $q) {
 
     // Parses array of contacts that plugin brings forth
     var onSuccess = function(contacts) {
+        $ionicLoading.hide();
         var parsedContacts = [];
         contacts.forEach(function(contact) {
             if (contact.phoneNumbers) {
@@ -53,6 +53,7 @@ app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $q) {
 	return {
 		getAndParseContacts: function() {
 		    // find all contacts that have phone numbers, populate displayname and phoneNumbers
+            $ionicLoading.show({template: '<ion-spinner></ion-spinner>'})
 		    var options = new ContactFindOptions();
 		    options.multiple = true;
 		    options.desiredFields = ['phoneNumbers', 'displayName', 'name'];
@@ -66,6 +67,7 @@ app.factory('ContactsFactory', function($cordovaContacts, $cordovaSms, $q) {
 
 		// Send each chosen fellow an sms with the link to the quest instance
 	    summonFellows: function(chosenFellows, questId, room) {
+            // $ionicLoading.show({template: '<ion-spinner></ion-spinner>'})            
 	    	var message = 'You have been invited on a GeoQuest! Follow this path to join: https://glacial-sands-1292.herokuapp.com/?ns=' + questId + '&room=' + room;
 	        chosenFellows.forEach(function(fellowNumber) {
 	            $cordovaSms.send(fellowNumber, message, {}, success, error);
