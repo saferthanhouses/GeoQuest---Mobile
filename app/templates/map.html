@@ -1,7 +1,7 @@
 <ion-view view-title="Map" align-title="center">
 
 	<div ng-show="!viewProgress" id="map"></div>
-	<div ng-show="!viewProgress" class="go-home"><a ng-click="abandon(nsSocket, mainSocket); closeAllModal()">Home</a></div>
+	<div ng-show="!viewProgress" class="go-home"><a ng-click="abandon(nsSocket, mainSocket); closeAllModals()">Home</a></div>
 	<div ng-show="!viewProgress" class="view-progress"><a ng-click="viewProgress = true">Progress</a></div>
 	
 	<section ng-show="viewProgress" class="full-screen">
