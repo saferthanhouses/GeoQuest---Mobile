@@ -1,7 +1,6 @@
 'use strict'
 
 app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, ClickFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory) {
-
     // QUEST VARIABLES
 
     $scope.justStarting = true;
@@ -30,10 +29,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps);
         }
     }
-    console.log("quest variables", $scope.quest)
 
     $scope.button = {};
-
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
 
     $scope.form ={}
@@ -67,7 +64,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         registerSocketListeners();
     });
     var room = $stateParams.startedQuest ? $stateParams.startedQuest.room : $stateParams.room;
-    SocketFactory.connectSockets($scope.quest._id, $stateParams.room);
+    SocketFactory.connectSockets($scope.quest._id, room);
+    console.log('connecting sockets questId', $scope.quest._id, 'roomId', room);
 
     function registerSocketListeners() {
         // So I can differentiate myself from others

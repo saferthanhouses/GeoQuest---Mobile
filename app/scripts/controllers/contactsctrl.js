@@ -42,7 +42,6 @@ app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state
 
     // When a contact is clicked, it's added to text queue and highlighted.
     // If already selected, it's spliced out of queue and ungighlighted.
-    // SHOULD BE DONE IN ANGULAR
     $(document).ready(function() {
         $('.contacts').on('click', '.contact', function() {
             var number = $(this).find('.number').html();
