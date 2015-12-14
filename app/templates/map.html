@@ -9,7 +9,7 @@
 		<div>
 			<h2 class="center">Progress</h2>
 			<p class="bold">{{me.name}}</p>
-			<div class="progress">
+			<div class="progress" ng-style="{'border': '1px solid #5bc0de'}">
 			  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(currentStepIndex)}">
 			  </div>
 			</div>
@@ -17,7 +17,7 @@
 		<div class="quest" ng-repeat="fellow in fellows">
 			<p class="bold">{{fellow.name}}</p>
 			<div class="progress">
-			  <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(fellow.currentStepIndex), 'background-color': fellow.color}"> 
+			  <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(fellow.currentStepIndex), 'background-color': fellow.color, 'border': '1px solid' + fellow.color}"> 
 			  </div>
 			</div>
 		</div>

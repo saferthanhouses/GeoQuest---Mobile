@@ -5,8 +5,6 @@ app.controller('TransitionCtrl', function($scope, $state, ClickFactory, $statePa
 	// or else use the quest on $stateParams (came from 'Home', didn't log in)
 	
 	$scope.quest = resolvedQuest ? resolvedQuest : $stateParams.quest;
-	console.log('statepars', $stateParams)
-	console.log('the quest', $scope.quest)
 	// When user logs in, get them on scope and their startedQuests on scope
     $rootScope.$on('auth-login-success', function(event, user) {
       $scope.user = user;
