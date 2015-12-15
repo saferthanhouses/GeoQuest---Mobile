@@ -246,6 +246,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
  
 
     function openModal() {
+        $scope.showUisref = false; // modal.show is async, and disabling ui-sref until modal opens avoids problems
         if (!$scope.justStarting && $scope.currentStep && $scope.currentStep.transitionInfo && $scope.currentStep.transitionInfo.question) {
             $scope.button.buttonMessage = "Submit!";
         } else {
@@ -256,7 +257,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 UserNotificationFactory.notifyUser("new region entered!");
             }
             $scope.modalIsOpen = true;
-        })
+        });
     }
 
     $scope.attemptCloseModal = function(){
@@ -267,6 +268,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             setRegex();
             if ($scope.regex.test($scope.form.answer)) { 
                 $scope.modal.hide();
+                $scope.showUisref = true;
             } else {
                 $scope.wrongAnswer = true;
                 $timeout(function(){
@@ -276,6 +278,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             $scope.form.answer = "";
         } else {
             $scope.modal.hide();
+            $scope.showUisref = true;
         }
     };
 
