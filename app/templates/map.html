@@ -1,5 +1,4 @@
 <ion-view view-title="Map" align-title="center">
-<ion-content scroll="true">
 	<div ng-show="!viewProgress" id="map"></div>
 	<div ng-show="!viewProgress && showUisref" class="go-home"><a ng-click="abandon(nsSocket, mainSocket)">Home</a></div>
 	<div ng-show="!viewProgress && showUisref" class="view-progress"><a ng-click="viewProgress = true">Progress</a></div>
@@ -24,5 +23,4 @@
 		<button class="btn btn-info" ng-click="viewProgress = false">Back to Map</button>
 	</div>
 	</section>
-</ion-content>
 </ion-view>
