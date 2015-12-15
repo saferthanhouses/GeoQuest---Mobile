@@ -3,7 +3,8 @@
 <navbar home="home" abandon="abandon" socket="socket" nssocket="nsSocket" user="user" startedquests="startedQuests"></navbar>
 <section>
 	<div class="container">
-		<h2 class="center">Choose Your Fellowship</h2>
+		<div class="center welcome" ng-show="user">Welcome, {{user.userName}}</div>
+		<h2 ng-class="{'no-top-margin': user}" class="center">Choose Your Fellowship</h2>
 		<form>
 			<div class="form-group">
 				<input class="form-control" placeholder="Filter Fellows by Name" type="text" ng-model="desiredContact.name">

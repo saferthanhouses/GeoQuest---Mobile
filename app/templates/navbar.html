@@ -6,7 +6,6 @@
     </ul>
     <div class="logo pull-left"><img src="http://s17.postimg.org/wrmvxxo1r/map_logo.png" /></div>
     <div ng-show="user" class="welcome pull-left">
-        <span>Welcome, {{ user.userName }}!</span>
     </div>
     <button ng-show="!home" ng-click="abandon()" class="btn btn-info pull-left">Quests</button>
     <button ng-show="user && startedquests.length && home" ui-sref="StartedQuests({userId:user._id})" class="btn btn-info pull-left">Quests in Progress</button>
