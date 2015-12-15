@@ -2,8 +2,11 @@
 
 app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, ClickFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory) {
     // QUEST VARIABLES
-
     $scope.justStarting = true;
+    $scope.shouldShowUisref = function() {
+        return $scope.showUisref;
+    };
+
     $scope.currentStepIndex = 0; 
     $scope.questNotOver = true;
     $scope.viewProgress = false; // ng-show for the progress view
@@ -135,7 +138,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             var circleCenter = $scope.currentStep.targetCircle.center;
             var circleRadius = $scope.currentStep.targetCircle.radius;
             var distanceFromtargetCircleCenter = QuestFactory.getDistanceFromLatLonInMi(circleCenter[0], circleCenter[1], GeoFactory.position[0], GeoFactory.position[1]) * (1.60934 * 1000);
-            if (distanceFromtargetCircleCenter < circleRadius) openModal();
+            if (distanceFromtargetCircleCenter < circleRadius) {
+                $scope.showUisref = false; // modal.show is async, and disabling ui-sref until modal opens avoids problems
+                openModal();
+            } 
         }
     }
 
@@ -174,8 +180,8 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         } else {
             openedWinModal = false;
             $scope.mainModalHidden = false;
-            // if ($scope.modalIsOpen === true) $scope.modal.show();
         }
+        $scope.showUisref = true;
     });
 
     function goToNextStep() {
@@ -256,7 +262,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 UserNotificationFactory.notifyUser("new region entered!");
             }
             $scope.modalIsOpen = true;
-        })
+        });
     }
 
     $scope.attemptCloseModal = function(){
