@@ -4,7 +4,8 @@
 
 	<section>
 	<div class="container">
-		<h2 class="center">Who Goes There?</h2>
+		<div class="center welcome" ng-show="user">Welcome, {{user.userName}}</div>
+		<h2 ng-class="{'no-top-margin': user}" class="center">Who Goes There?</h2>
 		<div ng-show="!isLoggedInUser()">
 			<p>Please either log in/sign up, or enter a temporary trail name. Then be on your way!</p>
 			<br>

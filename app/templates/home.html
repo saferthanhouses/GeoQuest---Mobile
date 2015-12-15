@@ -1,10 +1,10 @@
 <ion-view view-title="Home" align-title="center">
 <ion-content scroll="true">
 	<navbar home="home" user="user" startedquests="startedQuests"></navbar>
-
 	<section>
 	<div class="container">
-		<h2 class="center">Select a Quest</h2>
+		<div class="center welcome" ng-show="user">Welcome, {{user.userName}}</div>
+		<h2 ng-class="{'no-top-margin': user}" class="center">Select a Quest</h2>
 		<form>
 			<div class="form-group">
 				<input class="form-control" placeholder="Filter Quests by Name" type="text" ng-model="desiredQuest.name">

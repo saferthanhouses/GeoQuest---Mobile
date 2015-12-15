@@ -19,6 +19,13 @@ body {
   font-weight: bold;
 }
 
+.welcome {
+  margin-top: 10px;
+}
+.no-top-margin {
+  margin-top: 0;
+}
+
 .form-group input {
   font-size: 16px;
   padding: 5px 0 0 3px;
@@ -26,6 +33,10 @@ body {
 
 .full-screen, #map, html, body {
   height: 100%;
+}
+
+h2.top-margin {
+  margin-top: 15px;
 }
 
 h2.title {
@@ -133,7 +144,7 @@ input.answer {
   margin-bottom: 0;
 }
 
-.container h2 {
+.no-user {
   margin-top: 15px 
 }
 
