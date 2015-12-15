@@ -2,7 +2,6 @@
 
 app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, MapFactory, ClickFactory, $stateParams, GeoFactory, SocketFactory, $cordovaGeolocation, QuestFactory, StartedQuestFactory, UserNotificationFactory) {
     // QUEST VARIABLES
-
     $scope.justStarting = true;
     $scope.currentStepIndex = 0; 
     $scope.questNotOver = true;
