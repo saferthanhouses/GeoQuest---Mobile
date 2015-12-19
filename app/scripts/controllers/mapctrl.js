@@ -85,6 +85,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             MapFactory.updateFellowMarkers($scope.fellows);
             $scope.$digest();
         });
+        $scope.nsSocket.on('disconnect', function(){
+            console.log("disconnected");
+            console.log(this);
+        })
 
     }
 

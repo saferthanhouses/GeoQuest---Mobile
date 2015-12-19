@@ -60,14 +60,51 @@ app.factory('MapFactory', function($cordovaGeolocation, GeoFactory) {
 	};
 
 	MapFactory.updateFellowMarkers = function(fellowArr) {
-		MapFactory.fellowMarkers.forEach(function(marker) {
-			MapFactory.map.removeLayer(marker);
+		//
+
+		// this 
+		// MapFactory.fellowMarkers.forEach(function(marker, index){
+		// 	// if that marker is no longer found in the fellow's, remove it.
+		// 	if (fellowArr.map(function(fellow){
+		// 		return fellow.marker;
+		// 		})
+		// 		.indexOf(marker) === -1)) 
+		// 		{
+		// 			MapFactory.map.removeLayer(marker);
+		// 			toDelete.push(index);
+		// 		} 
+		// })
+
+		var fellowArrayMapped=fellowArr.map(function(fellow){
+			return fellow.marker ? fellow.marker : undefined;
 		});
-		MapFactory.fellowMarkers = [];
+
+		for (var i=MapFactory.fellowMarkers.length-1; i>=0; i--){
+			var marker = MapFactory.fellowMarkers[i];
+			if (fellowArrayMapped.indexOf(marker) === -1) 
+				{
+					MapFactory.map.removeLayer(marker);
+					// delete(marker);
+					MapFactory.fellowMarkers.splice(i,1);
+				} 
+		}
+
+		// otherwise update / add the markers.
 		fellowArr.forEach(function(fellow) {
-			var fellowIcon = L.MakiMarkers.icon({icon: 'school', color: fellow.color, size: 'm'});
-			var fellowMarker = L.marker(fellow.location, {icon: fellowIcon}).addTo(MapFactory.map);
-			MapFactory.fellowMarkers.push(fellowMarker);
+			// if the fellow already has a marker, update it,
+			if (fellow.marker) {
+				//  var lat = (e.latlng.lat);
+			    // var lng = (e.latlng.lng);
+			    // var newLatLng = new L.LatLng(lat, lng);
+			    fellow.marker.setLatLng(fellow.location)
+			} else {
+				// if not, add one.
+				var fellowIcon = L.MakiMarkers.icon({icon: 'school', color: fellow.color, size: 'm'});
+				fellow.marker = L.marker(fellow.location, {icon: fellowIcon}).addTo(MapFactory.map);
+				console.log("fellow", fellow);
+				fellow.marker.bindPopup("<b>" + fellow.name + "</b>").openPopup();
+			}
+			MapFactory.fellowMarkers.push(fellow.marker);
 		});
 	};
 
