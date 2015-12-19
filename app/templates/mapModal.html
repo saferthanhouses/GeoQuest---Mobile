@@ -5,20 +5,22 @@
 <ion-content class="modalContent" ng-class="{'hideMainModal': mainModalHidden}">
 	<!-- Opening info: show when quest begins -->
 	<h2 ng-show="justStarting" class="title">{{quest.openingInfo.title}}</h2>
+	<div ng-show="justStarting && quest.openingInfo.imageUrl" class="modal-image"><img src="{{quest.openingInfo.imageUrl}}"></div>
 	<p ng-show="justStarting">{{quest.openingInfo.text}}</p>
 
+	<!-- Show for transition steps -->
 	<h2 ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.title}}</h2>
-	<div ng-show="currentStep.transitionInfo.imageUrl" class="modal-image"><img src="{{currentStep.transitionInfo.imageUrl}}"></div>
+	<div ng-show="!justStarting && currentStep.transitionInfo.imageUrl" class="modal-image"><img src="{{currentStep.transitionInfo.imageUrl}}"></div>
 	<p ng-show="questNotOver && !justStarting">{{currentStep.transitionInfo.text}}</p>
 	<!-- Show only when an answer is required to move to next step -->
 	<p ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver">{{currentStep.transitionInfo.question}}</p>
 	<input ng-show="currentStep.transitionInfo.question.length && !justStarting && questNotOver" class="answer" type="text" ng-model="form.answer">
 	<p ng-show="wrongAnswer" class="wrongAnswer">Incorrect!</p>
+
 	<!-- Closing info: show when quest ends -->
 	<!-- if there is no winner and the quest is over -->
 	<div ng-show="!wins.winner && !questNotOver">
 		<h2 class="winMessage">Congratulations,<br><span class="winMessage">You WON!</span></h2>
-		<!-- <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQU65A1hkNSMtB0I1hyvYS78eHbs9QqMdS7q2hzpN3e2RbO6h_eew"  alt="winner"> -->
 	</div>
 	<h2 ng-show="!questNotOver">{{currentStep.closingInfo.title}}</h2>
 	<p ng-show="!questNotOver">{{currentdStep.closingInfo.text}}</p>
