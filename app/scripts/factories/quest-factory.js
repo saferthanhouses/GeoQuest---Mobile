@@ -56,7 +56,10 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
         })
         .then(function(myLocation) {
             quests.forEach(function(quest) {
-                var args = [myLocation[0], myLocation[1], quest.start[0], quest.start[1]];
+              console.log('quest', quest.questSteps[0].targetCircle);
+                var questStartLat = quest.questSteps[0].targetCircle.center[0];
+                var questStartLon = quest.questSteps[0].targetCircle.center[1];
+                var args = [myLocation[0], myLocation[1], questStartLat, questStartLon];
                 quest.distFromMe = QuestFactory.getDistanceFromLatLonInMi.apply(null, args);
                 quest.distFromMe = Math.round(quest.distFromMe * 100)/100;
             });

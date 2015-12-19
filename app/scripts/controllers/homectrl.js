@@ -1,10 +1,8 @@
 'use strict'
 
 app.controller('HomeCtrl', function($scope, $rootScope, $state, ClickFactory, $ionicPlatform, $location, quests, startedQuests, AuthService, QuestFactory, StartedQuestFactory) {
-    // Get user's location, and sort in ascending order of distance from user
-
     
-
+    // Get user's location, and sort in ascending order of distance from user
     $ionicPlatform.ready(function() {
       QuestFactory.sortQuestsByDistanceFromMe(quests)
       .then(function(sortedQuests) {
