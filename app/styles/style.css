@@ -31,8 +31,28 @@ body {
   padding: 5px 0 0 3px;
 }
 
-.full-screen, #map, html, body {
+/* on Map - progress/chat/map container*/
+
+.thingContainer {
+  position: static;
+  top: 50px;
   height: 100%;
+  width: 100%;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+.thingContainer {
+  position: relative;
+  top: 40px;
+}
+
+.progress-page {
+  position: relative;
+  top:40px;
 }
 
 h2.top-margin {
@@ -187,9 +207,10 @@ section.login, div.login {
 }
 
 /* Map */
-#map {
+/*#map {
   position: static;
-}
+  top: 50px;
+}*/
 .modal-image {
   width: 100%;
   margin: 0 auto 10px auto;
@@ -197,6 +218,23 @@ section.login, div.login {
 .modal-image img {
   width: 100%;
 }
+
+.mapNavBar {
+  position:fixed;
+  top: 0px;
+  width: 100%;
+  height: 30px;
+  border-bottom: 1px solid black;
+  padding: 5px 0px 5px 0px;
+}
+
+.mapNavBar div {
+  display: inline;
+  font: black;
+  font-size: 1.3em;
+}
+
+/*
 .go-home {
   position: fixed;
   top: 20px;
@@ -206,7 +244,8 @@ section.login, div.login {
   position: fixed;
   top: 20px;
   right: 20px;
-}
+}*/
+
 .go-home a:link, .go-home a:visited, .go-home a:hover, .go-home a:active, .go-home a,
 .view-progress a:link, .view-progress a:visited, .view-progress a:hover, .view-progress a:active, .view-progress a {
   color: white;

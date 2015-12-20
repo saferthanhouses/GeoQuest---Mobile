@@ -290,6 +290,32 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         SocketFactory.abandon($scope.nsSocket, $scope.mainSocket);
     }
 
+    // buttons
+
+    $scope.showMap = true;
+    $scope.showProgress = false;
+    $scope.showChat = false;
+
+    $scope.mapButton = function(){
+        $scope.showMap = true;
+        $scope.showProgress = false;
+        $scope.showChat = false;
+    }
+
+
+    $scope.progressButton = function(){
+        $scope.showMap = false;
+        $scope.showProgress = true;
+        $scope.showChat = false;
+    }
+
+
+    $scope.chatButton = function(){
+        $scope.showMap = false;
+        $scope.showProgress = false;
+        $scope.showChat = true;
+    }
+
     // REVIEW
     $scope.isReviewSubmitted = false;
 
