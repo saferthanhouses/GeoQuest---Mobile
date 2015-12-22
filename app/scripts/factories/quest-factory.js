@@ -24,10 +24,10 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
     };
 
 	QuestFactory.getAllQuests = function() {
-      $ionicLoading.show({template: '<ion-spinner></ion-spinner>'})
+      $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
   		return $http.get(ENV.apiEndpoint + 'api/quests/')
 		.then(function(res) {
-      $ionicLoading.hide()
+      $ionicLoading.hide();
 			return res.data;
 		});
 	};
@@ -58,8 +58,8 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
             var withSteps = [];
             var withoutSteps = [];
             quests.forEach(function(quest) {
-              if (quest.active && quest.questSteps[0] && quest.questSteps[0].targetCircle) withSteps.push(quest);
-              else if (quest.active) withoutSteps.push(quest);
+              if (quest.active && quest.valid && quest.questSteps[0] && quest.questSteps[0].targetCircle) withSteps.push(quest);
+              else if (quest.active && quest.valid) withoutSteps.push(quest);
             });
             withSteps.forEach(function(quest) {
               var questStartLat = quest.questSteps[0].targetCircle.center[0];
