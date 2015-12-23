@@ -1,6 +1,6 @@
 'use strict';
 
-app.controller('StartedQuestCtrl', function($scope, $state, startedQuests, Session, StartedQuestFactory, SocketFactory) {
+app.controller('StartedQuestCtrl', function($scope, $state, startedQuests, Session, StartedQuestFactory, SocketFactory, ClickFactory) {
 	$scope.user = Session.user;
 	$scope.startedQuests = startedQuests;
 
@@ -15,6 +15,11 @@ app.controller('StartedQuestCtrl', function($scope, $state, startedQuests, Sessi
 			name: $scope.user.userName
 		});
 	};
+
+	$('button').click(function() {
+      var theButton = $(this);
+      ClickFactory.buttonReact(theButton);
+    });
 
 	$scope.abandon = SocketFactory.abandon;
 });

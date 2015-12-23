@@ -9,7 +9,6 @@ app.factory('SocketFactory', function($rootScope, $state, ENV) {
 			// 3. Ask to join room
 		    // 4. Emit sockets back to MapCtrl
 		    var socket = io.connect(ENV.apiEndpoint, {'forceNew': true, 'sync disconnect on unload': true });
-		    socket.on('connect', function(){console.log('gottem');});
 		    // Register listener for 'ok' to join specified namespace
 		    socket.on('setToJoinNs', function(questId) {
 		        var nsSocket = io.connect(ENV.apiEndpoint + questId);

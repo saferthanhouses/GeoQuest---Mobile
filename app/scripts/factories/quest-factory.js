@@ -24,10 +24,10 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
     };
 
 	QuestFactory.getAllQuests = function() {
-      $ionicLoading.show({template: '<ion-spinner></ion-spinner>'})
+      $ionicLoading.show({template: '<ion-spinner></ion-spinner>'});
   		return $http.get(ENV.apiEndpoint + 'api/quests/')
 		.then(function(res) {
-      $ionicLoading.hide()
+      $ionicLoading.hide();
 			return res.data;
 		});
 	};
@@ -44,8 +44,8 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
     return $http.put(ENV.apiEndpoint + 'api/quests/' + questId + '/review', { reviewToAdd: review })
       .then(function() {
         $ionicLoading.hide();
-      })      
-  }
+      });  
+  };
 
 	QuestFactory.sortQuestsByDistanceFromMe = function(quests) {
     $ionicLoading.show('<ion-spinner></ion-spinner>');
@@ -55,18 +55,23 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
           return [position.coords.latitude, position.coords.longitude];
         })
         .then(function(myLocation) {
+            var withSteps = [];
+            var withoutSteps = [];
             quests.forEach(function(quest) {
-              console.log('quest', quest.questSteps[0].targetCircle);
-                var questStartLat = quest.questSteps[0].targetCircle.center[0];
-                var questStartLon = quest.questSteps[0].targetCircle.center[1];
-                var args = [myLocation[0], myLocation[1], questStartLat, questStartLon];
-                quest.distFromMe = QuestFactory.getDistanceFromLatLonInMi.apply(null, args);
-                quest.distFromMe = Math.round(quest.distFromMe * 100)/100;
+              if (quest.active && quest.valid && quest.questSteps[0] && quest.questSteps[0].targetCircle) withSteps.push(quest);
+              else if (quest.active && quest.valid) withoutSteps.push(quest);
             });
-            quests.sort(function(a,b) {
+            withSteps.forEach(function(quest) {
+              var questStartLat = quest.questSteps[0].targetCircle.center[0];
+              var questStartLon = quest.questSteps[0].targetCircle.center[1];
+              var args = [myLocation[0], myLocation[1], questStartLat, questStartLon];
+              quest.distFromMe = QuestFactory.getDistanceFromLatLonInMi.apply(null, args);
+              quest.distFromMe = Math.round(quest.distFromMe * 100)/100;
+            });
+            withSteps.sort(function(a,b) {
                 return a.distFromMe - b.distFromMe;
             });
-            return quests;
+            return withSteps.concat(withoutSteps);
         })
         .catch(function(err) {
           console.log('Had a problem getting location: ' + err);
@@ -74,7 +79,7 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
 	};
 
   QuestFactory.shuffle = function(array) {
-      var currentIndex = array.length, temporaryValue, randomIndex ;
+      var currentIndex = array.length, temporaryValue, randomIndex;
       // While there remain elements to shuffle...
       while (0 !== currentIndex) {
         // Pick a remaining element...
@@ -86,7 +91,7 @@ app.factory('QuestFactory', function($http, ENV, $cordovaGeolocation, $rootScope
         array[randomIndex] = temporaryValue;
       }
       return array;
-    }
+    };
 
 	return QuestFactory;
 

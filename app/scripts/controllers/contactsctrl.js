@@ -1,6 +1,6 @@
 'use strict'
 
-app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, $cordovaContacts, $cordovaSms, SocketFactory, AuthService, StartedQuestFactory, ContactsFactory, ClickFactory){
+app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state, SocketFactory, AuthService, StartedQuestFactory, ContactsFactory, ClickFactory){
 
     // Get contacts and put them on scope 
     ContactsFactory.getAndParseContacts()
@@ -33,7 +33,7 @@ app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state
         if ($scope.user) {
             StartedQuestFactory.saveStartedQuestForUser($scope.user._id, $scope.quest, $scope.room)
             .then(function(startedQuest) {
-                $state.go('Map', {startedQuest: startedQuest, name:$scope.user.userName});
+                $state.go('Map', {startedQuest: startedQuest, name: $scope.user.userName});
             });
         } else {
             $state.go('Transition', {quest: $scope.quest, room: $scope.room});
