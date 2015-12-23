@@ -41,7 +41,11 @@
 
 		<!-- chat container -->
 		<section ng-show="showChat" class="full-screen">
-			<div class="chat">THIS IS THE CHAT</div>
+			<div class="chat">
+				<div class="chatArea"></div>
+				<input type="text" name="chatInput" class="chatInput" ng-model="chat.chatInput"/>
+				<button class="btn btn-lg btn-success" ng-click="sendMessage()">Send</button>
+			</div>
 		</section>
 	</div>
 </ion-view>

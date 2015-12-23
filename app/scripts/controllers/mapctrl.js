@@ -238,7 +238,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         // Maybe make a dynamic modalCreator function
     }
 
-
     // MODAL
 
     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
@@ -346,6 +345,23 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             color += letters[Math.floor(Math.random() * 22)];
         }
         return color;
+    }
+
+    $scope.chat = {};
+    // chat functions
+    $scope.sendMessage = function(){
+        // ...
+        console.log("chat.chatInput", $scope.chat.chatInput);
+        $scope.chat.chatInput = "";
+        // send a message event, when successful
+        // clear the chat box &
+        // write the message to the screen 
+    }
+
+    $scope.writeFellowMessage = function(){
+        // on receiving a fellow message event,
+        // write to the screen
+        // jQuery.append...
     }
 
     // Home and Progress links react to click
