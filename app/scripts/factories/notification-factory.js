@@ -1,3 +1,5 @@
+'use strict'
+
 app.factory('UserNotificationFactory', function($cordovaVibration, $cordovaLocalNotification){
 	var factory = {
 		notifyUser : function(message){
@@ -13,6 +15,6 @@ app.factory('UserNotificationFactory', function($cordovaVibration, $cordovaLocal
         		console.log(result);
       		});
     	}
-    }
+    };
     return factory;
-})
+});

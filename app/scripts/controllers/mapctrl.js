@@ -9,34 +9,36 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     $scope.currentStepIndex = 0; 
     $scope.questNotOver = true;
+    $scope.startedQuest = $stateParams.startedQuest;
     $scope.viewProgress = false; // ng-show for the progress view
     // If there's a startedQuest object, use the embedded quest as our quest object
-    if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts' state
-        $scope.quest = $stateParams.startedQuest.quest;
-        var room = $stateParams.startedQuest.room;
+    if ($scope.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts' state
+        $scope.quest = $scope.startedQuest.quest;
+        var room = $scope.startedQuest.room;
         // If this starteQuest is partially finished, pick up where user left off
-        if ($stateParams.startedQuest.currentStepIndex > 0) {
-            $scope.currentStepIndex = $scope.quest.currentStepIndex; 
+        if ($scope.startedQuest.currentStepIndex > 0) {
+            $scope.currentStepIndex = $scope.startedQuest.currentStepIndex;
             $scope.justStarting = false;
         } 
     } else if ($stateParams.quest) { // if user did not log in at 'Transition' state
         $scope.quest = $stateParams.quest;
         var room = $stateParams.room;
     } 
-    $scope.steps = $scope.quest.questSteps;
+    
     // If creator wants questSteps to be shuffled, shuffle them and save new order in startedQuest object
     if ($scope.justStarting && $scope.quest.shuffle) {
-        $scope.steps = QuestFactory.shuffle($scope.steps);
+        $scope.quest.questSteps = QuestFactory.shuffle($scope.quest.questSteps);
         // Reset questStep order in startedQuest object in database
-        if ($stateParams.startedQuest) {
-            StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps);
+        if ($scope.startedQuest) {
+            $scope.startedQuest.quest.questSteps = $scope.quest.questSteps;
+            StartedQuestFactory.shuffleSteps($scope.startedQuest);
         }
     }
+    $scope.steps = $scope.quest.questSteps;
 
-    $scope.button = {};
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
-
-    $scope.form ={}
+    $scope.button = {};
+    $scope.form ={};
     $scope.form.answer = "";
     $scope.wins = {};
     var alreadyWon = false;
@@ -52,7 +54,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $scope.me = {name: $stateParams.name, color: getRandomColor()};
     $scope.fellows = [];
     
-
+    // For progress tracking
     $scope.getPercentage = function(stepIndex) {
         var percentage = (stepIndex / $scope.steps.length) * 100;
         return percentage + '%';
@@ -63,7 +65,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $rootScope.$on('sockets connected', function(event, theSockets) {
         $scope.mainSocket = theSockets.socket;
         $scope.nsSocket = theSockets.nsSocket;
-        console.log('connected', $scope.mainSocket, $scope.nsSocket);
         registerSocketListeners();
     });
     var room = $stateParams.startedQuest ? $stateParams.startedQuest.room : $stateParams.room;
@@ -71,7 +72,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     console.log('connecting sockets questId', $scope.quest._id, 'roomId', room);
 
     function registerSocketListeners() {
-        // So I can differentiate myself from others
+        // So client can differentiate itself from others
         $scope.nsSocket.on('yourId', function(id) {
             $scope.me.id = id;
         });
@@ -89,11 +90,57 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             console.log("disconnected");
             console.log(this);
         })
-
     }
 
 
     // QUEST LOGIC
+
+    // Set the map (If returning to map state, reload map)
+    MapFactory.reloadMap().then(function(){   
+        // If we're just picking up in the middle of the quest, draw the target and setBounds
+        if ($scope.currentStepIndex>0) {
+            MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
+            MapFactory.fitBounds($scope.currentStep.targetCircle.center);
+            $scope.showUisref = true;
+        }
+
+        // linking the MapFactory with the game logic.
+        MapFactory.map.on('locationfound', function (e) {
+            //set user location
+            GeoFactory.position = [e.latlng.lat, e.latlng.lng];
+            // user marker
+            MapFactory.updateUserMarker();        
+            // Tell server where you are so it can tell others in the room
+            if ($scope.nsSocket) {
+                $scope.nsSocket.emit('hereIAm', {
+                    location: [e.latlng.lat, e.latlng.lng],
+                    currentStepIndex: $scope.currentStepIndex,
+                    name: $scope.me.name,
+                    color: $scope.me.color
+                });
+            }
+
+            if ($scope.questNotOver) {
+                checkRegion();
+            } 
+        });
+    });
+
+    // Gets called on 'locationfound'. 
+    function checkRegion() {
+        if ($scope.justStarting) {
+            openModal();
+        } else {
+            var circleCenter = $scope.currentStep.targetCircle.center;
+            var circleRadius = $scope.currentStep.targetCircle.radius;
+            var distanceFromtargetCircleCenter = QuestFactory.getDistanceFromLatLonInMi(circleCenter[0], circleCenter[1], GeoFactory.position[0], GeoFactory.position[1]) * (1.60934 * 1000);
+            if (distanceFromtargetCircleCenter < circleRadius) {
+                $scope.showUisref = false; // modal.show is async, and disabling ui-sref until modal opens avoids problems
+                openModal();
+            } 
+        }
+    }
+
     function checkWinner(fellow){
         // if the fellow is at the end, and it's not me (cause get own events) and no one has 'won' previously
         if ((fellow.currentStepIndex == $scope.steps.length) && (fellow.name !== $scope.me.name) && (!$scope.wins.winner) && (!alreadyWon)){
@@ -113,50 +160,14 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         }
     }
 
-    // Set the map (If returning to map state, reload map)
-    MapFactory.reloadMap().then(function(){   
-        // linking the MapFactory with the game logic.
-        MapFactory.map.on('locationfound', function (e) {
-            //set user location
-            GeoFactory.position = [e.latlng.lat, e.latlng.lng];
-            // user marker
-            MapFactory.updateUserMarker();        
-            // Tell server where you are so it can tell others in the room
-            if ($scope.nsSocket) {
-                $scope.nsSocket.emit('hereIAm', {
-                    location: [e.latlng.lat, e.latlng.lng],
-                    currentStepIndex: $scope.currentStepIndex,
-                    name: $scope.me.name,
-                    color: $scope.me.color
-                });
-            }
-            if ($scope.questNotOver) checkRegion();
-        });
-    });
-
-    // Gets called on 'locationfound'. 
-    function checkRegion () {
-        if ($scope.justStarting) {
-            openModal();
-        } else {
-            var circleCenter = $scope.currentStep.targetCircle.center;
-            var circleRadius = $scope.currentStep.targetCircle.radius;
-            var distanceFromtargetCircleCenter = QuestFactory.getDistanceFromLatLonInMi(circleCenter[0], circleCenter[1], GeoFactory.position[0], GeoFactory.position[1]) * (1.60934 * 1000);
-            if (distanceFromtargetCircleCenter < circleRadius) {
-                $scope.showUisref = false; // modal.show is async, and disabling ui-sref until modal opens avoids problems
-                openModal();
-            } 
-        }
-    }
-
     $scope.closeAllModals = function(){
         if ($scope.modal.isShown()) $scope.modal.hide();
         if ($scope.winModal.isShown()) $scope.winModal.hide();
-    }
+    };
 
     $scope.closeWinModal = function() {
         $scope.winModal.hide();
-    }
+    };
 
     // Closing of modal brings us to next step
     $scope.$on('modal.hidden', function () {
@@ -165,7 +176,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             $timeout(function(){ 
                 $scope.modalIsOpen = false;
 
-                // $timeout(function(){
                     MapFactory.removeTargetCircle();
                     if ($scope.questNotOver === false) {
                         return; //If quest is done, no need to continue 
@@ -177,7 +187,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                     if ($scope.currentStepIndex <= $scope.steps.length - 1) {
                         MapFactory.addTargetCircle($scope.currentStep.targetCircle.center, $scope.currentStep.targetCircle.radius);
                         // Set the map bounds to client and targetCircle
-                        MapFactory.fitBounds($scope.currentStep.targetCircle.center, GeoFactory.position);
+                        MapFactory.fitBounds($scope.currentStep.targetCircle.center);
                     }
 
             }, 300);
@@ -271,7 +281,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     $scope.attemptCloseModal = function(){
         // If there's a question to answer, only close modal if answer is correct
-        if ($scope.questNotOver && (!$scope.justStarting && $scope.currentStep.transitionInfo.question.length)) {
+        if ($scope.questNotOver && (!$scope.justStarting && $scope.currentStep.transitionInfo.question)) {
           // will be undefined if the modal hasn't had time to load
           // need to have the regex defined before we close the modal.
             setRegex();
@@ -318,11 +328,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     }
 
     // Home and Progress links react to click
-    $('a').click(function() {
-      var theLink = $(this);
-      ClickFactory.mapLinkReact(theLink);
-    });
-    // 'Back to map' button reacts to click
     $('a').click(function() {
       var theLink = $(this);
       ClickFactory.mapLinkReact(theLink);
