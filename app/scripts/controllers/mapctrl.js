@@ -9,30 +9,32 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     $scope.currentStepIndex = 0; 
     $scope.questNotOver = true;
+    $scope.startedQuest = $stateParams.startedQuest;
     $scope.viewProgress = false; // ng-show for the progress view
     // If there's a startedQuest object, use the embedded quest as our quest object
-    if ($stateParams.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts' state
-        $scope.quest = $stateParams.startedQuest.quest;
-        var room = $stateParams.startedQuest.room;
+    if ($scope.startedQuest) {  // Defined if creator was logged in when they went through 'Contacts' state
+        $scope.quest = $scope.startedQuest.quest;
+        var room = $scope.startedQuest.room;
         // If this starteQuest is partially finished, pick up where user left off
-        if ($stateParams.startedQuest.currentStepIndex > 0) {
-            $scope.currentStepIndex = $stateParams.startedQuest.currentStepIndex;
+        if ($scope.startedQuest.currentStepIndex > 0) {
+            $scope.currentStepIndex = $scope.startedQuest.currentStepIndex;
             $scope.justStarting = false;
         } 
     } else if ($stateParams.quest) { // if user did not log in at 'Transition' state
         $scope.quest = $stateParams.quest;
         var room = $stateParams.room;
     } 
-    $scope.steps = $scope.quest.questSteps;
     
     // If creator wants questSteps to be shuffled, shuffle them and save new order in startedQuest object
     if ($scope.justStarting && $scope.quest.shuffle) {
-        $scope.steps = QuestFactory.shuffle($scope.steps);
+        $scope.quest.questSteps = QuestFactory.shuffle($scope.quest.questSteps);
         // Reset questStep order in startedQuest object in database
-        if ($stateParams.startedQuest) {
-            StartedQuestFactory.shuffleSteps($stateParams.startedQuest._id, $scope.steps);
+        if ($scope.startedQuest) {
+            $scope.startedQuest.quest.questSteps = $scope.quest.questSteps;
+            StartedQuestFactory.shuffleSteps($scope.startedQuest);
         }
     }
+    $scope.steps = $scope.quest.questSteps;
 
     $scope.currentStep = $scope.steps[$scope.currentStepIndex];
     $scope.button = {};
@@ -63,7 +65,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     $rootScope.$on('sockets connected', function(event, theSockets) {
         $scope.mainSocket = theSockets.socket;
         $scope.nsSocket = theSockets.nsSocket;
-        console.log('connected', $scope.mainSocket, $scope.nsSocket);
         registerSocketListeners();
     });
     var room = $stateParams.startedQuest ? $stateParams.startedQuest.room : $stateParams.room;
@@ -71,7 +72,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     console.log('connecting sockets questId', $scope.quest._id, 'roomId', room);
 
     function registerSocketListeners() {
-        // So I can differentiate myself from others
+        // So client can differentiate itself from others
         $scope.nsSocket.on('yourId', function(id) {
             $scope.me.id = id;
         });
@@ -85,6 +86,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             MapFactory.updateFellowMarkers($scope.fellows);
             $scope.$digest();
         });
+        $scope.nsSocket.on('disconnect', function(){
+            console.log("disconnected");
+            console.log(this);
+        })
     }
 
 

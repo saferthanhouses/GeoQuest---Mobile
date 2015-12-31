@@ -21,7 +21,6 @@ app.controller('ContactsCtrl', function($scope, $rootScope, $stateParams, $state
     .then(function(loggedInUser) {
         $scope.user = loggedInUser;
     });
-    $scope.abandon = SocketFactory.abandon; // For going back to Home state
     $scope.chosenFellows = []; // Array gets populated as user selects contacts
 
     // Registers method to send a text to each chosen contact, then go to map state. 

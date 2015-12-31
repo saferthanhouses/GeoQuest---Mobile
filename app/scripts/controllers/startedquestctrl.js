@@ -5,8 +5,11 @@ app.controller('StartedQuestCtrl', function($scope, $state, startedQuests, Sessi
 	$scope.startedQuests = startedQuests;
 
 	$scope.deleteStartedQuest = function(startedQuestId) {
-		StartedQuestFactory.deleteStartedQuest(startedQuestId);
-		$scope.startedQuests = StartedQuestFactory.fetchCache();
+		StartedQuestFactory.deleteStartedQuest(startedQuestId)
+		.then(function() {
+			$scope.startedQuests = StartedQuestFactory.fetchCache();
+			if (!$scope.startedQuests.length) $state.go('Home');
+		});
 	};
 
 	$scope.toMapFromStartedQuests = function(startedQuest) {
@@ -21,5 +24,4 @@ app.controller('StartedQuestCtrl', function($scope, $state, startedQuests, Sessi
       ClickFactory.buttonReact(theButton);
     });
 
-	$scope.abandon = SocketFactory.abandon;
 });
