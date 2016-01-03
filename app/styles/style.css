@@ -55,6 +55,10 @@ html, body {
   top:40px;
 }
 
+div.chatArea {
+  background: white;
+}
+
 h2.top-margin {
   margin-top: 15px;
 }

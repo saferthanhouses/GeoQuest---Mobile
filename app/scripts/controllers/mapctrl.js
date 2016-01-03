@@ -81,14 +81,24 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             if (eventData.callMethod === 'fellowLocation') {
 
                 if (!$scope.wins.winner) checkWinner(eventData.fellow);
-            }
-            $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
-            MapFactory.updateFellowMarkers($scope.fellows);
-            $scope.$digest();
+                $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
+                MapFactory.updateFellowMarkers($scope.fellows);
+                $scope.$digest();
+            } 
         });
         $scope.nsSocket.on('disconnect', function(){
             console.log("disconnected");
             console.log(this);
+        })
+        $scope.nsSocket.on('fellowMessage', function(messageData){
+            console.log("heardFellowMessageEvent", messageData);
+            // how to pass in the name and the colour?
+            var name = messageData.name, color = messageData.color, message = messageData.message;
+            // var a = [name, color, message];
+            // a.forEach(function(elt){ 
+
+            printChatMessage(name, color, message);
+            
         })
     }
 
@@ -313,6 +323,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.showMap = true;
         $scope.showProgress = false;
         $scope.showChat = false;
+        // modal reveal
     }
 
 
@@ -320,6 +331,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.showMap = false;
         $scope.showProgress = true;
         $scope.showChat = false;
+        // modal hide
     }
 
 
@@ -327,6 +339,7 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.showMap = false;
         $scope.showProgress = false;
         $scope.showChat = true;
+        // modal hide
     }
 
     // REVIEW
@@ -352,21 +365,29 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         return color;
     }
 
+    // Live Chat Functions
+    
+    // get the user name?
     $scope.chat = {};
-    // chat functions
     $scope.sendMessage = function(){
         // ...
-        console.log("chat.chatInput", $scope.chat.chatInput);
+        var message = $scope.chat.chatInput;
         $scope.chat.chatInput = "";
+        var wrappedMessage = $("<p>" + message + "</p>" )
+        $('div.chatArea').append(wrappedMessage);
+        $scope.nsSocket.emit('chatMessage', {
+            message: message,
+            name: $scope.me.name,
+            color: $scope.me.color
+        });
         // send a message event, when successful
         // clear the chat box &
         // write the message to the screen 
     }
 
-    $scope.writeFellowMessage = function(){
-        // on receiving a fellow message event,
-        // write to the screen
-        // jQuery.append...
+    function printChatMessage(name, color, message){
+        var wrappedMessage = $("<p>" + name + ": " + message + "</p>" )
+        $('div.chatArea').append(wrappedMessage);
     }
 
     // Home and Progress links react to click
