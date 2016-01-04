@@ -93,12 +93,14 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.nsSocket.on('fellowMessage', function(messageData){
             console.log("heardFellowMessageEvent", messageData);
             // how to pass in the name and the colour?
-            var name = messageData.name, color = messageData.color, message = messageData.message;
-            // var a = [name, color, message];
-            // a.forEach(function(elt){ 
+            // uncomment when testing non-locally
+            // if (messageData.name!==$scope.me.name){
+                var name = messageData.name, color = messageData.color, message = messageData.message;
+                // var a = [name, color, message];
+                // a.forEach(function(elt){ 
 
-            printChatMessage(name, color, message);
-            
+                printChatMessage(name, color, message);
+            // }
         })
     }
 
@@ -341,7 +343,6 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         $scope.showChat = true;
         // modal hide
     }
-
     // REVIEW
     $scope.isReviewSubmitted = false;
 
@@ -380,14 +381,19 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             name: $scope.me.name,
             color: $scope.me.color
         });
-        // send a message event, when successful
-        // clear the chat box &
-        // write the message to the screen 
     }
 
     function printChatMessage(name, color, message){
-        var wrappedMessage = $("<p>" + name + ": " + message + "</p>" )
-        $('div.chatArea').append(wrappedMessage);
+        var messageContainer = $("<div></div>").addClass("chatMessage");
+        var wrappedName = $("<p>" + name + ":</p>").css("color", color).addClass("chatName");
+        var wrappedMessage = $("<p>" + message + "</p>" )
+        // .addClass("chatMessage");
+        // var wrappedAfter = wrappedName.after(wrappedMessage);
+        var appendToDiv = messageContainer.append(wrappedName)
+        wrappedName.after(wrappedMessage);
+
+        // $('div.chatArea').append(wrappedAfter);
+        $('div.chatArea').append(appendToDiv);
     }
 
     // Home and Progress links react to click

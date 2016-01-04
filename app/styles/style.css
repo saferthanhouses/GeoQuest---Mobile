@@ -33,11 +33,11 @@ body {
 
 /* on Map - progress/chat/map container*/
 
-.thingContainer {
-  position: static;
-  top: 50px;
+.sectionContainer {
+  position: relative !important;
+  top: 52px !important;
   height: 100%;
-  width: 100%;
+  /*width: 100%;*/
 }
 
 html, body {
@@ -45,18 +45,24 @@ html, body {
   width: 100%;
 }
 
-.thingContainer {
+.sectionContainer {
   position: relative;
   top: 40px;
 }
 
 .progress-page {
   position: relative;
-  top:40px;
 }
 
 div.chatArea {
   background: white;
+  min-height: 70vh;
+  margin-top: 8px;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  /*border-radius: 3px;*/
+
 }
 
 h2.top-margin {
@@ -72,11 +78,37 @@ h2.title {
   text-align: center;
 }
 
+/* map nav buttons */
+.left-nav-button {
+  margin-left:3px;
+}
+
+.right-nav-buttons {
+  margin-right:3px;
+}
+
 section {
     background: url('../images/denim.png') repeat;
     min-height: calc(100vh - 50px);
     height: auto;
 }
+
+section.full-screen {
+  background: white;
+  width: 100%;
+  /*margin-left:1%;*/
+}
+
+input.chatInput {
+  width:100%;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
+  border-top: 1px solid black;
+  /*border-radius: 3px*/
+  margin-bottom: 4px;
+}
+
 .pressed {
   border: 2px solid #333 !important;
 }
@@ -152,7 +184,6 @@ button.endButton {
 /* Home */
 div.container {
     background: url('../images/paper.png') repeat;
-    margin: 0 2%;
     min-height: calc(100vh - 50px);
 }
 div.container.progress-view {
@@ -213,7 +244,6 @@ section.login, div.login {
 /* Map */
 #map {
   position: static;
-  top: 50px;
   height: 100%;
 }
 
@@ -229,8 +259,9 @@ section.login, div.login {
   position:fixed;
   top: 0px;
   width: 100%;
-  height: 30px;
-  border-bottom: 1px solid black;
+  height: 50px;
+  border-bottom: 1px solid #333030;
+  box-shadow: 0px 3px 5px #888888;
   padding: 5px 0px 5px 0px;
 }
 
@@ -240,17 +271,9 @@ section.login, div.login {
   font-size: 1.3em;
 }
 
-/*
-.go-home {
-  position: fixed;
-  top: 20px;
-  left: 20px;
+button.chatButton {
+  width: 100%;
 }
-.view-progress {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-}*/
 
 .go-home a:link, .go-home a:visited, .go-home a:hover, .go-home a:active, .go-home a,
 .view-progress a:link, .view-progress a:visited, .view-progress a:hover, .view-progress a:active, .view-progress a {
@@ -259,6 +282,17 @@ section.login, div.login {
   font-family: 'Josefin Sans', sans-serif;
   font-size: 30px; 
   text-decoration: none;
+}
+
+/* modals to hide */
+
+ion-modal-view {
+  top: 70px;
+  height: 85vh;
+}
+
+ion-header-bar {
+  display:none;
 }
 
 .myModal {  

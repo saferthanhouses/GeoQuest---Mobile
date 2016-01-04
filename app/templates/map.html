@@ -2,20 +2,19 @@
 	<!-- map navbar -->
 	<div class="mapNavBar">
 		
-		<div ng-show="showUisref" class="pull-left">
-			<a ng-click="abandon(nsSocket, mainSocket)">Home</a>
+		<div class="pull-left left-nav-button">
+			<button ng-click="abandon(nsSocket, mainSocket)" class="btn btn-danger pull-left">Home</button>
 		</div>
-		<div ng-show="showUisref" class="pull-right">
-			<div><a ng-click="mapButton()">Map</a></div>
+		<div class="pull-right right-nav-buttons">
+			<button ng-click="mapButton()" class="btn btn-info">Map</button>
 			
-			<div ng-show="showUisref"><a ng-click="progressButton()">Progress</a></div>
+			<div><button ng-click="progressButton()" class="btn btn-info">Progress</button></div>
 			
-			<div ng-show="showUisref" ng-click="chatButton()"><a>Chat</a></div>
+			<div><button ng-click="chatButton()" class="btn btn-info">Chat</button></div>
 		</div>
-
 	</div>
 
-	<div class="thingContainer">
+	<div class="sectionContainer">
 		<!-- map container -->
 		<div ng-show="showMap" data-tap-disabled="true" id="map"></div>
 		
@@ -41,10 +40,10 @@
 
 		<!-- chat container -->
 		<section ng-show="showChat" class="full-screen">
-			<div class="chat">
+			<div class="container progress-page">
 				<div class="chatArea"></div>
 				<input type="text" name="chatInput" class="chatInput" ng-model="chat.chatInput"/>
-				<button class="btn btn-lg btn-success" ng-click="sendMessage()">Send</button>
+				<button class="chatButton btn btn-lg btn-success" ng-click="sendMessage()">Send</button>
 			</div>
 		</section>
 	</div>
