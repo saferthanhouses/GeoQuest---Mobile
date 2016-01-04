@@ -81,14 +81,26 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             if (eventData.callMethod === 'fellowLocation') {
 
                 if (!$scope.wins.winner) checkWinner(eventData.fellow);
-            }
-            $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
-            MapFactory.updateFellowMarkers($scope.fellows);
-            $scope.$digest();
+                $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
+                MapFactory.updateFellowMarkers($scope.fellows);
+                $scope.$digest();
+            } 
         });
         $scope.nsSocket.on('disconnect', function(){
             console.log("disconnected");
             console.log(this);
+        })
+        $scope.nsSocket.on('fellowMessage', function(messageData){
+            console.log("heardFellowMessageEvent", messageData);
+            // how to pass in the name and the colour?
+            // uncomment when testing non-locally
+            if (messageData.name!==$scope.me.name){
+                var name = messageData.name, color = messageData.color, message = messageData.message;
+                // var a = [name, color, message];
+                // a.forEach(function(elt){ 
+
+                printChatMessage(name, color, message);
+            }
         })
     }
 
@@ -243,8 +255,11 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         // Maybe make a dynamic modalCreator function
     }
 
-
     // MODAL
+
+    function areModals(){
+        return $scope.modal.isOpen() || $scope.winModal.isOpen();
+    }
 
     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
         scope: $scope,
@@ -304,6 +319,34 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         SocketFactory.abandon($scope.nsSocket, $scope.mainSocket);
     }
 
+    // buttons
+
+    $scope.showMap = true;
+    $scope.showProgress = false;
+    $scope.showChat = false;
+
+    $scope.mapButton = function(){
+        $scope.showMap = true;
+        $scope.showProgress = false;
+        $scope.showChat = false;
+        // modal reveal
+    }
+
+
+    $scope.progressButton = function(){
+        $scope.showMap = false;
+        $scope.showProgress = true;
+        $scope.showChat = false;
+        // modal hide
+    }
+
+
+    $scope.chatButton = function(){
+        $scope.showMap = false;
+        $scope.showProgress = false;
+        $scope.showChat = true;
+        // modal hide
+    }
     // REVIEW
     $scope.isReviewSubmitted = false;
 
@@ -325,6 +368,50 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             color += letters[Math.floor(Math.random() * 22)];
         }
         return color;
+    }
+
+    // Live Chat Functions
+    
+    // get the user name?
+    $scope.chat = {
+        chatInput : "...",
+        lastSender : undefined
+    };
+
+    $scope.sendMessage = function(){
+        // ...
+        var message = $scope.chat.chatInput;
+        $scope.chat.chatInput = "";
+        var wrappedName = $("<p>" + $scope.me.name + ":</p>").css("color", $scope.me.color).addClass("chatName");
+        var wrappedMessage = $("<p>" + message + "</p>" )
+        if ($scope.chat.lastSender !== $scope.me.name){
+            $('div.chatArea').append(wrappedName);    
+        }
+        $('div.chatArea').append(wrappedMessage);
+        $scope.chat.lastSender = $scope.me.name;
+        $scope.nsSocket.emit('chatMessage', {
+            message: message,
+            name: $scope.me.name,
+            color: $scope.me.color
+        });
+    }
+
+    function printChatMessage(name, color, message){
+        var messageContainer = $("<div></div>").addClass("chatMessage");
+        var wrappedName = $("<p>" + name + ":</p>").css("color", color).addClass("chatName");
+        var wrappedMessage = $("<p>" + message + "</p>" )
+        // .addClass("chatMessage");
+        // var wrappedAfter = wrappedName.after(wrappedMessage);
+        if (name === $scope.chat.lastSender){
+            $(".chatArea span p").last().after(wrappedMessage);
+        } else {
+            messageContainer.append(wrappedName).append(wrappedMessage);
+            $('div.chatArea').append(messageContainer);
+        }
+
+        // $('div.chatArea').append(wrappedAfter);
+
+        $scope.chat.lastSender = name;
     }
 
     // Home and Progress links react to click

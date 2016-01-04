@@ -1,26 +1,50 @@
 <ion-view view-title="Map" align-title="center">
-	<div data-tap-disabled="true" ng-show="!viewProgress" id="map"></div>
-	<div ng-show="!viewProgress && showUisref" class="go-home"><a ng-click="abandon(nsSocket, mainSocket)">Home</a></div>
-	<div ng-show="!viewProgress && showUisref" class="view-progress"><a ng-click="viewProgress = true">Progress</a></div>
-	
-	<section ng-show="viewProgress" class="full-screen">
-	<div class="container progress-page">
-		<div>
-			<h2 class="center">Progress</h2>
-			<p class="bold">{{me.name}}</p>
-			<div class="progress" ng-style="{'border': '1px solid #5bc0de'}">
-			  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(currentStepIndex)}">
-			  </div>
-			</div>
+	<!-- map navbar -->
+	<div class="mapNavBar">
+		
+		<div class="pull-left left-nav-button">
+			<button ng-disabled="areModals()" ng-click="abandon(nsSocket, mainSocket)" class="btn btn-danger pull-left">Home</button>
 		</div>
-		<div class="quest" ng-repeat="fellow in fellows">
-			<p class="bold">{{fellow.name}}</p>
-			<div class="progress">
-			  <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(fellow.currentStepIndex), 'background-color': fellow.color, 'border': '1px solid' + fellow.color}"> 
-			  </div>
-			</div>
+		<div class="pull-right right-nav-buttons">
+			<div><button ng-disabled="areModals()" ng-click="mapButton()" class="btn btn-info">Map</button></div>
+			
+			<div><button ng-disabled="areModals()" ng-click="progressButton()" class="btn btn-info">Progress</button></div>
+			
+			<div><button ng-disabled="areModals()" ng-click="chatButton()" class="btn btn-info">Chat</button></div>
 		</div>
-		<button class="btn btn-info" ng-click="viewProgress = false">Back to Map</button>
 	</div>
-	</section>
+
+	<div class="sectionContainer">
+		<!-- map container -->
+		<div ng-show="showMap" data-tap-disabled="true" id="map"></div>
+		
+		<!-- progress container -->
+		<section ng-show="showProgress" class="full-screen">
+		<div class="container progress-page">
+			<div>
+				<p class="bold">{{me.name}}</p>
+				<div class="progress" ng-style="{'border': '1px solid #5bc0de'}">
+				  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(currentStepIndex)}">
+				  </div>
+				</div>
+			</div>
+			<div class="quest" ng-repeat="fellow in fellows">
+				<p class="bold">{{fellow.name}}</p>
+				<div class="progress">
+				  <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': getPercentage(fellow.currentStepIndex), 'background-color': fellow.color, 'border': '1px solid' + fellow.color}"> 
+				  </div>
+				</div>
+			</div>
+		</div>
+		</section>
+
+		<!-- chat container -->
+		<section ng-show="showChat" class="full-screen">
+			<div class="container progress-page">
+				<div class="chatArea"></div>
+				<input type="text" name="chatInput" class="chatInput" ng-model="chat.chatInput"/>
+				<button class="chatButton btn btn-lg btn-success" ng-click="sendMessage()">Send</button>
+			</div>
+		</section>
+	</div>
 </ion-view>
