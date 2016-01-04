@@ -3,14 +3,14 @@
 	<div class="mapNavBar">
 		
 		<div class="pull-left left-nav-button">
-			<button ng-click="abandon(nsSocket, mainSocket)" class="btn btn-danger pull-left">Home</button>
+			<button ng-disabled="areModals()" ng-click="abandon(nsSocket, mainSocket)" class="btn btn-danger pull-left">Home</button>
 		</div>
 		<div class="pull-right right-nav-buttons">
-			<button ng-click="mapButton()" class="btn btn-info">Map</button>
+			<div><button ng-disabled="areModals()" ng-click="mapButton()" class="btn btn-info">Map</button></div>
 			
-			<div><button ng-click="progressButton()" class="btn btn-info">Progress</button></div>
+			<div><button ng-disabled="areModals()" ng-click="progressButton()" class="btn btn-info">Progress</button></div>
 			
-			<div><button ng-click="chatButton()" class="btn btn-info">Chat</button></div>
+			<div><button ng-disabled="areModals()" ng-click="chatButton()" class="btn btn-info">Chat</button></div>
 		</div>
 	</div>
 

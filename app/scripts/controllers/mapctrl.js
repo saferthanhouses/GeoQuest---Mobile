@@ -94,13 +94,13 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
             console.log("heardFellowMessageEvent", messageData);
             // how to pass in the name and the colour?
             // uncomment when testing non-locally
-            // if (messageData.name!==$scope.me.name){
+            if (messageData.name!==$scope.me.name){
                 var name = messageData.name, color = messageData.color, message = messageData.message;
                 // var a = [name, color, message];
                 // a.forEach(function(elt){ 
 
                 printChatMessage(name, color, message);
-            // }
+            }
         })
     }
 
@@ -257,6 +257,10 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
 
     // MODAL
 
+    function areModals(){
+        return $scope.modal.isOpen() || $scope.winModal.isOpen();
+    }
+
     $ionicModal.fromTemplateUrl('templates/mapModal.html', {
         scope: $scope,
         animation: 'slide-in-up',
@@ -369,13 +373,22 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
     // Live Chat Functions
     
     // get the user name?
-    $scope.chat = {};
+    $scope.chat = {
+        chatInput : "...",
+        lastSender : undefined
+    };
+
     $scope.sendMessage = function(){
         // ...
         var message = $scope.chat.chatInput;
         $scope.chat.chatInput = "";
+        var wrappedName = $("<p>" + $scope.me.name + ":</p>").css("color", $scope.me.color).addClass("chatName");
         var wrappedMessage = $("<p>" + message + "</p>" )
+        if ($scope.chat.lastSender !== $scope.me.name){
+            $('div.chatArea').append(wrappedName);    
+        }
         $('div.chatArea').append(wrappedMessage);
+        $scope.chat.lastSender = $scope.me.name;
         $scope.nsSocket.emit('chatMessage', {
             message: message,
             name: $scope.me.name,
@@ -389,11 +402,16 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
         var wrappedMessage = $("<p>" + message + "</p>" )
         // .addClass("chatMessage");
         // var wrappedAfter = wrappedName.after(wrappedMessage);
-        var appendToDiv = messageContainer.append(wrappedName)
-        wrappedName.after(wrappedMessage);
+        if (name === $scope.chat.lastSender){
+            $(".chatArea span p").last().after(wrappedMessage);
+        } else {
+            messageContainer.append(wrappedName).append(wrappedMessage);
+            $('div.chatArea').append(messageContainer);
+        }
 
         // $('div.chatArea').append(wrappedAfter);
-        $('div.chatArea').append(appendToDiv);
+
+        $scope.chat.lastSender = name;
     }
 
     // Home and Progress links react to click
