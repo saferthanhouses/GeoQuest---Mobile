@@ -84,7 +84,16 @@ app.controller('MapCtrl', function ($scope, $rootScope, $timeout, $ionicModal, M
                 $scope.fellows = SocketFactory[eventData.callMethod](eventData, $scope.fellows, $scope.me.id);
                 MapFactory.updateFellowMarkers($scope.fellows);
                 $scope.$digest();
-            } 
+            } else if (eventData.callMethod === 'fellowMessage') {
+                // if (messageData.name!==$scope.me.name){
+                    console.log("fellowMessage EventHeard in fellowEvent", eventData);
+                var name = eventData.messageData.name, color = eventData.messageData.color, message = eventData.messageData.message;
+                // var a = [name, color, message];
+                // a.forEach(function(elt){ 
+
+                printChatMessage(name, color, message);
+            // }
+            }
         });
         $scope.nsSocket.on('disconnect', function(){
             console.log("disconnected");
